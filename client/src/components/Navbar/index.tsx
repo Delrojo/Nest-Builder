@@ -1,15 +1,27 @@
-import { Flex, Image, Text, IconButton, useColorMode } from "@chakra-ui/react";
+import {
+  Flex,
+  Image,
+  Text,
+  IconButton,
+  useColorModeValue,
+  useColorMode,
+  Tooltip,
+} from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import Link from "next/link";
 import UserMenu from "./UserMenu";
 import PublicMenu from "./PublicMenu";
 import { useRecoilValue } from "recoil";
 import { userAtom, UserStatus } from "@/atoms/userAtom";
+import { useHotkeys } from "react-hotkeys-hook";
 
 const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const userState = useRecoilValue(userAtom);
-  const color = colorMode === "dark" ? "primary.400" : "primary.500";
+  const color = useColorModeValue("primary.500", "primary.400");
+
+  // Bind Ctrl+D to toggle color mode
+  useHotkeys("ctrl+d", toggleColorMode, [toggleColorMode]);
 
   return (
     <Flex
@@ -17,7 +29,6 @@ const Navbar = () => {
       padding="0.5rem 1rem"
       alignItems="center"
       justifyContent="space-between"
-      boxShadow="sm"
     >
       <Flex align="center" justify="start" gap="0.5rem">
         <Link href="/" passHref>
@@ -45,18 +56,28 @@ const Navbar = () => {
           <PublicMenu />
         )}
 
-        <IconButton
-          aria-label={`Switch to ${
+        <Tooltip
+          label={`Toggle ${
             colorMode === "light" ? "dark" : "light"
-          } mode`}
-          icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
-          onClick={toggleColorMode}
-          width={"fit-content"}
-          variant={"unstyled"}
-          aspectRatio={1}
-          lineHeight={0.5}
-          _hover={{ color: "secondary.600" }}
-        />
+          } mode (Ctrl+D)`}
+          fontSize="xs"
+          hasArrow
+          bg={colorMode === "light" ? "background.dark" : "background.light"}
+          openDelay={2000}
+        >
+          <IconButton
+            aria-label={`Switch to ${
+              colorMode === "light" ? "dark" : "light"
+            } mode`}
+            icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
+            onClick={toggleColorMode}
+            width={"fit-content"}
+            variant={"unstyled"}
+            aspectRatio={1}
+            lineHeight={0.5}
+            _hover={{ color: "secondary.600" }}
+          />
+        </Tooltip>
       </Flex>
     </Flex>
   );

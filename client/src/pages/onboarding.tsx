@@ -10,8 +10,9 @@ import {
   StepSeparator,
   Flex,
   Icon,
+  Text,
   useSteps,
-  Heading,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { FaCheckCircle } from "react-icons/fa";
 import { useRouter } from "next/router";
@@ -33,6 +34,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
   });
   const handleNext = () => setActiveStep((prev) => prev + 1);
   const handlePrev = () => setActiveStep((prev) => prev - 1);
+  const iconColor = useColorModeValue("gray.300", "gray.500");
 
   const router = useRouter();
 
@@ -58,7 +60,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
             <StepIndicator>
               <StepStatus
                 complete={<Icon as={FaCheckCircle} />}
-                incomplete={<Icon as={step.stepIcon} />}
+                incomplete={<Icon as={step.stepIcon} color={iconColor} />}
                 active={<Icon as={step.stepIcon} />}
               />
             </StepIndicator>
@@ -77,9 +79,10 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
 
       <Flex
         w={"100%"}
-        alignContent={"center"}
+        alignItems={"center"}
         gap={4}
         justifyContent={"space-between"}
+        mb={4}
       >
         <Button
           colorScheme="green.600"
@@ -89,9 +92,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
         >
           Previous
         </Button>
-        <Heading as="h6" size="xs" mt={4} textAlign="start">
-          {`${steps[activeStep].nextStep}`}
-        </Heading>
+        <Text fontSize="md">{`${steps[activeStep].nextStep}`}</Text>
         <Button
           colorScheme="green.600"
           onClick={handleNextAndSubmit}

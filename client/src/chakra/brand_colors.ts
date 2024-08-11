@@ -1,41 +1,54 @@
 const colors = {
   background: {
-    light: "#FFFFDF",
+    light: "#FBFDFA",
     dark: "#1E2D22",
   },
   primary: {
-    100: "#e3e7c6",
+    100: "#F3FAEE",
     400: "#63A757",
-    500: "#2e7d32",
-    600: "#1b5e20",
-    700: "#43a047",
+    500: "#2E7D32",
+    600: "#1B5E20",
+    700: "#43A047",
     800: "#385337",
   },
   secondary: {
     500: "#F4FFF2",
     600: "#F9C74F",
-    700: "#b17e06",
+    700: "#B17E06",
   },
   text: {
     light: "#1E2D22",
-    dark: "#f6edd9",
+    dark: "#F6EDD9",
   },
   border: {
-    light: "#2e7d32",
-    dark: "#43a047",
+    light: "#2E7D32",
+    dark: "#43A047",
+    inactive: "#FFFFFF29",
   },
   success: {
-    500: "#63A757", // Bright green
-    600: "#2e7d32", // Primary green
+    500: "#2E7D32",
   },
   error: {
-    500: "#E53E3E", // A standard error red
+    500: "#E53E3E",
   },
   warning: {
-    500: "#F9C74F", // Secondary yellow
+    500: "#F9C74F",
   },
   info: {
-    500: "#3182CE", // A standard info blue
+    500: "#3182CE",
+  },
+
+  gray: {
+    50: "#f9faf6",
+    100: "#f2f2f2",
+    200: "#e5e5e5",
+    300: "#d4d4d4",
+    400: "#a3a3a3",
+    500: "#737373",
+    600: "#404040",
+    700: "#373737",
+    800: "#262626",
+    900: "#171717",
   },
 };
 

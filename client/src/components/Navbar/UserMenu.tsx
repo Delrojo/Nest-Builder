@@ -1,54 +1,105 @@
 import {
   Avatar,
-  HStack,
-  Text,
-  Link as ChakraLink,
   Box,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuDivider,
+  Button,
   Icon,
+  Text,
+  useColorModeValue,
 } from "@chakra-ui/react";
-import { useAuth } from "@/utils/hooks/useAuth";
+import { FaEgg } from "react-icons/fa";
 import { useRecoilState } from "recoil";
 import { userAtom } from "@/atoms/userAtom";
-import { FaEgg } from "react-icons/fa";
+import { useAuth } from "@/utils/hooks/useAuth";
+import { FaCircleArrowLeft, FaGear } from "react-icons/fa6";
+import { useRouter } from "next/router";
+import { useCallback } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 
 const UserMenu = () => {
   const [userState, setUserState] = useRecoilState(userAtom);
-
   const { logOut } = useAuth();
 
+  // Define color modes
+  const menuBg = useColorModeValue("background.light", "background.dark");
+  const menuItemBg = useColorModeValue("primary.100", "primary.800");
+  const iconColor = useColorModeValue("primary.500", "primary.400");
+  const borderColor = useColorModeValue("gray.200", "gray.600");
+
+  const router = useRouter();
+  // Hotkeys for navigation
+  const navigateToMyNest = useCallback(() => {
+    router.push("/mynest");
+  }, [router]);
+
+  const navigateToSettings = useCallback(() => {
+    router.push("/settings");
+  }, [router]);
+
+  // Bind hotkeys
+  useHotkeys("ctrl+m", navigateToMyNest, [navigateToMyNest]);
+  useHotkeys("ctrl+s", navigateToSettings, [navigateToSettings]);
+  useHotkeys("ctrl+l", logOut, [logOut]);
+
   return (
-    <HStack spacing={6} align="center">
-      <HStack spacing={1}>
+    <Menu>
+      <MenuButton
+        as={Button}
+        rounded={"full"}
+        variant={"link"}
+        cursor={"pointer"}
+        minW={0}
+      >
         <Avatar
-          name={userState.user?.name}
+          size="sm"
           src={userState.user?.photoURL}
-          size={"xs"}
-          bg={"primary.500"}
-          color={"text.dark"}
+          name={userState.user?.name}
+          bg="primary.500"
         />
-        <Text whiteSpace="nowrap">{userState.user?.name}</Text>
-      </HStack>
-      <ChakraLink
-        href="https://github.com/eeshamoona/Nest-Builder"
-        _hover={{ textDecoration: "none", textColor: "green" }}
-        _active={{ color: "primary.400" }}
-      >
-        <Box display="flex" alignItems="center" w="100%">
-          <Icon as={FaEgg} mr={2} color="green" />
-          <Text whiteSpace="nowrap">My Nest</Text>
+      </MenuButton>
+      <MenuList backgroundColor={menuBg} borderColor={borderColor}>
+        <Box px={4} py={3}>
+          <Text fontWeight="bold" mb={1}>
+            {" "}
+            {userState.user?.name}
+          </Text>
+          <Text fontSize="sm">{userState.user?.email}</Text>
         </Box>
-      </ChakraLink>
-      <ChakraLink
-        _hover={{ textDecoration: "none", textColor: "secondary.600" }}
-        _active={{ color: "secondary.600" }}
-        onClick={logOut}
-        size={"md"}
-        variant={"action"}
-        as="button"
-      >
-        Logout
-      </ChakraLink>
-    </HStack>
+        <MenuDivider />
+        <MenuItem
+          icon={<Icon as={FaEgg} color={iconColor} />}
+          command="⌘M"
+          bg={menuBg}
+          _hover={{ bg: menuItemBg }}
+          onClick={navigateToMyNest}
+        >
+          My Nest
+        </MenuItem>
+        <MenuItem
+          icon={<Icon as={FaGear} color={iconColor} />}
+          command="⌘S"
+          bg={menuBg}
+          _hover={{ bg: menuItemBg }}
+          onClick={navigateToSettings}
+        >
+          Settings
+        </MenuItem>
+        <MenuDivider />
+        <MenuItem
+          icon={<Icon as={FaCircleArrowLeft} color={iconColor} />}
+          command="⌘L"
+          bg={menuBg}
+          _hover={{ bg: menuItemBg }}
+          onClick={logOut}
+        >
+          Logout
+        </MenuItem>
+      </MenuList>
+    </Menu>
   );
 };
 

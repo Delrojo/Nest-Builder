@@ -23,7 +23,7 @@ const PublicMenu = () => {
         as={IconButton}
         aria-label="Open Menu"
         icon={<HamburgerIcon />}
-        variant="unstyled"
+        variant="ghost"
         color="primary.600"
         width="fit-content"
       />
