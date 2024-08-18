@@ -11,8 +11,13 @@ import {
   SliderThumb,
   SliderTrack,
   useColorModeValue,
+  Input,
+  Icon,
+  InputGroup,
+  InputLeftElement,
 } from "@chakra-ui/react";
 import React from "react";
+import { FaHome } from "react-icons/fa";
 
 type TransportationProps = {};
 
@@ -39,41 +44,51 @@ const Transportation: React.FC<TransportationProps> = () => {
         alignContent="center"
         justify="center"
       >
-        <Card
-          size="sm"
-          flex="1"
-          minWidth={{ base: "100%", md: "48%" }}
-          maxWidth="500px"
-          p={6}
-          borderRadius="md"
-          bg={bgColor}
-        >
-          <Heading as="h2" size="md" textAlign="start">
-            Transportation Methods
-          </Heading>
-          <Text fontSize="sm" mt={1} textAlign="start">
-            We&apos;ll use this information to help find you the best places to
-            visit.
-          </Text>
-          <Stack spacing={4} mt={4}>
-            {["Walking", "Biking", "Driving", "Bus", "Train"].map((method) => (
-              <Flex key={method} direction="row" align="center" gap={2}>
-                <Checkbox>{method}</Checkbox>
-                <Slider
-                  aria-label="slider-ex-2"
-                  colorScheme={"primary.500"}
-                  defaultValue={30}
-                >
-                  <SliderTrack>
-                    <SliderFilledTrack />
-                  </SliderTrack>
-                  <SliderThumb />
-                </Slider>
-                <Text>miles</Text>
-              </Flex>
-            ))}
-          </Stack>
-        </Card>
+        <Flex direction={"column"} align="center" gap={4}>
+          <InputGroup w={"full"}>
+            <InputLeftElement pointerEvents="none">
+              <Icon as={FaHome} color="gray.300" />
+            </InputLeftElement>
+            <Input placeholder="Where to center your search" />
+          </InputGroup>{" "}
+          <Card
+            size="sm"
+            flex="1"
+            minWidth={{ base: "100%", md: "48%" }}
+            maxWidth="500px"
+            p={6}
+            borderRadius="md"
+            bg={bgColor}
+          >
+            <Heading as="h2" size="md" textAlign="start">
+              Transportation Methods
+            </Heading>
+            <Text fontSize="sm" mt={1} textAlign="start">
+              We&apos;ll use this information to help find you the best places
+              to visit.
+            </Text>
+            <Stack spacing={4} mt={4}>
+              {["Walking", "Biking", "Driving", "Bus", "Train"].map(
+                (method) => (
+                  <Flex key={method} direction="row" align="center" gap={2}>
+                    <Checkbox>{method}</Checkbox>
+                    <Slider
+                      aria-label="slider-ex-2"
+                      colorScheme={"primary.500"}
+                      defaultValue={30}
+                    >
+                      <SliderTrack>
+                        <SliderFilledTrack />
+                      </SliderTrack>
+                      <SliderThumb />
+                    </Slider>
+                    <Text>miles</Text>
+                  </Flex>
+                )
+              )}
+            </Stack>
+          </Card>
+        </Flex>
 
         <Card
           mt={{ base: 4, md: 0 }}

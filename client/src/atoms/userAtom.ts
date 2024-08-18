@@ -14,6 +14,7 @@ export interface User {
   email: string;
   photoURL: string;
   status: UserStatus | null;
+  googleAuthToken: string | null;
 }
 
 export interface UserAtom {
@@ -25,8 +26,8 @@ const defaultUserState: UserAtom = {
 };
 
 export const userAtom = atom<UserAtom>({
-  key: "userAtom", // unique ID (with respect to other atoms/selectors)
-  default: defaultUserState, // default value (aka initial value)
+  key: "userAtom",
+  default: defaultUserState,
 });
 
 export const loadingAtom = atom<boolean>({

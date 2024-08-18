@@ -3,11 +3,8 @@ import {
   Box,
   Text,
   Input,
-  Button,
   FormControl,
   FormLabel,
-  useToast,
-  Progress,
   Flex,
   useDisclosure,
   Icon,
@@ -18,27 +15,29 @@ import {
   Tooltip,
   SimpleGrid,
   Card,
+  Spinner,
 } from "@chakra-ui/react";
 import {
   CheckCircleIcon,
   InfoOutlineIcon,
   WarningIcon,
 } from "@chakra-ui/icons";
+import { FaCar, FaListAlt, FaAlignJustify, FaTags } from "react-icons/fa";
 import StepNavigation from "./TakeoutStepNavigation";
 import { userAtom } from "@/atoms/userAtom";
 import { useRecoilState } from "recoil";
+import GoogleDriveButton from "./GoogleDriveButton";
 
 const IntroPage = () => {
   const [birthday, setBirthday] = useState("");
   const [gender, setGender] = useState("");
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [sectionStatus, setSectionStatus] = useState({
-    transportation: false,
-    lifestyle: false,
-    review: false,
-    categories: false,
+    transportation: "neutral",
+    lifestyle: "neutral",
+    review: "neutral",
+    categories: "neutral",
   });
-  const toast = useToast();
+  const [isUploading, setIsUploading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [userState, setUserState] = useRecoilState(userAtom);
 
@@ -58,40 +57,43 @@ const IntroPage = () => {
 
   const handleUpload = async () => {
     try {
-      setUploadProgress(0);
-      for (let i = 1; i <= 100; i++) {
-        setUploadProgress(i);
-        await new Promise((resolve) => setTimeout(resolve, 30));
+      setIsUploading(true); // Start processing
+      const sectionNames = [
+        "transportation",
+        "lifestyle",
+        "review",
+        "categories",
+      ];
+      for (let i = 0; i < sectionNames.length; i++) {
+        const section = sectionNames[i];
+
+        setSectionStatus((prevStatus) => ({
+          ...prevStatus,
+          [section]: "processing",
+        }));
+
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
+        const success = Math.random() > 0.5;
+
+        setSectionStatus((prevStatus) => ({
+          ...prevStatus,
+          [section]: success ? "success" : "failed",
+        }));
       }
-      setSectionStatus({
-        transportation: Math.random() > 0.5,
-        lifestyle: Math.random() > 0.5,
-        review: Math.random() > 0.5,
-        categories: Math.random() > 0.5,
-      });
-      toast({
-        title: "Upload Successful",
-        description: "Your Google Maps data has been processed successfully.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
     } catch (error) {
-      toast({
-        title: "Upload Failed",
-        description: "There was an error uploading your data.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      console.error("Upload Failed", error);
+    } finally {
+      setIsUploading(false); // Reset to allow new uploads
     }
   };
 
   return (
-    <Flex direction="column" minHeight="100vh" width="100%" p={6}>
+    <Flex direction="column" height="100%" width="100%" p={6}>
       <Box textAlign="center" mb={8}>
         <Heading as="h1" mt={4} size="lg">
-          Hey There, {userState.user?.name}!
+          Hey There, {userState.user?.name}!{" "}
+          {userState.user?.googleAuthToken || "JDSLKJF"}
         </Heading>
         <Text fontSize="md" mt={2} mb={4}>
           Welcome to Nested! We are excited to help you find the perfect places
@@ -133,39 +135,39 @@ const IntroPage = () => {
 
         <Card p={4} bg={cardBg}>
           <Text fontSize="xl" fontWeight="bold" mb={2}>
-            Data Upload & Progress
+            AI Onboarding [Optional]
           </Text>
           <Text fontSize="sm" mb={4}>
-            Connect your Google Maps data to get started with Nested.
+            Adding your Google Takeout data helps Nested autofill onboarding
+            questions to save you time and is not stored. You also have the
+            option to answer questions manually, up to you!{" "}
           </Text>
           <Flex alignItems="center" mb={4}>
-            <Button variant="solid" onClick={handleUpload} w="full">
-              Connect to Google Drive
-            </Button>
+            {/* <Button
+              variant="solid"
+              onClick={handleUpload}
+              w="full"
+              isLoading={isUploading}
+              loadingText="Processing..."
+            >
+              Upload Google Takeout Data
+            </Button> */}
+            <GoogleDriveButton />
             <Tooltip
               label="Don't know how to get your Google Maps data? No worries! We'll guide you through the process."
-              placement="top"
-              hasArrow
+              maxWidth={"14rem"}
             >
               <Icon
                 as={InfoOutlineIcon}
                 w={5}
                 h={5}
                 ml={2}
-                color={useColorModeValue("gray.500", "gray.200")}
+                mr={2}
                 onClick={onOpen}
                 cursor="pointer"
               />
             </Tooltip>
           </Flex>
-          {uploadProgress > 0 && (
-            <Box w="full" mt={4}>
-              <Progress value={uploadProgress} size="sm" hasStripe isAnimated />
-              <Text fontSize="sm" mt={2}>
-                Upload Progress: {uploadProgress}%
-              </Text>
-            </Box>
-          )}
 
           <SimpleGrid
             columns={{ base: 1, md: 2 }}
@@ -175,15 +177,47 @@ const IntroPage = () => {
             alignItems="center"
           >
             {[
-              { label: "Transportation", status: sectionStatus.transportation },
-              { label: "Lifestyle", status: sectionStatus.lifestyle },
-              { label: "Review", status: sectionStatus.review },
-              { label: "Categories", status: sectionStatus.categories },
-            ].map(({ label, status }) => (
+              {
+                label: "Transportation",
+                status: sectionStatus.transportation,
+                icon: FaCar,
+              },
+              {
+                label: "Lifestyle",
+                status: sectionStatus.lifestyle,
+                icon: FaListAlt,
+              },
+              {
+                label: "Review",
+                status: sectionStatus.review,
+                icon: FaAlignJustify,
+              },
+              {
+                label: "Categories",
+                status: sectionStatus.categories,
+                icon: FaTags,
+              },
+            ].map(({ label, status, icon }) => (
               <HStack key={label}>
                 <Icon
-                  as={status ? CheckCircleIcon : WarningIcon}
-                  color={status ? "green.500" : "yellow.500"}
+                  as={
+                    status === "neutral"
+                      ? icon
+                      : status === "processing"
+                      ? Spinner
+                      : status === "success"
+                      ? CheckCircleIcon
+                      : WarningIcon
+                  }
+                  color={
+                    status === "success"
+                      ? "green.500"
+                      : status === "failed"
+                      ? "yellow.500"
+                      : status === "processing"
+                      ? "blue.500"
+                      : "gray.500"
+                  }
                 />
                 <Text>{label}</Text>
               </HStack>

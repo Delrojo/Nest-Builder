@@ -86,7 +86,6 @@ const AuthModal: React.FC = () => {
     } else if (userState.user?.status === UserStatus.whitelist) {
       return <AuthWelcomeBack />;
     } else if (userState.user?.status === UserStatus.admin) {
-      //TODO: Change to AuthAdminWelcome
       return <AuthAdminWelcome />;
     } else if (userState.user?.status === UserStatus.new) {
       return <AuthRegisterForm handleSubmit={handleSubmit} />;

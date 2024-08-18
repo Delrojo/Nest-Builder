@@ -12,12 +12,11 @@ import {
   useToast,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { EditIcon, CheckIcon, DeleteIcon } from "@chakra-ui/icons";
+import { CheckIcon, DeleteIcon } from "@chakra-ui/icons";
+import { MdModeEdit } from "react-icons/md";
 
 interface CategoryModel {
   title: string;
-  description: string;
-  isActive: boolean;
   costPreference: string;
   userPreferences: string;
   relatedSubcategories: string[];
@@ -82,11 +81,11 @@ const CategoryCard = ({
     >
       <Flex justifyContent="space-between" alignItems="center">
         <Text fontWeight="bold" fontSize="xl">
-          {category.title} - {category.costPreference}
+          {category.title} | {category.costPreference}
         </Text>
         <IconButton
           aria-label="Edit category"
-          icon={editMode ? <CheckIcon /> : <EditIcon />}
+          icon={editMode ? <CheckIcon /> : <MdModeEdit />}
           onClick={editMode ? saveChanges : handleEditToggle}
           colorScheme="blue"
           w="fit-content"
@@ -102,8 +101,9 @@ const CategoryCard = ({
           />
         )}
       </Flex>
-      <Text mt={2}>{category.description}</Text>
+      <Text mt={2}>{category.userPreferences}</Text>
       <Stack direction="row" mt={2} spacing={2} wrap="wrap">
+        <Text fontWeight="bold">Related Subcategories:</Text>
         {category.relatedSubcategories.map((subcategory, index) => (
           <Tag key={index} bg={tagBg} borderRadius="full">
             <TagLabel>{subcategory}</TagLabel>
@@ -118,6 +118,7 @@ const CategoryCard = ({
         ))}
       </Stack>
       <Stack direction="row" mt={2} spacing={2} wrap="wrap">
+        <Text fontWeight="bold">Vibes:</Text>
         {category.vibes.map((vibe, index) => (
           <Tag key={index} bg={tagBg} borderRadius="full">
             <TagLabel>{vibe}</TagLabel>

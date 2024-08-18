@@ -12,7 +12,6 @@ import CategoryCard from "./CategoryCard";
 
 interface CategoryModel {
   title: string;
-  description: string;
   isActive: boolean;
   costPreference: string;
   userPreferences: string;
@@ -29,30 +28,27 @@ const OnboardCategories = () => {
     const fetchedCategories: CategoryModel[] = [
       {
         title: "Restaurant",
-        description:
-          "Interest in Mediterranean cuisine and healthy dining options",
         isActive: true,
         costPreference: "$$",
-        userPreferences: "Healthy",
+        userPreferences:
+          "Interest in Mediterranean cuisine and healthy dining options",
         relatedSubcategories: ["Mediterranean", "Healthy Dining"],
         vibes: ["Casual", "Family-Friendly"],
       },
       {
         title: "Activities & Entertainment",
-        description: "Interest in museums, parks, and fitness activities",
         isActive: true,
         costPreference: "$",
-        userPreferences: "Active",
+        userPreferences: "Interest in museums, parks, and fitness activities",
         relatedSubcategories: ["Museums", "Parks", "Fitness"],
         vibes: ["Family-Friendly", "Outdoor"],
       },
       {
         title: "Shopping",
-        description:
-          "Frequent searches for grocery stores and athletic apparel",
         isActive: false,
         costPreference: "$$$",
-        userPreferences: "Fashion",
+        userPreferences:
+          "Frequent searches for grocery stores and athletic apparel",
         relatedSubcategories: ["Grocery Stores", "Athletic Apparel"],
         vibes: ["Convenient", "Affordable"],
       },
@@ -67,7 +63,6 @@ const OnboardCategories = () => {
   const handleAddNewCategory = () => {
     const newCategory: CategoryModel = {
       title: "",
-      description: "",
       isActive: false,
       costPreference: "",
       userPreferences: "",
@@ -89,7 +84,7 @@ const OnboardCategories = () => {
       <Heading as="h1" mt={4} textAlign="center" size="lg">
         Categories
       </Heading>
-      <Text fontSize="md" mt={2} mb={4} textAlign="center">
+      <Text fontSize="md" mt={2} textAlign="center">
         These are the categories we believe you would be interested in, feel
         free to edit or add more.
       </Text>
