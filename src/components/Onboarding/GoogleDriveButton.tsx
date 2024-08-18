@@ -80,6 +80,29 @@ const GoogleDriveButton = () => {
             console.log("User loaded the picker");
           }
 
+          if (data.action === "authFailed") {
+            console.error("Google Drive authentication failed.");
+            toast({
+              title: "Authentication failed",
+              description: "Please authenticate with Google to continue.",
+              status: "error",
+              duration: 5000,
+              isClosable: true,
+            });
+          }
+
+          if (data.action === "error") {
+            console.error("Google Drive Picker error:", data.action);
+            toast({
+              title: "Error",
+              description:
+                "An error occurred while opening the Google Drive Picker.",
+              status: "error",
+              duration: 5000,
+              isClosable: true,
+            });
+          }
+
           // Log the data for any other actions
           console.log(data);
         },

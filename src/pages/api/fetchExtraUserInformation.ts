@@ -9,9 +9,10 @@ const fetchPeopleInfo = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const personFields = "genders,birthdays,addresses,locations";
   const url = `https://people.googleapis.com/v1/people/me?personFields=${personFields}&access_token=${token}`;
-
   try {
     const response = await fetch(url, {
+      mode: "cors",
+      cache: "no-cache",
       headers: {
         Authorization: `Bearer ${token}`,
       },

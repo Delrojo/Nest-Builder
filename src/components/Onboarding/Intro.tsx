@@ -59,7 +59,9 @@ const IntroPage = () => {
     console.log("Fetching people info");
     console.log("User Auth Token:", userState.user?.googleAuthToken);
     const token = userState.user?.googleAuthToken;
-    const response = await fetch(`/api/fetchPeopleInfo?token=${token}`);
+    const response = await fetch(
+      `/api/fetchExtraUserInformation?token=${token}`
+    );
 
     if (response.ok) {
       const data = await response.json();

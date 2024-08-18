@@ -18,6 +18,8 @@ export default async function handler(
 
   try {
     const response = await fetch(url, {
+      mode: "cors",
+      cache: "no-cache",
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
