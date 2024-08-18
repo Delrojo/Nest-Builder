@@ -60,17 +60,18 @@ export function useAuth() {
     setLoading(true);
     try {
       console.log("Signing in with Google using redirect");
-      await signInWithRedirect(auth, provider);
+      await signInWithPopup(auth, provider);
       console.log("Sign in with Google using redirect successful");
     } catch (error) {
       console.error("Error signing in with Google using redirect: ", error);
       console.log("Attempting to sign in with Google using popup");
       try {
-        await signInWithPopup(auth, provider);
+        await signInWithRedirect(auth, provider);
         console.log("Sign in with Google using popup successful");
       } catch (popupError) {
         console.error("Error signing in with Google using popup: ", popupError);
       }
+      throw error;
     }
     setLoading(false);
   };
