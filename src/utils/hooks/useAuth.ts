@@ -26,9 +26,13 @@ export function useAuth() {
 
     const unsubscribeAuthState = onAuthStateChanged(auth, async (user) => {
       console.log("Auth state changed");
-      const result = getRedirectResult(auth);
+      const result = await getRedirectResult(auth);
       console.log("Redirect result:", result);
       console.log("User:", user);
+      if (user === null && result && result.user) {
+        console.log("User found in redirect result");
+        user = result.user;
+      }
       if (user) {
         window.close();
         console.log("User is signed in:", user);
