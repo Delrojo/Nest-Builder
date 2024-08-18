@@ -56,6 +56,8 @@ const IntroPage = () => {
   };
 
   const getPeopleInfo = useCallback(async () => {
+    console.log("Fetching people info");
+    console.log("User Auth Token:", userState.user?.googleAuthToken);
     const token = userState.user?.googleAuthToken;
     const response = await fetch(`/api/fetchPeopleInfo?token=${token}`);
 
@@ -112,7 +114,7 @@ const IntroPage = () => {
     <Flex direction="column" height="100%" width="100%" p={6}>
       <Box textAlign="center" mb={8}>
         <Heading as="h1" mt={4} size="lg">
-          Hey There, {userState.user?.name}!{userState.user?.googleAuthToken}
+          Hey There, {userState.user?.name}!
         </Heading>
         <Text fontSize="md" mt={2} mb={4}>
           Welcome to Nested! We are excited to help you find the perfect places

@@ -44,8 +44,8 @@ const GoogleDriveButton = () => {
           "FirebaseAuthEmulatorFakeAccessToken_google.com"
           ? userState.user?.googleAuthToken
           : "";
-      const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
-      const developerKey = process.env.NEXT_PUBLIC_GOOGLE_DRIVE_ID ?? "";
+      const clientId = process.env.NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID ?? "";
+      const developerKey = process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY ?? "";
 
       console.log("Opening Google Drive Picker with token:", token);
 
