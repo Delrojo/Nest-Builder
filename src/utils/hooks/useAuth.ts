@@ -1,62 +1,17 @@
 // useAuth.ts
 import { useRecoilState } from "recoil";
-import { userAtom, loadingAtom, UserStatus } from "@/atoms/userAtom";
-import {
-  GoogleAuthProvider,
-  signOut,
-  onAuthStateChanged,
-  getRedirectResult,
-  signInWithPopup,
-} from "firebase/auth";
-import { useEffect } from "react";
+import { userAtom, loadingAtom, User } from "@/atoms/userAtom";
+import { GoogleAuthProvider, signOut, signInWithPopup } from "firebase/auth";
 import { auth } from "@/firebase/firebaseConfig";
-import { checkUserStatus } from "../functions/authFunctions";
-import { User } from "@/atoms/userAtom";
 import { useRouter } from "next/router";
 import { useToast } from "@chakra-ui/react";
+import { checkUserStatus } from "../functions/authFunctions";
 
 export function useAuth() {
   const [user, setUser] = useRecoilState(userAtom);
   const [loading, setLoading] = useRecoilState(loadingAtom);
   const router = useRouter();
   const toast = useToast();
-
-  useEffect(() => {
-    console.log("useEffect triggered");
-
-    const unsubscribeAuthState = onAuthStateChanged(auth, async (user) => {
-      console.log("Auth state changed");
-      const result = await getRedirectResult(auth);
-      console.log("Redirect result:", result);
-      console.log("User:", user);
-      if (user === null && result && result.user) {
-        console.log("User found in redirect result");
-        user = result.user;
-      }
-      if (user) {
-        console.log("User is signed in:", user);
-        const status = await checkUserStatus(user.email || "");
-        console.log("User status:", status);
-        setUser({
-          user: {
-            uid: user.uid,
-            name: user.displayName || "",
-            email: user.email || "",
-            photoURL: user.photoURL || "",
-            status: status || UserStatus.new,
-            googleAuthToken: "idToken",
-          } as User,
-        });
-      } else {
-        console.error("User not found.");
-      }
-    });
-
-    return () => {
-      console.log("Cleaning up useEffect");
-      unsubscribeAuthState();
-    };
-  }, [setUser]);
 
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
@@ -66,35 +21,36 @@ export function useAuth() {
 
     setLoading(true);
     try {
-      console.log("Signing in with Google using redirect");
-      await signInWithPopup(auth, provider).then((result) => {
-        console.log("Sign in with Google using popup SUCCESS!!");
-        console.log("Result:", result);
+      await signInWithPopup(auth, provider).then(async (result) => {
         const user = result.user;
-        console.log("User:", user);
+
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential ? credential.accessToken : null;
+
+        const status = await checkUserStatus(user.email || "");
+
         setUser({
           user: {
             uid: user.uid,
             name: user.displayName || "",
             email: user.email || "",
             photoURL: user.photoURL || "",
-            status: UserStatus.new,
-            googleAuthToken: "idToken",
-          },
+            status: status,
+            googleAuthToken: token || "idToken",
+          } as User,
         });
+        console.log("User state updated:", user);
       });
-      console.log("Sign in with Google using redirect successful");
     } catch (error) {
-      console.error("Error signing in with Google using redirect: ", error);
-      throw error;
+      console.error("Error during Google sign-in: ", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const logOut = async () => {
     setLoading(true);
     try {
-      console.log("Logging out");
       localStorage.removeItem("accessToken");
       setUser({
         user: null,
@@ -108,7 +64,6 @@ export function useAuth() {
         position: "bottom-left",
       });
       await signOut(auth);
-      console.log("Logout successful");
     } catch (error) {
       console.error("Logout failed:", error);
       toast({

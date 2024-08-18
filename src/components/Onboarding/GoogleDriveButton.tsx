@@ -23,7 +23,12 @@ function GoogleDriveButton() {
   };
 
   return (
-    <Button variant="solid" w="full" loadingText="Processing...">
+    <Button
+      variant="solid"
+      w="full"
+      loadingText="Processing..."
+      onClick={fetchDriveFiles}
+    >
       Upload Google Takeout Data
     </Button>
   );
