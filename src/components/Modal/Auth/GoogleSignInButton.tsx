@@ -12,36 +12,29 @@ const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = () => {
   const { user, loading, googleSignIn, logOut } = useAuth();
 
   const router = useRouter();
-  const handleGoogleSignIn = async (testMode = false) => {
+  const handleGoogleSignIn = async () => {
     console.log("Google Sign-In button clicked");
-
     try {
-      let signInWindow: Window | null = null;
-      if (!testMode) {
-        signInWindow = window.open("", "_blank");
-      }
-
-      if (!signInWindow && !testMode) {
-        const error = "Popup blocked. Please allow popups and try again.";
-        console.error(error);
-        setErrorMessage(error);
-        setStatus("error");
-        return;
-      }
-
+      console.log("Attempting Google sign-in.");
       await googleSignIn().then(() => {
         console.log("Google sign-in successful");
         setStatus("success");
-        if (signInWindow) {
-          signInWindow.close();
-        }
       });
-    } catch (error) {
-      console.error("Error during Google sign-in: ", error);
-      setErrorMessage("Error during Google sign-in. Please try again.");
-      setStatus("error");
+    } catch (error: any) {
+      if (error.code === "auth/popup-blocked") {
+        const errorMessage =
+          "Popup blocked. Please allow popups and try again.";
+        console.error(errorMessage);
+        setErrorMessage(errorMessage);
+        setStatus("error");
+      } else {
+        console.error("Error during Google sign-in: ", error);
+        setErrorMessage("Error during Google sign-in" + error.message);
+        setStatus("error");
+      }
     }
   };
+
   return (
     <>
       <Button
