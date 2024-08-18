@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "try-nested"
-  }
+    "default": "try-nested",
+    "nested": "try-nested"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
 }
