@@ -6,7 +6,6 @@ import {
   signOut,
   onAuthStateChanged,
   signInWithRedirect,
-  signInWithPopup,
 } from "firebase/auth";
 import { useEffect } from "react";
 import { auth } from "@/firebase/firebaseConfig";
@@ -26,8 +25,8 @@ export function useAuth() {
 
     const unsubscribeAuthState = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        console.log("User is signed in:", user);
         window.close();
+        console.log("User is signed in:", user);
         const status = await checkUserStatus(user.email || "");
         console.log("User status:", status);
         setUser({
@@ -60,17 +59,10 @@ export function useAuth() {
     setLoading(true);
     try {
       console.log("Signing in with Google using redirect");
-      await signInWithPopup(auth, provider);
+      await signInWithRedirect(auth, provider);
       console.log("Sign in with Google using redirect successful");
     } catch (error) {
       console.error("Error signing in with Google using redirect: ", error);
-      console.log("Attempting to sign in with Google using popup");
-      try {
-        await signInWithRedirect(auth, provider);
-        console.log("Sign in with Google using popup successful");
-      } catch (popupError) {
-        console.error("Error signing in with Google using popup: ", popupError);
-      }
       throw error;
     }
     setLoading(false);

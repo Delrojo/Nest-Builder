@@ -10,6 +10,7 @@ export default function GoogleSignIn() {
     const handleGoogleSignIn = async () => {
       try {
         await googleSignIn().then(() => {
+          window.close();
           setStatus("success");
         });
       } catch (error) {
