@@ -69,6 +69,7 @@ export function useAuth() {
     try {
       console.log("Signing in with Google using redirect");
       await signInWithRedirect(auth, provider);
+      window.close();
       console.log("Sign in with Google using redirect successful");
     } catch (error) {
       console.error("Error signing in with Google using redirect: ", error);

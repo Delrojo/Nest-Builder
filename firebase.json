@@ -8,7 +8,8 @@
     },
     "firestore": {
       "port": 8080
-    }
+    },
+    "singleProjectMode": false
   },
   "hosting": {
     "source": ".",
