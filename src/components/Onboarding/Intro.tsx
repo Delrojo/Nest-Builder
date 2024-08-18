@@ -1,4 +1,4 @@
-import { SetStateAction, useState } from "react";
+import { SetStateAction, useEffect, useState, useCallback } from "react";
 import {
   Box,
   Text,
@@ -55,6 +55,26 @@ const IntroPage = () => {
     setGender(e.target.value);
   };
 
+  const getPeopleInfo = useCallback(async () => {
+    const token = userState.user?.googleAuthToken;
+    const response = await fetch(`/api/fetchPeopleInfo?token=${token}`);
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("People Info:", data);
+
+      //TODO: set birthday and gender from data
+    } else {
+      console.error("Failed to fetch people info");
+    }
+  }, [userState.user?.googleAuthToken]);
+
+  useEffect(() => {
+    if (userState.user) {
+      getPeopleInfo();
+    }
+  }, [getPeopleInfo, userState.user]);
+
   const handleUpload = async () => {
     try {
       setIsUploading(true); // Start processing
@@ -92,8 +112,7 @@ const IntroPage = () => {
     <Flex direction="column" height="100%" width="100%" p={6}>
       <Box textAlign="center" mb={8}>
         <Heading as="h1" mt={4} size="lg">
-          Hey There, {userState.user?.name}!{" "}
-          {userState.user?.googleAuthToken || "JDSLKJF"}
+          Hey There, {userState.user?.name}!{userState.user?.googleAuthToken}
         </Heading>
         <Text fontSize="md" mt={2} mb={4}>
           Welcome to Nested! We are excited to help you find the perfect places

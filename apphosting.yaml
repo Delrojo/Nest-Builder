@@ -28,3 +28,6 @@ env:
 
   - variable: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
     secret: firebase_measurement_id
+
+  - variable: NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY
+    secret: google_drive_api_key

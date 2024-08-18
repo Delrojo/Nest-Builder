@@ -1,5 +1,5 @@
 import useDrivePicker from "react-google-drive-picker";
-import { Button } from "@chakra-ui/react";
+import { Button, useToast } from "@chakra-ui/react";
 import { userAtom } from "@/atoms/userAtom";
 import { useRecoilState } from "recoil";
 import { useEffect } from "react";
@@ -9,36 +9,119 @@ const GoogleDriveButton = () => {
   const [openPicker] = useDrivePicker();
   const [userState] = useRecoilState(userAtom);
   const [, setAuthModalState] = useRecoilState(authModalState);
+  const toast = useToast();
 
   useEffect(() => {
     if (!userState.user) {
       console.error("User is not signed in.");
       setAuthModalState({ isOpen: true, mode: "login" });
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to continue.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
     if (!userState.user?.googleAuthToken) {
       console.error("User has not authenticated with Google.");
       setAuthModalState({ isOpen: true, mode: "login" });
+      toast({
+        title: "Google Authentication required",
+        description: "Please authenticate with Google to continue.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
-  }, [setAuthModalState, userState.user]);
+  }, [setAuthModalState, userState.user, toast]);
 
   const handleOpenPicker = () => {
-    openPicker({
-      clientId: "xxxxxxxxxxxxxxxxx",
-      developerKey: "xxxxxxxxxxxx",
-      viewId: "DOCS",
-      token: userState.user?.googleAuthToken ?? "",
-      showUploadView: true,
-      showUploadFolders: true,
-      supportDrives: true,
-      multiselect: true,
-      callbackFunction: (data) => {
-        if (data.action === "cancel") {
-          console.log("User clicked cancel/close button");
-        }
-        console.log(data);
-      },
-    });
+    try {
+      const token =
+        userState.user?.googleAuthToken &&
+        userState.user?.googleAuthToken !==
+          "FirebaseAuthEmulatorFakeAccessToken_google.com"
+          ? userState.user?.googleAuthToken
+          : "";
+      const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
+      const developerKey = process.env.NEXT_PUBLIC_GOOGLE_DRIVE_ID ?? "";
+
+      console.log("Opening Google Drive Picker with token:", token);
+
+      openPicker({
+        clientId: token.length === 0 ? clientId : "",
+        developerKey: token.length === 0 ? developerKey : "",
+        viewId: "DOCS",
+        token,
+        showUploadView: true,
+        showUploadFolders: true,
+        supportDrives: true,
+        multiselect: false,
+        callbackFunction: (data) => {
+          console.log("Picker callback data:", data);
+
+          // Handle cancel action
+          if (data.action === "cancel") {
+            console.log("User clicked cancel/close button");
+            return;
+          }
+
+          // Handle picked action
+          if (data.action === "picked") {
+            console.log("User picked a file");
+            console.log(data.docs);
+            fetchGoogleDriveFile(data.docs[0].id, token);
+            return;
+          }
+
+          // Handle loaded action
+          if (data.action === "loaded") {
+            console.log("User loaded the picker");
+          }
+
+          // Log the data for any other actions
+          console.log(data);
+        },
+      });
+    } catch (error) {
+      console.error("Error opening Google Drive Picker:", error);
+      toast({
+        title: "Error",
+        description: "An error occurred while opening the Google Drive Picker.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
+
+  async function fetchGoogleDriveFile(fileId: string, accessToken: string) {
+    try {
+      console.log("Fetching Google Drive file with ID:", fileId);
+      const response = await fetch(
+        `/api/fetchGoogleDriveFile?fileId=${fileId}&accessToken=${accessToken}`
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error);
+      }
+
+      const data = await response.json();
+      console.log("Fetched file data:", data);
+      return data;
+    } catch (error) {
+      console.error("Error fetching Google Drive file:", error);
+      toast({
+        title: "Error",
+        description: "An error occurred while fetching the Google Drive file.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  }
 
   return (
     <Button
