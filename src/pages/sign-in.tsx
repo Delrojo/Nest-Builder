@@ -11,7 +11,6 @@ export default function GoogleSignIn() {
       try {
         await googleSignIn().then(() => {
           setStatus("success");
-          window.close();
         });
       } catch (error) {
         console.error("Error during Google sign-in: ", error);

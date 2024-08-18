@@ -6,6 +6,7 @@ import {
   signOut,
   onAuthStateChanged,
   signInWithRedirect,
+  signInWithPopup,
 } from "firebase/auth";
 import { useEffect } from "react";
 import { auth } from "@/firebase/firebaseConfig";
@@ -21,10 +22,14 @@ export function useAuth() {
   const toast = useToast();
 
   useEffect(() => {
+    console.log("useEffect triggered");
+
     const unsubscribeAuthState = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        console.log("User is signed in:", user);
         window.close();
         const status = await checkUserStatus(user.email || "");
+        console.log("User status:", status);
         setUser({
           user: {
             uid: user.uid,
@@ -32,7 +37,6 @@ export function useAuth() {
             email: user.email || "",
             photoURL: user.photoURL || "",
             status: status || UserStatus.new,
-            //TODO: Add googleAuthToken to user object
             googleAuthToken: "idToken",
           } as User,
         });
@@ -41,27 +45,9 @@ export function useAuth() {
       }
     });
 
-    // const unsubscribeIdToken = onIdTokenChanged(auth, async (user) => {
-    //   if (user) {
-    //     const idToken = await getIdToken(user);
-    //     setUser((prevState) => {
-    //       if (!prevState.user) {
-    //         return prevState;
-    //       }
-    //       return {
-    //         ...prevState,
-    //         user: {
-    //           ...prevState.user,
-    //           googleAuthToken: idToken,
-    //         },
-    //       };
-    //     });
-    //   }
-    // });
-
     return () => {
+      console.log("Cleaning up useEffect");
       unsubscribeAuthState();
-      // unsubscribeIdToken();
     };
   }, [setUser]);
 
@@ -73,16 +59,26 @@ export function useAuth() {
 
     setLoading(true);
     try {
-      console.log("Signing in with Google");
+      console.log("Signing in with Google using redirect");
       await signInWithRedirect(auth, provider);
+      console.log("Sign in with Google using redirect successful");
     } catch (error) {
-      console.error("Error signing in with Google: ", error);
+      console.error("Error signing in with Google using redirect: ", error);
+      console.log("Attempting to sign in with Google using popup");
+      try {
+        await signInWithPopup(auth, provider);
+        console.log("Sign in with Google using popup successful");
+      } catch (popupError) {
+        console.error("Error signing in with Google using popup: ", popupError);
+      }
     }
     setLoading(false);
   };
+
   const logOut = async () => {
     setLoading(true);
     try {
+      console.log("Logging out");
       localStorage.removeItem("accessToken");
       setUser({
         user: null,
@@ -96,6 +92,7 @@ export function useAuth() {
         position: "bottom-left",
       });
       await signOut(auth);
+      console.log("Logout successful");
     } catch (error) {
       console.error("Logout failed:", error);
       toast({

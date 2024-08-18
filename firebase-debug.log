@@ -1,0 +1,240 @@
+[debug] [2024-08-18T17:47:58.030Z] ----------------------------------------------------------------------
+[debug] [2024-08-18T17:47:58.033Z] Command:       /Users/HBN378/.nvm/versions/node/v20.15.0/bin/node /Users/HBN378/.nvm/versions/node/v20.15.0/bin/firebase emulators:start --import firebase-emulators
+[debug] [2024-08-18T17:47:58.033Z] CLI Version:   13.14.2
+[debug] [2024-08-18T17:47:58.033Z] Platform:      darwin
+[debug] [2024-08-18T17:47:58.033Z] Node Version:  v20.15.0
+[debug] [2024-08-18T17:47:58.033Z] Time:          Sun Aug 18 2024 12:47:58 GMT-0500 (Central Daylight Time)
+[debug] [2024-08-18T17:47:58.033Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-08-18T17:47:58.119Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-08-18T17:47:58.120Z] > authorizing via signed-in user (eeshamoona@gmail.com)
+[debug] [2024-08-18T17:47:58.243Z] openjdk version "11.0.24" 2024-07-16
+[debug] [2024-08-18T17:47:58.243Z] 
+OpenJDK Runtime Environment Homebrew (build 11.0.24+0)
+OpenJDK 64-Bit Server VM Homebrew (build 11.0.24+0, mixed mode)
+
+[debug] [2024-08-18T17:47:58.246Z] Parsed Java major version: 11
+[info] i  emulators: Starting emulators: auth, firestore, hosting {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: auth, firestore, hosting"}}
+[debug] [2024-08-18T17:47:59.546Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-08-18T17:47:59.546Z] [auth] Authentication Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-08-18T17:47:59.546Z] [firestore] Firestore Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-08-18T17:47:59.546Z] [firestore.websocket] websocket server for firestore only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-08-18T17:47:59.546Z] [hosting] Hosting Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-08-18T17:47:59.546Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"hosting":[{"address":"127.0.0.1","family":"IPv4","port":5000}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2024-08-18T17:47:59.550Z] [hub] writing locator at /var/folders/78/jplrqkc16xd0024y8_ppk4y00000gp/T/hub-nest-builder.json
+[debug] [2024-08-18T17:47:59.557Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/nest-builder [none]
+[debug] [2024-08-18T17:47:59.746Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/nest-builder 200
+[debug] [2024-08-18T17:47:59.746Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/nest-builder {"projectId":"nest-builder","projectNumber":"335426098638","displayName":"Nest Builder","name":"projects/nest-builder","resources":{"hostingSite":"nest-builder","realtimeDatabaseInstance":"nest-builder-default-rtdb"},"state":"ACTIVE","etag":"1_1a948670-36db-4f26-a364-2e80850c0ac1"}
+[debug] [2024-08-18T17:48:01.057Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/nest-builder/sites pageToken=&pageSize=10
+[debug] [2024-08-18T17:48:02.951Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/nest-builder/sites 200
+[debug] [2024-08-18T17:48:02.952Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/nest-builder/sites {"sites":[{"name":"projects/nest-builder/sites/nest-builder","defaultUrl":"https://nest-builder.web.app","appId":"1:335426098638:web:904068fe93bd929323079f","type":"DEFAULT_SITE"}]}
+[debug] [2024-08-18T17:48:02.952Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/-/webApps/1:335426098638:web:904068fe93bd929323079f/config [none]
+[debug] [2024-08-18T17:48:03.245Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/-/webApps/1:335426098638:web:904068fe93bd929323079f/config 200
+[debug] [2024-08-18T17:48:03.245Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/-/webApps/1:335426098638:web:904068fe93bd929323079f/config {"projectId":"nest-builder","appId":"1:335426098638:web:904068fe93bd929323079f","databaseURL":"https://nest-builder-default-rtdb.firebaseio.com","storageBucket":"nest-builder.appspot.com","apiKey":"AIzaSyA0ra2cAcPGFJIuY1NcUXCbWj5EyvV6aso","authDomain":"nest-builder.firebaseapp.com","messagingSenderId":"335426098638","measurementId":"G-7GJSPHB9BS"}
+[info] 
+   Thank you for trying our early preview of Next.js support on Firebase Hosting.
+   During the preview, support is best-effort and breaking changes can be expected. Proceed with caution.
+
+   Documentation: https://firebase.google.com/docs/hosting/frameworks/nextjs
+   File a bug: https://github.com/firebase/firebase-tools/issues/new?template=bug_report.md
+   Submit a feature request: https://github.com/firebase/firebase-tools/issues/new?template=feature_request.md
+
+   We'd love to learn from you. Express your interest in helping us shape the future of Firebase Hosting: https://goo.gle/41enW5X
+
+[debug] [2024-08-18T17:48:19.781Z] [web frameworks] effective firebase.json:  {
+  "hosting": [
+    {
+      "source": ".",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "frameworksBackend": {
+        "region": "us-central1"
+      },
+      "site": "nest-builder",
+      "rewrites": [
+        {
+          "source": "**",
+          "function": {
+            "functionId": "ssrnestbuilder",
+            "region": "us-central1",
+            "pinTag": true
+          }
+        }
+      ],
+      "redirects": [],
+      "headers": [
+        {
+          "source": "**/*.[jt]s",
+          "headers": [
+            {
+              "key": "Set-Cookie",
+              "value": "__FIREBASE_DEFAULTS__=eyJlbXVsYXRvckhvc3RzIjp7ImF1dGgiOiIxMjcuMC4wLjE6OTA5OSIsImZpcmVzdG9yZSI6IjEyNy4wLjAuMTo4MDgwIn0sImNvbmZpZyI6eyJwcm9qZWN0SWQiOiJuZXN0LWJ1aWxkZXIiLCJhcHBJZCI6IjE6MzM1NDI2MDk4NjM4OndlYjo5MDQwNjhmZTkzYmQ5MjkzMjMwNzlmIiwiZGF0YWJhc2VVUkwiOiJodHRwczovL25lc3QtYnVpbGRlci1kZWZhdWx0LXJ0ZGIuZmlyZWJhc2Vpby5jb20iLCJzdG9yYWdlQnVja2V0IjoibmVzdC1idWlsZGVyLmFwcHNwb3QuY29tIiwiYXBpS2V5IjoiQUl6YVN5QTByYTJjQWNQR0ZKSXVZMU5jVVhDYldqNUV5dlY2YXNvIiwiYXV0aERvbWFpbiI6Im5lc3QtYnVpbGRlci5maXJlYmFzZWFwcC5jb20iLCJtZXNzYWdpbmdTZW5kZXJJZCI6IjMzNTQyNjA5ODYzOCIsIm1lYXN1cmVtZW50SWQiOiJHLTdHSlNQSEI5QlMifSwiX2F1dGhUb2tlblN5bmNVUkwiOiIvX19zZXNzaW9uIn0; SameSite=Strict; Expires=2026-07-14T04:28:19.781Z; Path=/;"
+            }
+          ]
+        }
+      ],
+      "cleanUrls": true,
+      "public": ".firebase/nest-builder/hosting",
+      "webFramework": "next_ssr"
+    }
+  ],
+  "functions": [
+    {
+      "source": ".firebase/nest-builder/functions",
+      "codebase": "firebase-frameworks-nest-builder"
+    }
+  ]
+}
+[debug] [2024-08-18T17:48:20.185Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-08-18T17:48:20.185Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-08-18T17:48:20.185Z] late-assigned ports for functions and eventarc emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"hosting":[{"address":"127.0.0.1","family":"IPv4","port":5000}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[warn] ⚠  functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: database, pubsub, storage, dataconnect {"metadata":{"emulator":{"name":"functions"},"message":"The following emulators are not running, calls to these services from the Functions emulator will affect production: \u001b[1mdatabase, pubsub, storage, dataconnect\u001b[22m"}}
+[warn] ⚠  functions: Your GOOGLE_APPLICATION_CREDENTIALS environment variable points to /Users/HBN378/Downloads/service-account-key.json. Non-emulated services will access production using these credentials. Be careful! {"metadata":{"emulator":{"name":"functions"},"message":"Your GOOGLE_APPLICATION_CREDENTIALS environment variable points to /Users/HBN378/Downloads/service-account-key.json. Non-emulated services will access production using these credentials. Be careful!"}}
+[debug] [2024-08-18T17:48:20.191Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/nest-builder/adminSdkConfig [none]
+[debug] [2024-08-18T17:48:20.335Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/nest-builder/adminSdkConfig 200
+[debug] [2024-08-18T17:48:20.335Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/nest-builder/adminSdkConfig {"projectId":"nest-builder","databaseURL":"https://nest-builder-default-rtdb.firebaseio.com","storageBucket":"nest-builder.appspot.com"}
+[info] i  firestore: Importing data from /Users/HBN378/Documents/PersonalProjects/Nest-Builder/firebase-emulators/firestore_export/firestore_export.overall_export_metadata {"metadata":{"emulator":{"name":"firestore"},"message":"Importing data from /Users/HBN378/Documents/PersonalProjects/Nest-Builder/firebase-emulators/firestore_export/firestore_export.overall_export_metadata"}}
+[debug] [2024-08-18T17:48:20.360Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2024-08-18T17:48:20.360Z] Ignoring unsupported arg: single_project_mode_error {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: single_project_mode_error"}}
+[debug] [2024-08-18T17:48:20.360Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","/Users/HBN378/.cache/firebase/emulators/cloud-firestore-emulator-v1.19.7.jar","--host","127.0.0.1","--port",8080,"--websocket_port",9150,"--project_id","nest-builder","--seed_from_export","/Users/HBN378/Documents/PersonalProjects/Nest-Builder/firebase-emulators/firestore_export/firestore_export.overall_export_metadata","--rules","/Users/HBN378/Documents/PersonalProjects/Nest-Builder/firestore.rules","--single_project_mode",true,"--functions_emulator","127.0.0.1:5001"],"optionalArgs":["port","webchannel_port","host","rules","websocket_port","functions_emulator","seed_from_export","project_id","single_project_mode"],"joinArgs":false,"shell":false} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"/Users/HBN378/.cache/firebase/emulators/cloud-firestore-emulator-v1.19.7.jar\",\"--host\",\"127.0.0.1\",\"--port\",8080,\"--websocket_port\",9150,\"--project_id\",\"nest-builder\",\"--seed_from_export\",\"/Users/HBN378/Documents/PersonalProjects/Nest-Builder/firebase-emulators/firestore_export/firestore_export.overall_export_metadata\",\"--rules\",\"/Users/HBN378/Documents/PersonalProjects/Nest-Builder/firestore.rules\",\"--single_project_mode\",true,\"--functions_emulator\",\"127.0.0.1:5001\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"websocket_port\",\"functions_emulator\",\"seed_from_export\",\"project_id\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false}"}}
+[info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to \u001b[1mfirestore-debug.log\u001b[22m"}}
+[debug] [2024-08-18T17:48:21.476Z] Aug 18, 2024 12:48:21 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
+INFO: Started WebSocket server on ws://127.0.0.1:9150
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Aug 18, 2024 12:48:21 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start\nINFO: Started WebSocket server on ws://127.0.0.1:9150\n"}}
+[debug] [2024-08-18T17:48:21.492Z] API endpoint: http:// {"metadata":{"emulator":{"name":"firestore"},"message":"API endpoint: http://"}}
+[debug] [2024-08-18T17:48:21.492Z] 127.0.0.1:8080
+If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
+
+   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
+
+If you are running a Firestore in Datastore Mode project, run:
+
+   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080
+
+Note: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.
+Dev App Server is now running.
+
+ {"metadata":{"emulator":{"name":"firestore"},"message":"127.0.0.1:8080\nIf you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:\n\n   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080\n\nIf you are running a Firestore in Datastore Mode project, run:\n\n   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080\n\nNote: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.\nDev App Server is now running.\n\n"}}
+[info] ✔  firestore: Firestore Emulator UI websocket is running on 9150. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator UI websocket is running on 9150."}}
+[info] i  auth: Importing config from /Users/HBN378/Documents/PersonalProjects/Nest-Builder/firebase-emulators/auth_export/config.json {"metadata":{"emulator":{"name":"auth"},"message":"Importing config from /Users/HBN378/Documents/PersonalProjects/Nest-Builder/firebase-emulators/auth_export/config.json"}}
+[info] i  auth: Importing accounts from /Users/HBN378/Documents/PersonalProjects/Nest-Builder/firebase-emulators/auth_export/accounts.json {"metadata":{"emulator":{"name":"auth"},"message":"Importing accounts from /Users/HBN378/Documents/PersonalProjects/Nest-Builder/firebase-emulators/auth_export/accounts.json"}}
+[debug] [2024-08-18T17:48:25.515Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/nest-builder/sites 
+[debug] [2024-08-18T17:48:26.085Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/nest-builder/sites 200
+[debug] [2024-08-18T17:48:26.085Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/nest-builder/sites {"sites":[{"name":"projects/nest-builder/sites/nest-builder","defaultUrl":"https://nest-builder.web.app","appId":"1:335426098638:web:904068fe93bd929323079f","type":"DEFAULT_SITE"}]}
+[debug] [2024-08-18T17:48:26.085Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/nest-builder/webApps/1:335426098638:web:904068fe93bd929323079f/config [none]
+[debug] [2024-08-18T17:48:26.310Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/nest-builder/webApps/1:335426098638:web:904068fe93bd929323079f/config 200
+[debug] [2024-08-18T17:48:26.310Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/nest-builder/webApps/1:335426098638:web:904068fe93bd929323079f/config {"projectId":"nest-builder","appId":"1:335426098638:web:904068fe93bd929323079f","databaseURL":"https://nest-builder-default-rtdb.firebaseio.com","storageBucket":"nest-builder.appspot.com","apiKey":"AIzaSyA0ra2cAcPGFJIuY1NcUXCbWj5EyvV6aso","authDomain":"nest-builder.firebaseapp.com","messagingSenderId":"335426098638","measurementId":"G-7GJSPHB9BS"}
+[info] i  hosting[nest-builder]: Serving hosting files from: .firebase/nest-builder/hosting {"metadata":{"emulator":{"name":"hosting"},"message":"Serving hosting files from: \u001b[1m.firebase/nest-builder/hosting\u001b[22m"}}
+[info] ✔  hosting[nest-builder]: Local server: http://127.0.0.1:5000 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: \u001b[4m\u001b[1mhttp://127.0.0.1:5000\u001b[22m\u001b[24m"}}
+[debug] [2024-08-18T17:48:26.442Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2024-08-18T17:48:26.442Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2024-08-18T17:48:26.442Z] Starting Emulator UI with command {"binary":"node","args":["/Users/HBN378/.cache/firebase/emulators/ui-v1.13.0/server/server.mjs"],"optionalArgs":[],"joinArgs":false,"shell":false} {"metadata":{"emulator":{"name":"ui"},"message":"Starting Emulator UI with command {\"binary\":\"node\",\"args\":[\"/Users/HBN378/.cache/firebase/emulators/ui-v1.13.0/server/server.mjs\"],\"optionalArgs\":[],\"joinArgs\":false,\"shell\":false}"}}
+[info] i  ui: Emulator UI logging to ui-debug.log {"metadata":{"emulator":{"name":"ui"},"message":"Emulator UI logging to \u001b[1mui-debug.log\u001b[22m"}}
+[debug] [2024-08-18T17:48:26.541Z] Web / API server started at 127.0.0.1:4000
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at 127.0.0.1:4000\n"}}
+[debug] [2024-08-18T17:48:26.541Z] Web / API server started at ::1:4000
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at ::1:4000\n"}}
+[info] i  functions: Watching "/Users/HBN378/Documents/PersonalProjects/Nest-Builder/.firebase/nest-builder/functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"/Users/HBN378/Documents/PersonalProjects/Nest-Builder/.firebase/nest-builder/functions\" for Cloud Functions..."}}
+[debug] [2024-08-18T17:48:26.647Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2024-08-18T17:48:27.101Z] > [functions] package.json contents: {
+  "main": "server.js",
+  "dependencies": {
+    "firebase-frameworks": "^0.11.0",
+    "firebase-functions": "^4.5.0",
+    "firebase-admin": "^11.11.1"
+  },
+  "engines": {
+    "node": "20"
+  }
+}
+[debug] [2024-08-18T17:48:27.101Z] Building nodejs source
+[debug] [2024-08-18T17:48:27.101Z] Failed to find version of module node: reached end of search path /Users/HBN378/Documents/PersonalProjects/Nest-Builder/.firebase/nest-builder/functions/node_modules
+[info] ✔  functions: Using node@20 from host. 
+[info] i  functions: Loaded environment variables from .env, .env.local. 
+[debug] [2024-08-18T17:48:27.103Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-08-18T17:48:27.108Z] Found firebase-functions binary at '/Users/HBN378/Documents/PersonalProjects/Nest-Builder/.firebase/nest-builder/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8036
+
+[debug] [2024-08-18T17:48:27.600Z] Got response from /__/functions.yaml {"endpoints":{"ssrnestbuilder":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","region":["us-central1"],"labels":{},"httpsTrigger":{},"entryPoint":"ssrnestbuilder"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[info] ✔  functions: Loaded functions definitions from source: ssrnestbuilder. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: ssrnestbuilder."}}
+[info] ✔  functions[us-central1-ssrnestbuilder]: http function initialized (http://127.0.0.1:5001/nest-builder/us-central1/ssrnestbuilder). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/nest-builder/us-central1/ssrnestbuilder)."}}
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4000/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌────────────────┬────────────────┬─────────────────────────────────┐
+│ Emulator       │ Host:Port      │ View in Emulator UI             │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Authentication │ 127.0.0.1:9099 │ http://127.0.0.1:4000/auth      │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Functions      │ 127.0.0.1:5001 │ http://127.0.0.1:4000/functions │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Firestore      │ 127.0.0.1:8080 │ http://127.0.0.1:4000/firestore │
+├────────────────┼────────────────┼─────────────────────────────────┤
+│ Hosting        │ 127.0.0.1:5000 │ n/a                             │
+└────────────────┴────────────────┴─────────────────────────────────┘
+  Emulator Hub running at 127.0.0.1:4400
+  Other reserved ports: 4500, 9150
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
+[debug] [2024-08-18T17:48:40.070Z] Aug 18, 2024 12:48:40 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Aug 18, 2024 12:48:40 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-08-18T17:48:40.185Z] Multiple projectIds are not recommended in single project mode. Requested project ID try-nested, but the emulator is configured for nest-builder. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Multiple projectIds are not recommended in single project mode. Requested project ID try-nested, but the emulator is configured for nest-builder. To opt-out of single project mode add/set the '\"singleProjectMode\": false' property in the firebase.json emulators config.\n"}}
+[debug] [2024-08-18T17:48:58.718Z] Aug 18, 2024 12:48:58 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Aug 18, 2024 12:48:58 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-08-18T17:48:58.723Z] Multiple projectIds are not recommended in single project mode. Requested project ID try-nested, but the emulator is configured for nest-builder. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Multiple projectIds are not recommended in single project mode. Requested project ID try-nested, but the emulator is configured for nest-builder. To opt-out of single project mode add/set the '\"singleProjectMode\": false' property in the firebase.json emulators config.\n"}}
+[debug] [2024-08-18T17:48:58.742Z] Aug 18, 2024 12:48:58 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Aug 18, 2024 12:48:58 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-08-18T17:48:58.756Z] Aug 18, 2024 12:48:58 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Aug 18, 2024 12:48:58 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-08-18T17:48:58.789Z] Aug 18, 2024 12:48:58 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Aug 18, 2024 12:48:58 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-08-18T17:48:58.807Z] Aug 18, 2024 12:48:58 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Aug 18, 2024 12:48:58 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-08-18T17:48:58.815Z] Aug 18, 2024 12:48:58 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Aug 18, 2024 12:48:58 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-08-18T17:49:01.285Z] Aug 18, 2024 12:49:01 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Aug 18, 2024 12:49:01 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-08-18T17:49:01.291Z] Aug 18, 2024 12:49:01 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreListenHandler onClose
+INFO: channel closed
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Aug 18, 2024 12:49:01 PM com.google.cloud.datastore.emulator.firestore.webchannel.FirestoreV1WebChannelAdapter$FirestoreListenHandler onClose\nINFO: channel closed\n"}}
+[debug] [2024-08-18T17:49:06.763Z] Aug 18, 2024 12:49:06 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Aug 18, 2024 12:49:06 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-08-18T17:49:06.768Z] Aug 18, 2024 12:49:06 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Aug 18, 2024 12:49:06 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-08-18T17:49:06.777Z] Multiple projectIds are not recommended in single project mode. Requested project ID try-nested, but the emulator is configured for nest-builder. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Multiple projectIds are not recommended in single project mode. Requested project ID try-nested, but the emulator is configured for nest-builder. To opt-out of single project mode add/set the '\"singleProjectMode\": false' property in the firebase.json emulators config.\n"}}
+[debug] [2024-08-18T17:49:06.785Z] Multiple projectIds are not recommended in single project mode. Requested project ID try-nested, but the emulator is configured for nest-builder. To opt-out of single project mode add/set the '"singleProjectMode": false' property in the firebase.json emulators config.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Multiple projectIds are not recommended in single project mode. Requested project ID try-nested, but the emulator is configured for nest-builder. To opt-out of single project mode add/set the '\"singleProjectMode\": false' property in the firebase.json emulators config.\n"}}
+[debug] [2024-08-18T17:49:06.792Z] Aug 18, 2024 12:49:06 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Aug 18, 2024 12:49:06 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-08-18T17:49:06.802Z] Aug 18, 2024 12:49:06 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Aug 18, 2024 12:49:06 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-08-18T17:49:06.825Z] Aug 18, 2024 12:49:06 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Aug 18, 2024 12:49:06 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2024-08-18T17:49:06.852Z] Aug 18, 2024 12:49:06 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Aug 18, 2024 12:49:06 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
