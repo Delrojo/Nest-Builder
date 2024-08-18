@@ -9,21 +9,7 @@ export default function GoogleSignIn() {
   const router = useRouter();
 
   useEffect(() => {
-    console.log("GoogleSignIn useEffect triggered");
-    const handleGoogleSignIn = async () => {
-      try {
-        await googleSignIn().then(() => {
-          console.log("Google sign-in successful");
-          window.close();
-          router.push("/");
-          setStatus("success");
-        });
-      } catch (error) {
-        console.error("Error during Google sign-in: ", error);
-        setStatus("error");
-      }
-    };
-    handleGoogleSignIn();
+    console.log("This page is deprecated, how did you get here?");
   }, []);
 
   return (
@@ -32,7 +18,7 @@ export default function GoogleSignIn() {
         <>
           <Spinner size="xl" color="primary.500" />
           <Text fontSize="lg" mt={3}>
-            Redirecting to Google Sign-In...
+            Redirecting to Google Sign-In... Wait what?
           </Text>
         </>
       )}

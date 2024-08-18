@@ -34,7 +34,6 @@ export function useAuth() {
         user = result.user;
       }
       if (user) {
-        window.close();
         console.log("User is signed in:", user);
         const status = await checkUserStatus(user.email || "");
         console.log("User status:", status);
