@@ -9,41 +9,25 @@ runConfig:
 # Environment variables and secrets
 env:
   - variable: NEXT_PUBLIC_FIREBASE_API_KEY
-    valueFrom:
-      secretKeyRef:
-        name: firebase_api_key
+    secret: firebase_api_key
 
   - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-    valueFrom:
-      secretKeyRef:
-        name: firebase_auth_domain
+    secret: firebase_auth_domain
 
   - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
-    valueFrom:
-      secretKeyRef:
-        name: firebase_project_id
+    secret: firebase_project_id
 
   - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-    valueFrom:
-      secretKeyRef:
-        name: firebase_storage_bucket
+    secret: firebase_storage_bucket
 
   - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-    valueFrom:
-      secretKeyRef:
-        name: firebase_messaging_sender_id
+    secret: firebase_messaging_sender_id
 
   - variable: NEXT_PUBLIC_FIREBASE_APP_ID
-    valueFrom:
-      secretKeyRef:
-        name: firebase_app_id
+    secret: firebase_app_id
 
   - variable: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
-    valueFrom:
-      secretKeyRef:
-        name: firebase_measurement_id
+    secret: firebase_measurement_id
 
   - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-    valueFrom:
-      secretKeyRef:
-        name: firebase_messaging_sender_id
+    secret: firebase_messaging_sender_id
