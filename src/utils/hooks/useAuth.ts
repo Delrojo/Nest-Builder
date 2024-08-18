@@ -6,6 +6,7 @@ import {
   signOut,
   onAuthStateChanged,
   signInWithRedirect,
+  getRedirectResult,
 } from "firebase/auth";
 import { useEffect } from "react";
 import { auth } from "@/firebase/firebaseConfig";
@@ -24,6 +25,10 @@ export function useAuth() {
     console.log("useEffect triggered");
 
     const unsubscribeAuthState = onAuthStateChanged(auth, async (user) => {
+      console.log("Auth state changed");
+      const result = getRedirectResult(auth);
+      console.log("Redirect result:", result);
+      console.log("User:", user);
       if (user) {
         window.close();
         console.log("User is signed in:", user);
