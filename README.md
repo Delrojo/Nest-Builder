@@ -1,102 +1,36 @@
-# Nested
-
-Nested helps you move to a new city with ease by matching you with places based on your lifestyle preferences. By analyzing your Google Maps search history, Nested understands your preferences and provides tailored suggestions for nearby grocery stores, gyms, museums, or any type of place you can think of!
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
 
-These instructions will guide you on how to set up and run Nested locally for development and testing purposes.
+First, run the development server:
 
-### Prerequisites
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-To run Nested, you will need:
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-- Node.js and npm for the client
-- Python 3 and pip for the server
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-### Installing
+This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-Follow these steps to get your development environment running:
+## Learn More
 
-#### Client
+To learn more about Next.js, take a look at the following resources:
 
-1. Clone the repository and navigate to the client directory:
-   ```bash
-   cd client
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the React client:
-   ```bash
-   npm run start
-   ```
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-#### Server
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-1. Navigate to the server directory:
-   ```bash
-   cd server
-   ```
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   # Install any other necessary packages
-   ```
-3. Start the Flask Server:
-   ```bash
-   python3 server.py
-   ```
+## Deploy on Vercel
 
-### Configuration
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Before running the application, You will need Firebase Auth or GCP API credentials to get the necessary information.
-
-1. Create `.env` files in both the client and server directories. Below is an example of what the `.env` file might look like:
-
-   ```plaintext
-   # Client
-    REACT_APP_apiKey=YOUR_API_KEY
-    REACT_APP_authDomain=YOUR_AUTH_DOMAIN
-    REACT_APP_projectId=YOUR_PROJECT_ID
-    REACT_APP_storageBucket=YOUR_STORAGE_BUCKET
-    REACT_APP_messagingSenderId=YOUR_MESSAGING_SENDER_ID
-    REACT_APP_appId=YOUR_APP_ID
-    REACT_APP_measurementId=YOUR_MEASUREMENT_ID
-
-    REACT_APP_peopleAPIKey=YOUR_PEOPLE_API_KEY
-    REACT_APP_googleMapsAPIKey=YOUR_GOOGLE_MAPS_API_KEY
-
-    REACT_APP_geminiAIKey=YOUR_GEMINI_AI_KEY
-   ```
-
-   ```plaintext
-   # Server
-   export REACT_APP_geminiAIKey=YOUR_GEMINI_AI_KEY
-   export REACT_APP_googleMapsAPIKey=YOUR_GOOGLE_MAPS_API_KEY
-   export REACT_APP_placesAPIKey=YOUR_PLACES_API_KEY
-   ```
-
-## Built With
-
-- **Frontend**: React, TypeScript, Material UI
-- **Backend**: Flask, Python
-- **APIs**: Google Places API, Distance Matrix API, Geocoding API, Identity Toolkit API, Maps Javascript API, Generative Language API, Token Service API, Google Drive API, & People API
-- **Database and Authentication**: Firebase
-
-## Contributing
-
-If you're interested in contributing to Nested, please read through the project files and contact the main author to see how you can help.
-
-### Main Author
-
-- **Eesha Moona** - _Initial work_ - [eeshamoona@gmail.com](mailto:eeshamoona@gmail.com)
-
-## Acknowledgments
-
-- Thanks to all the developers and contributors who made this project possible.
-- Special thanks to Google for providing the APIs that power our application.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file in the repository for more details.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.

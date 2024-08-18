@@ -6,8 +6,6 @@ import {
   signOut,
   onAuthStateChanged,
   signInWithRedirect,
-  getIdToken,
-  onIdTokenChanged,
 } from "firebase/auth";
 import { useEffect } from "react";
 import { auth } from "@/firebase/firebaseConfig";
@@ -25,7 +23,6 @@ export function useAuth() {
   useEffect(() => {
     const unsubscribeAuthState = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const idToken = await getIdToken(user);
         window.close();
         const status = await checkUserStatus(user.email || "");
         setUser({
@@ -35,7 +32,8 @@ export function useAuth() {
             email: user.email || "",
             photoURL: user.photoURL || "",
             status: status || UserStatus.new,
-            googleAuthToken: idToken,
+            //TODO: Add googleAuthToken to user object
+            googleAuthToken: "idToken",
           } as User,
         });
       } else {
@@ -43,27 +41,27 @@ export function useAuth() {
       }
     });
 
-    const unsubscribeIdToken = onIdTokenChanged(auth, async (user) => {
-      if (user) {
-        const idToken = await getIdToken(user);
-        setUser((prevState) => {
-          if (!prevState.user) {
-            return prevState;
-          }
-          return {
-            ...prevState,
-            user: {
-              ...prevState.user,
-              googleAuthToken: idToken,
-            },
-          };
-        });
-      }
-    });
+    // const unsubscribeIdToken = onIdTokenChanged(auth, async (user) => {
+    //   if (user) {
+    //     const idToken = await getIdToken(user);
+    //     setUser((prevState) => {
+    //       if (!prevState.user) {
+    //         return prevState;
+    //       }
+    //       return {
+    //         ...prevState,
+    //         user: {
+    //           ...prevState.user,
+    //           googleAuthToken: idToken,
+    //         },
+    //       };
+    //     });
+    //   }
+    // });
 
     return () => {
       unsubscribeAuthState();
-      unsubscribeIdToken();
+      // unsubscribeIdToken();
     };
   }, [setUser]);
 
