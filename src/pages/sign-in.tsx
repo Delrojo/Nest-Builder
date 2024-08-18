@@ -14,8 +14,8 @@ export default function GoogleSignIn() {
       try {
         await googleSignIn().then(() => {
           console.log("Google sign-in successful");
-          router.push("/");
           window.close();
+          router.push("/");
           setStatus("success");
         });
       } catch (error) {

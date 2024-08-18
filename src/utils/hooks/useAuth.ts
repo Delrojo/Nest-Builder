@@ -5,8 +5,8 @@ import {
   GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
-  signInWithRedirect,
   getRedirectResult,
+  signInWithPopup,
 } from "firebase/auth";
 import { useEffect } from "react";
 import { auth } from "@/firebase/firebaseConfig";
@@ -68,7 +68,22 @@ export function useAuth() {
     setLoading(true);
     try {
       console.log("Signing in with Google using redirect");
-      await signInWithRedirect(auth, provider);
+      await signInWithPopup(auth, provider).then((result) => {
+        console.log("Sign in with Google using popup SUCCESS!!");
+        console.log("Result:", result);
+        const user = result.user;
+        console.log("User:", user);
+        setUser({
+          user: {
+            uid: user.uid,
+            name: user.displayName || "",
+            email: user.email || "",
+            photoURL: user.photoURL || "",
+            status: UserStatus.new,
+            googleAuthToken: "idToken",
+          },
+        });
+      });
       console.log("Sign in with Google using redirect successful");
     } catch (error) {
       console.error("Error signing in with Google using redirect: ", error);
