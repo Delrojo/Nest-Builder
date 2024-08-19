@@ -1,6 +1,6 @@
 import useDrivePicker from "react-google-drive-picker";
 import { Button, useToast } from "@chakra-ui/react";
-import { userAtom } from "@/atoms/userAtom";
+import { isAuthenticToken, userAtom } from "@/atoms/userAtom";
 import { useRecoilState } from "recoil";
 import { useEffect } from "react";
 import { authModalState } from "@/atoms/authModalAtom";
@@ -38,12 +38,9 @@ const GoogleDriveButton = () => {
 
   const handleOpenPicker = () => {
     try {
-      const token =
-        userState.user?.googleAuthToken &&
-        userState.user?.googleAuthToken !==
-          "FirebaseAuthEmulatorFakeAccessToken_google.com"
-          ? userState.user?.googleAuthToken
-          : "";
+      const token = isAuthenticToken(userState.user?.googleAuthToken)
+        ? (userState.user?.googleAuthToken as string)
+        : "";
       const clientId = process.env.NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID ?? "";
       const developerKey = process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY ?? "";
 

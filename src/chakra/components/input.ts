@@ -5,17 +5,17 @@ export const Input: ComponentStyleConfig = {
     field: {
       borderRadius: "md",
       color: props.colorMode === "dark" ? "text.dark" : "text.light",
+      padding: "0.75rem 1.5rem",
       _placeholder: {
         color: props.colorMode === "dark" ? "gray.400" : "gray.600",
       },
     },
   }),
   sizes: {
-    md: {
+    lg: {
       field: {
-        fontSize: "md",
-        px: 4,
-        py: 2,
+        padding: 0,
+        paddingLeft: "2.5rem",
       },
     },
   },

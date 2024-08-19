@@ -1,7 +1,12 @@
-// useAuth.ts
+import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 import { userAtom, loadingAtom, User } from "@/atoms/userAtom";
-import { GoogleAuthProvider, signOut, signInWithPopup } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  signOut,
+  signInWithPopup,
+  onAuthStateChanged,
+} from "firebase/auth";
 import { auth } from "@/firebase/firebaseConfig";
 import { useRouter } from "next/router";
 import { useToast } from "@chakra-ui/react";
@@ -12,6 +17,31 @@ export function useAuth() {
   const [loading, setLoading] = useRecoilState(loadingAtom);
   const router = useRouter();
   const toast = useToast();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const status = await checkUserStatus(firebaseUser.email || "");
+        const token = localStorage.getItem("accessToken");
+        setUser({
+          user: {
+            uid: firebaseUser.uid,
+            name: firebaseUser.displayName || "",
+            email: firebaseUser.email || "",
+            photoURL: firebaseUser.photoURL || "",
+            status: status,
+            googleAuthToken: token || "nullIdToken",
+          } as User,
+        });
+      } else {
+        setUser({
+          user: null,
+        });
+      }
+    });
+
+    return () => unsubscribe();
+  }, [setUser]);
 
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
@@ -26,6 +56,12 @@ export function useAuth() {
 
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const token = credential ? credential.accessToken : null;
+        if (token) {
+          localStorage.setItem("accessToken", token);
+        } else {
+          console.error("Failed to get Google access token.");
+          logOut();
+        }
 
         const status = await checkUserStatus(user.email || "");
 
@@ -36,7 +72,7 @@ export function useAuth() {
             email: user.email || "",
             photoURL: user.photoURL || "",
             status: status,
-            googleAuthToken: token || "idToken",
+            googleAuthToken: token || "nullIdToken",
           } as User,
         });
         console.log("User state updated:", user);

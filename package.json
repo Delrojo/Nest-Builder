@@ -15,6 +15,7 @@
     "@emotion/styled": "^11.13.0",
     "@fontsource/open-sans": "^5.0.28",
     "@google-cloud/vertexai": "^1.4.0",
+    "@react-google-maps/api": "^2.19.3",
     "@types/react-router-dom": "^5.3.3",
     "@types/tailwindcss": "^3.1.0",
     "firebase": "^10.12.4",
@@ -29,7 +30,8 @@
     "react-hotkeys-hook": "^4.5.0",
     "react-icons": "^5.2.1",
     "react-router-dom": "^6.25.1",
-    "recoil": "^0.7.7"
+    "recoil": "^0.7.7",
+    "use-places-autocomplete": "^4.0.1"
   },
   "devDependencies": {
     "@types/node": "^20",

@@ -78,6 +78,7 @@ const Lifestyle: React.FC = () => {
               onChange={(e) => setNewPreference(e.target.value)}
               color={"primary.500"}
               width={"full"}
+              height={"full"}
             />
             <InputRightElement>
               <IconButton

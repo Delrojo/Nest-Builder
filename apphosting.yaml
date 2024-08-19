@@ -34,3 +34,6 @@ env:
 
   - variable: NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID
     secret: google_drive_client_id
+
+  - variable: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+    secret: google_maps_api_key

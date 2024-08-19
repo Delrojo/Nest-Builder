@@ -24,9 +24,21 @@ import {
 } from "@chakra-ui/icons";
 import { FaCar, FaListAlt, FaAlignJustify, FaTags } from "react-icons/fa";
 import StepNavigation from "./TakeoutStepNavigation";
-import { userAtom } from "@/atoms/userAtom";
+import { isAuthenticToken, userAtom } from "@/atoms/userAtom";
 import { useRecoilState } from "recoil";
 import GoogleDriveButton from "./GoogleDriveButton";
+import {
+  findMostCompleteBirthday,
+  findMostCompleteGender,
+  formatBirthday,
+  GenderDTO,
+} from "@/utils/functions/introFunctions";
+import { BirthdayDTO } from "@/utils/functions/introFunctions";
+
+interface PeopleInfo {
+  genders: GenderDTO[];
+  birthdays: BirthdayDTO[];
+}
 
 const IntroPage = () => {
   const [birthday, setBirthday] = useState("");
@@ -55,10 +67,9 @@ const IntroPage = () => {
     setGender(e.target.value);
   };
 
-  const getPeopleInfo = useCallback(async () => {
+  const getPeopleInfo = useCallback(async (token: string) => {
     console.log("Fetching people info");
-    console.log("User Auth Token:", userState.user?.googleAuthToken);
-    const token = userState.user?.googleAuthToken;
+    console.log("User Auth Token:", token);
     const response = await fetch(
       `/api/fetchExtraUserInformation?token=${token}`
     );
@@ -66,18 +77,35 @@ const IntroPage = () => {
     if (response.ok) {
       const data = await response.json();
       console.log("People Info:", data);
-
-      //TODO: set birthday and gender from data
+      extractUserInfo(data);
     } else {
       console.error("Failed to fetch people info");
     }
-  }, [userState.user?.googleAuthToken]);
+  }, []);
 
   useEffect(() => {
-    if (userState.user) {
-      getPeopleInfo();
+    if (isAuthenticToken(userState.user?.googleAuthToken)) {
+      getPeopleInfo(userState.user?.googleAuthToken as string);
+    } else {
+      console.log("User's Google Auth Token is not valid");
     }
-  }, [getPeopleInfo, userState.user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const extractUserInfo = (data: PeopleInfo) => {
+    const birthday = findMostCompleteBirthday(data.birthdays);
+    const gender = findMostCompleteGender(data.genders);
+
+    if (birthday) {
+      const formattedBirthday = formatBirthday(birthday);
+      console.log("User's Birthday:", formattedBirthday);
+      setBirthday(formattedBirthday);
+    } else {
+      console.log("User's Birthday: Not available");
+    }
+
+    console.log("User's Gender:", gender || "Not available");
+  };
 
   const handleUpload = async () => {
     try {
@@ -140,7 +168,7 @@ const IntroPage = () => {
                 type="date"
                 value={birthday}
                 onChange={handleBirthdayChange}
-                placeholder="Enter your birthday"
+                placeholder="YYY-MM-DD"
               />
             </FormControl>
 
@@ -150,7 +178,7 @@ const IntroPage = () => {
                 type="text"
                 value={gender}
                 onChange={handleGenderChange}
-                placeholder="Enter your gender"
+                placeholder="Gender (e.g., Male, Female, Non-binary)"
               />
             </FormControl>
           </VStack>
