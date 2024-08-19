@@ -1,4 +1,5 @@
 import { userAtom } from "@/atoms/userAtom";
+import { NewUser } from "@/utils/functions/authFunctions";
 import {
   VStack,
   Text,
@@ -6,69 +7,112 @@ import {
   Icon,
   Input,
   InputGroup,
-  InputLeftElement,
+  FormControl,
+  FormLabel,
+  Box,
+  FormHelperText,
 } from "@chakra-ui/react";
-import React from "react";
-import { FaUser, FaEnvelope } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { FaUser, FaEnvelope, FaBolt } from "react-icons/fa";
 import { useRecoilState } from "recoil";
 
 type AuthRegisterFormProps = {
-  handleSubmit: () => void;
+  handleSubmit: (user: NewUser) => void;
 };
 
 const AuthRegisterForm: React.FC<AuthRegisterFormProps> = ({
   handleSubmit,
 }: AuthRegisterFormProps) => {
-  const [userState, setUserState] = useRecoilState(userAtom);
+  const [userState] = useRecoilState(userAtom);
+  const [newUser, setNewUser] = useState<NewUser>();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const changedName = e.target.value;
-    setUserState((prevState) => {
-      if (!prevState.user) return prevState;
-      return {
-        ...prevState,
-        user: {
-          ...prevState.user,
-          name: changedName,
-        },
-      };
-    });
+  useEffect(() => {
+    if (userState?.user) {
+      setNewUser({
+        uid: userState.user.uid,
+        name: userState.user.name,
+        email: userState.user.email,
+        text: "",
+      });
+    }
+  }, [userState?.user]);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    if (newUser) {
+      setNewUser({ ...newUser, [name]: value });
+    }
+  };
+
+  const handleOnSubmit = (e: React.FormEvent) => {
+    e.preventDefault(); // Prevent default form submission
+    if (newUser) {
+      handleSubmit(newUser);
+    }
   };
 
   return (
-    <VStack spacing={4} align="center">
-      <Text fontSize="xl" textAlign="center">
-        Join the Nested Community
-      </Text>
-      <Text>
-        It looks like you&apos;re new here! Share a few details with us to join
-        the Nested community and unlock personalized recommendations tailored
-        just for you.
-      </Text>
-      <InputGroup>
-        <InputLeftElement pointerEvents="none">
-          <Icon as={FaUser} />
-        </InputLeftElement>
-        <Input
-          placeholder="Full Name"
-          value={userState.user?.name || ""}
-          onChange={handleChange}
-        />
-      </InputGroup>
-      <InputGroup>
-        <InputLeftElement pointerEvents="none">
-          <Icon as={FaEnvelope} />
-        </InputLeftElement>
-        <Input
-          placeholder="Email Address"
-          value={userState.user?.email || ""}
-          disabled
-        />
-      </InputGroup>
-      <Button size={"sm"} onClick={handleSubmit} colorScheme="blue">
-        Join Now
-      </Button>
-    </VStack>
+    <Box as="form" onSubmit={handleOnSubmit} width="100%" maxW="400px">
+      <VStack spacing={4}>
+        <Text fontSize="xl">Join the Nested Community</Text>
+        <Text mb={4}>
+          We're excited to have you on board. Join our community to unlock a
+          world of personalized insights and supercharge your next big move.
+        </Text>
+
+        <FormControl id="name" isRequired>
+          <FormLabel>
+            <Icon as={FaUser} mr={2} />
+            Full Name
+          </FormLabel>
+          <InputGroup>
+            <Input
+              placeholder="Full Name"
+              name="name"
+              value={newUser?.name || ""}
+              onChange={handleChange}
+            />
+          </InputGroup>
+        </FormControl>
+
+        <FormControl id="email">
+          <FormLabel>
+            <Icon as={FaEnvelope} marginRight="2" />
+            Email Address
+          </FormLabel>
+          <InputGroup>
+            <Input
+              placeholder="Email Address"
+              name="email"
+              value={newUser?.email || ""}
+              isDisabled
+            />
+          </InputGroup>
+          <FormHelperText>Already got this!</FormHelperText>
+        </FormControl>
+
+        <FormControl id="goal">
+          <FormLabel>
+            <Icon as={FaBolt} marginRight="2" />
+            How can Nested help you achieve your next goal?
+          </FormLabel>
+          <InputGroup>
+            <Input
+              placeholder="Share your thoughts with us"
+              name="text"
+              value={newUser?.text || ""}
+              onChange={handleChange}
+            />
+          </InputGroup>
+        </FormControl>
+
+        <Button type="submit" size="lg" width="full">
+          Join Now
+        </Button>
+      </VStack>
+    </Box>
   );
 };
 

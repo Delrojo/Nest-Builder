@@ -10,7 +10,7 @@ import {
   Button,
   ModalFooter,
 } from "@chakra-ui/react";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useRecoilState } from "recoil";
 import { authModalState } from "@/atoms/authModalAtom";
 import AuthInitialSignIn from "./AuthInitialSignIn";
@@ -20,7 +20,7 @@ import AuthRegisterForm from "./AuthRegisterForm";
 import { useAuth } from "@/utils/hooks/useAuth";
 import { userAtom } from "@/atoms/userAtom";
 import { UserStatus } from "@/atoms/userAtom";
-import { addUserToGraylist } from "@/utils/functions/authFunctions";
+import { addUserToGraylist, NewUser } from "@/utils/functions/authFunctions";
 import AuthAdminWelcome from "./AuthAdminWelcome";
 
 const AuthModal: React.FC = () => {
@@ -55,25 +55,28 @@ const AuthModal: React.FC = () => {
     logOut();
   };
 
-  const handleSubmit = useCallback(() => {
-    // Handle form submission for new users here
+  const handleNewUserSubmit = (user: NewUser) => {
+    addUserToGraylist(user);
     setFormSubmitted(true);
     if (userState.user) {
-      addUserToGraylist(userState.user);
       setUserState((prevState) => {
-        if (!prevState.user) return prevState;
-        return {
-          ...prevState,
-          user: {
-            ...prevState.user,
-            status: UserStatus.pending,
-          },
-        };
+        if (prevState.user) {
+          return {
+            user: {
+              ...prevState.user,
+              status: UserStatus.pending,
+              uid: prevState.user.uid || "", // Ensure uid is always defined
+              name: prevState.user.name || "",
+              email: prevState.user.email || "",
+              photoURL: prevState.user.photoURL || "",
+              googleAuthToken: prevState.user.googleAuthToken || null,
+            },
+          };
+        }
+        return prevState;
       });
-    } else {
-      console.error("User not found, failed to add to graylist");
     }
-  }, [userState.user, setUserState]); // Include setUserState in the dependency array
+  };
 
   const onClose = () => {
     setModalState({ ...modalState, isOpen: false });
@@ -88,13 +91,13 @@ const AuthModal: React.FC = () => {
     } else if (userState.user?.status === UserStatus.admin) {
       return <AuthAdminWelcome />;
     } else if (userState.user?.status === UserStatus.new) {
-      return <AuthRegisterForm handleSubmit={handleSubmit} />;
+      return <AuthRegisterForm handleSubmit={handleNewUserSubmit} />;
     } else if (userState.user?.status === UserStatus.pending) {
       return <AuthNextSteps />;
     } else {
       return <Text>Error loading content, please reload!</Text>;
     }
-  }, [userState, handleSubmit]);
+  }, [userState, handleNewUserSubmit]);
 
   return (
     <>

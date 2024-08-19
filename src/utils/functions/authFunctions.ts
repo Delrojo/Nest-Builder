@@ -1,13 +1,25 @@
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+  deleteField,
+} from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
-import { User, UserStatus } from "@/atoms/userAtom";
+import { UserStatus } from "@/atoms/userAtom";
 import { firestore } from "@/firebase/firebaseConfig";
+
+export interface NewUser {
+  email: string;
+  uid: string;
+  name: string;
+  text: string;
+}
 
 export async function checkUserStatus(
   email: string
 ): Promise<UserStatus | null> {
   if (!email) {
-    console.error("Email is empty or null.");
     return null;
   }
 
@@ -27,9 +39,6 @@ export async function checkUserStatus(
     const adminData = adminDoc.exists() ? adminDoc.data() : null;
 
     if (!whitelistData && !adminData) {
-      console.error(
-        "Both whitelist and admin documents are empty or do not exist."
-      );
       return null;
     }
 
@@ -38,16 +47,12 @@ export async function checkUserStatus(
     const isAdmin = adminData && email in adminData;
 
     if (isAdmin) {
-      console.log(`${email} is an admin and whitelisted.`);
       return UserStatus.admin;
     } else if (isWhitelisted) {
-      console.log(`${email} is approved!`);
       return UserStatus.whitelist;
     } else if (isGraylisted) {
-      console.log(`${email} is graylisted.`);
       return UserStatus.pending;
     } else {
-      console.log(`${email} is a new nester.`);
       return UserStatus.new;
     }
   } catch (error) {
@@ -55,31 +60,89 @@ export async function checkUserStatus(
       console.error("Firebase error code:", error.code);
       console.error("Firebase error message:", error.message);
     }
-    console.error("Error checking user status:", error);
     return null;
   }
 }
 
-export const addUserToGraylist = async (user: User) => {
-  const { email, uid, name } = user;
+export const addUserToGraylist = async (user: NewUser) => {
+  const { email, uid, name, text } = user;
 
   if (!email || !uid || !name) {
-    console.error("Email, UID, or name is empty or null.");
     return;
   }
 
   try {
     const graylistRef = doc(firestore, "config", "graylist");
 
-    // Set the user's details in the graylist document
-    await setDoc(graylistRef, { [email]: { uid, name } }, { merge: true });
-
-    console.log(`Added ${email} in graylist.`);
+    await setDoc(
+      graylistRef,
+      { [email]: { uid, name, text } },
+      { merge: true }
+    );
   } catch (error) {
     if (error instanceof FirebaseError) {
       console.error("Firebase error code:", error.code);
       console.error("Firebase error message:", error.message);
     }
-    console.error("Error adding user to graylist:", error);
+  }
+};
+
+export const moveUserToWhitelist = async (user: NewUser) => {
+  const { email, uid, name } = user;
+
+  if (!email || !uid || !name) {
+    return;
+  }
+
+  try {
+    const graylistRef = doc(firestore, "config", "graylist");
+    const whitelistRef = doc(firestore, "config", "whitelist");
+
+    const graylistDoc = await getDoc(graylistRef);
+    //TODO: This is not a good practice to delete information from a document
+    if (graylistDoc.exists()) {
+      const graylistData = graylistDoc.data();
+
+      if (graylistData[email]) {
+        delete graylistData[email];
+        await setDoc(graylistRef, graylistData);
+      }
+    }
+
+    // Attempt to delete the user from the graylist using updateDoc
+    await updateDoc(graylistRef, { [email]: deleteField() });
+
+    // await setDoc(whitelistRef, { [email]: { uid, name } }, { merge: true });
+  } catch (error) {
+    if (error instanceof FirebaseError) {
+      console.error("Firebase error code:", error.code);
+      console.error("Firebase error message:", error.message);
+    }
+  }
+};
+
+export const getAllGraylistUsers = async (): Promise<NewUser[]> => {
+  try {
+    const graylistRef = doc(firestore, "config", "graylist");
+    const graylistDoc = await getDoc(graylistRef);
+
+    if (graylistDoc.exists()) {
+      const data = graylistDoc.data();
+      const userArray: NewUser[] = Object.keys(data).map((email) => ({
+        email,
+        uid: data[email].uid,
+        name: data[email].name,
+        text: data[email].text,
+      }));
+      return userArray;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error instanceof FirebaseError) {
+      console.error("Firebase error code:", error.code);
+      console.error("Firebase error message:", error.message);
+    }
+    return [];
   }
 };

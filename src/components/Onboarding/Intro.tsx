@@ -161,6 +161,7 @@ const IntroPage = () => {
             Let&apos;s start by confirming these details about you to start
             building your profile.
           </Text>
+
           <VStack spacing={4} align="stretch">
             <FormControl>
               <FormLabel>Birthday</FormLabel>
