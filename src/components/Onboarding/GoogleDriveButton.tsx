@@ -44,6 +44,8 @@ const GoogleDriveButton = () => {
       const clientId = process.env.NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID ?? "";
       const developerKey = process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY ?? "";
 
+      // TODO: Should we use clientId and developerKey in production as they are personal credentials.
+
       console.log("Opening Google Drive Picker with token:", token);
 
       openPicker({
@@ -56,8 +58,6 @@ const GoogleDriveButton = () => {
         supportDrives: true,
         multiselect: false,
         callbackFunction: (data) => {
-          console.log("Picker callback data:", data);
-
           // Handle cancel action
           if (data.action === "cancel") {
             console.log("User clicked cancel/close button");
@@ -66,15 +66,8 @@ const GoogleDriveButton = () => {
 
           // Handle picked action
           if (data.action === "picked") {
-            console.log("User picked a file");
-            console.log(data.docs);
             fetchGoogleDriveFile(data.docs[0].id, token);
             return;
-          }
-
-          // Handle loaded action
-          if (data.action === "loaded") {
-            console.log("User loaded the picker");
           }
 
           if (data.action === "authFailed") {
@@ -99,9 +92,6 @@ const GoogleDriveButton = () => {
               isClosable: true,
             });
           }
-
-          // Log the data for any other actions
-          console.log(data);
         },
       });
     } catch (error) {

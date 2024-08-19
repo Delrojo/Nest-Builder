@@ -10,7 +10,7 @@ import {
   Button,
   ModalFooter,
 } from "@chakra-ui/react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRecoilState } from "recoil";
 import { authModalState } from "@/atoms/authModalAtom";
 import AuthInitialSignIn from "./AuthInitialSignIn";
@@ -55,8 +55,8 @@ const AuthModal: React.FC = () => {
     logOut();
   };
 
-  const handleNewUserSubmit = useMemo(() => {
-    return (user: NewUser) => {
+  const handleNewUserSubmit = useCallback(
+    (user: NewUser) => {
       addUserToGraylist(user);
       setFormSubmitted(true);
       if (userState.user) {
@@ -77,8 +77,9 @@ const AuthModal: React.FC = () => {
           return prevState;
         });
       }
-    };
-  }, [userState.user]);
+    },
+    [userState.user, setUserState]
+  );
 
   const onClose = () => {
     setModalState({ ...modalState, isOpen: false });

@@ -66,9 +66,6 @@ const TodoApp: React.FC = () => {
   };
 
   const printTodoData = () => {
-    console.log("Todo Data:");
-    console.log("==========");
-    console.log(todoData);
     console.log(JSON.stringify(todoData, null, 2));
   };
 

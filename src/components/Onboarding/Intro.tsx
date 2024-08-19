@@ -34,6 +34,8 @@ import {
   GenderDTO,
 } from "@/utils/functions/introFunctions";
 import { BirthdayDTO } from "@/utils/functions/introFunctions";
+import { useRouter } from "next/router";
+import { useAuth } from "@/utils/hooks/useAuth";
 
 interface PeopleInfo {
   genders: GenderDTO[];
@@ -52,6 +54,8 @@ const IntroPage = () => {
   const [isUploading, setIsUploading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [userState, setUserState] = useRecoilState(userAtom);
+  const { logOut } = useAuth();
+  const router = useRouter();
 
   const cardBg = useColorModeValue("primary.100", "primary.800");
 
@@ -69,14 +73,12 @@ const IntroPage = () => {
 
   const getPeopleInfo = useCallback(async (token: string) => {
     console.log("Fetching people info");
-    console.log("User Auth Token:", token);
     const response = await fetch(
       `/api/fetchExtraUserInformation?token=${token}`
     );
 
     if (response.ok) {
       const data = await response.json();
-      console.log("People Info:", data);
       extractUserInfo(data);
     } else {
       console.error("Failed to fetch people info");
@@ -88,6 +90,8 @@ const IntroPage = () => {
       getPeopleInfo(userState.user?.googleAuthToken as string);
     } else {
       console.log("User's Google Auth Token is not valid");
+      logOut();
+      router.push("/");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -98,13 +102,12 @@ const IntroPage = () => {
 
     if (birthday) {
       const formattedBirthday = formatBirthday(birthday);
-      console.log("User's Birthday:", formattedBirthday);
       setBirthday(formattedBirthday);
-    } else {
-      console.log("User's Birthday: Not available");
     }
 
-    console.log("User's Gender:", gender || "Not available");
+    if (gender?.formattedValue) {
+      setGender(gender.formattedValue);
+    }
   };
 
   const handleUpload = async () => {
