@@ -37,4 +37,18 @@ export const todoList: TodoList = [
     priority: "Medium",
     pagePath: "src/pages/api/fetchExtraUserInformation.ts",
   },
+  {
+    title: "Organize All Constants",
+    description: "Organize all constants in one folder",
+    status: "To Do",
+    priority: "Low",
+    pagePath: "src/utils/constants.ts",
+  },
+  {
+    title: "Organize All Functions",
+    description: "Organize all functions in one folder or in the api",
+    status: "To Do",
+    priority: "Low",
+    pagePath: "src/utils/functions",
+  },
 ];

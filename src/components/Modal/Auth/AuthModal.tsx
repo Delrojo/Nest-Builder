@@ -55,28 +55,30 @@ const AuthModal: React.FC = () => {
     logOut();
   };
 
-  const handleNewUserSubmit = (user: NewUser) => {
-    addUserToGraylist(user);
-    setFormSubmitted(true);
-    if (userState.user) {
-      setUserState((prevState) => {
-        if (prevState.user) {
-          return {
-            user: {
-              ...prevState.user,
-              status: UserStatus.pending,
-              uid: prevState.user.uid || "", // Ensure uid is always defined
-              name: prevState.user.name || "",
-              email: prevState.user.email || "",
-              photoURL: prevState.user.photoURL || "",
-              googleAuthToken: prevState.user.googleAuthToken || null,
-            },
-          };
-        }
-        return prevState;
-      });
-    }
-  };
+  const handleNewUserSubmit = useMemo(() => {
+    return (user: NewUser) => {
+      addUserToGraylist(user);
+      setFormSubmitted(true);
+      if (userState.user) {
+        setUserState((prevState) => {
+          if (prevState.user) {
+            return {
+              user: {
+                ...prevState.user,
+                status: UserStatus.pending,
+                uid: prevState.user.uid || "", // Ensure uid is always defined
+                name: prevState.user.name || "",
+                email: prevState.user.email || "",
+                photoURL: prevState.user.photoURL || "",
+                googleAuthToken: prevState.user.googleAuthToken || null,
+              },
+            };
+          }
+          return prevState;
+        });
+      }
+    };
+  }, [userState.user]);
 
   const onClose = () => {
     setModalState({ ...modalState, isOpen: false });

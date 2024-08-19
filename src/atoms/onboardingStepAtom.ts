@@ -1,11 +1,9 @@
-import { IconProps, Icon } from "@chakra-ui/react";
 import {
   FaInfoCircle,
   FaCar,
   FaListAlt,
   FaAlignJustify,
   FaTags,
-  FaInfo,
 } from "react-icons/fa";
 import { atom } from "recoil";
 import Categories from "@/components/Onboarding/Categories";

@@ -58,7 +58,7 @@ const AuthRegisterForm: React.FC<AuthRegisterFormProps> = ({
       <VStack spacing={4}>
         <Text fontSize="xl">Join the Nested Community</Text>
         <Text mb={4}>
-          We're excited to have you on board. Join our community to unlock a
+          We&apos;re excited to have you on board. Join our community to unlock a
           world of personalized insights and supercharge your next big move.
         </Text>
 
