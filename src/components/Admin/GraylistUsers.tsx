@@ -48,6 +48,7 @@ const GraylistUsers: React.FC = () => {
           boxShadow="md"
           borderRadius="md"
           bg={cardBg}
+          // transition={"background-color 500ms ease-in-out !important"}
         >
           <VStack spacing={4} align="center" p={4}>
             <Avatar name={user.name} icon={<Icon as={FaUserShield} />} />

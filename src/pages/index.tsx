@@ -13,12 +13,10 @@ import { FaRocket, FaFlask } from "react-icons/fa";
 import AuthModal from "@/components/Modal/Auth/AuthModal";
 import { useSetRecoilState } from "recoil";
 import { authModalState } from "@/atoms/authModalAtom";
-import { userAtom } from "@/atoms/userAtom";
 import Link from "next/link";
 
 const LandingPage = () => {
   const setAuthModalState = useSetRecoilState(authModalState);
-  const setUserState = useSetRecoilState(userAtom);
   const { colorMode } = useColorMode();
 
   //TODO: Determine if these initial states are a good idea
@@ -60,7 +58,6 @@ const LandingPage = () => {
             <Box p="0.1rem" w="100%">
               <Link href="/demo" passHref>
                 <Button
-                  colorScheme="green"
                   size={{ base: "sm", md: "md" }}
                   leftIcon={<Icon as={FaRocket} />}
                   width="100%"
@@ -78,7 +75,6 @@ const LandingPage = () => {
             <Box p="0.1rem" w="100%">
               <Button
                 variant={"outline"}
-                colorScheme="blue"
                 size={{ base: "sm", md: "md" }}
                 leftIcon={<Icon as={FaFlask} />}
                 width="100%"
@@ -97,7 +93,7 @@ const LandingPage = () => {
       <Flex
         width="100%"
         flexDirection="column"
-        maxWidth={{ base: "100%", lg: "50%" }}
+        maxWidth={{ base: "100%", lg: "48%" }}
         mx="auto"
       >
         <AspectRatio ratio={16 / 9} width="100%">
@@ -106,7 +102,6 @@ const LandingPage = () => {
             src="https://www.youtube.com/embed/Qyf--S0LUlk"
             allowFullScreen
             width="100%"
-            height="100%"
             borderRadius="md"
           />
         </AspectRatio>

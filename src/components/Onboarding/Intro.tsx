@@ -87,7 +87,16 @@ const IntroPage = () => {
 
   useEffect(() => {
     if (isAuthenticToken(userState.user?.googleAuthToken)) {
-      getPeopleInfo(userState.user?.googleAuthToken as string);
+      if (
+        userState.user?.googleAuthToken !==
+        "FirebaseAuthEmulatorFakeAccessToken_google.com"
+      ) {
+        getPeopleInfo(userState.user?.googleAuthToken as string);
+      } else {
+        console.log("User is using Firebase Auth Emulator");
+        setBirthday("2000-01-01");
+        setGender("Non-binary");
+      }
     } else {
       console.log("User's Google Auth Token is not valid");
       logOut();

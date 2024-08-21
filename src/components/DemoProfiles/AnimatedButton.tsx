@@ -5,21 +5,29 @@ interface AnimatedButtonProps {
   gifSrc: string;
   photoSrc: string;
   onClick?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+  bgColor?: string;
 }
 
 const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   gifSrc,
   photoSrc,
   onClick = () => {},
+  onMouseEnter = () => {},
+  onMouseLeave = () => {},
+  bgColor = "transparent",
 }: AnimatedButtonProps) => {
   const [imageSrc, setImageSrc] = useState(photoSrc);
 
   const handleMouseEnter = () => {
     setImageSrc(gifSrc);
+    onMouseEnter();
   };
 
   const handleMouseLeave = () => {
     setImageSrc(photoSrc);
+    onMouseLeave();
   };
 
   return (
@@ -28,15 +36,16 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
       p={0}
-      bg="transparent"
-      _hover={{ bg: "transparent" }}
+      bg={bgColor}
+      _hover={{ bg: bgColor }}
       _focus={{ boxShadow: "none" }}
       w={"100%"}
       h={"100%"}
-      maxH={"15rem"}
-      maxW={"15rem"}
+      maxH={"12.5rem"}
+      maxW={"12.5rem"}
+      borderRadius={"1.5rem"}
     >
-      <Image src={imageSrc} alt="Animated Button" />
+      <Image borderRadius={"1.5rem"} src={imageSrc} alt="Animated Button" />
     </Button>
   );
 };

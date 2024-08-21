@@ -36,10 +36,5 @@ export const loadingAtom = atom<boolean>({
 });
 
 export const isAuthenticToken = (token: string | undefined | null): boolean => {
-  return (
-    token !== null &&
-    token !== undefined &&
-    token !== "FirebaseAuthEmulatorFakeAccessToken_google.com" &&
-    token !== "nullIdToken"
-  );
+  return token !== null && token !== undefined && token !== "nullIdToken";
 };

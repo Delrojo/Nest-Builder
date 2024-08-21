@@ -5,6 +5,8 @@ export interface Profile {
   gifSrc: string;
   photoSrc: string;
   color: string;
+  lightBgColor: string;
+  darkBgColor: string;
   summary: string[];
 }
 

@@ -1,3 +1,4 @@
+import { Profile } from "@/atoms/demoProfileAtom";
 import {
   Button,
   Drawer,
@@ -7,19 +8,24 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Text,
+  useColorMode,
 } from "@chakra-ui/react";
 
 interface SidePanelProps {
   isOpen: boolean;
   onClose: () => void;
-  profile: { name: string; summary: string[]; color: string };
+  profile: Profile;
 }
 
 const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, profile }) => {
+  const { colorMode } = useColorMode();
+  const bgColor = colorMode === "light" ? "primary.100" : "primary.800";
+  const textColor = colorMode === "light" ? "black" : "white";
+
   return (
     <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
       <DrawerOverlay>
-        <DrawerContent>
+        <DrawerContent bg={bgColor} color={textColor}>
           <DrawerCloseButton />
           <DrawerHeader>{profile.name}</DrawerHeader>
           <DrawerBody>

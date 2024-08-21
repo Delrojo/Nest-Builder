@@ -1,11 +1,18 @@
 import { Profile } from "@/atoms/demoProfileAtom";
+import lightenColor from "@/utils/functions/demoFunctions";
+
+// color is against the light background: FBFDFA
+// darkColor is against the dark background: 1E2D22
 
 const profilesData: Profile[] = [
   {
-    name: "Isabella the Social Foodie",
-    gifSrc: "/images/TheFoodie.gif",
+    name: "Isabella the Bold Foodie",
+    gifSrc: "/images/DemoProfile_Dark_Isabella.gif",
     photoSrc: "/images/TheFoodie.png",
-    color: "#E6A419",
+    // color: "#F0A401",
+    color: "#FFAF00",
+    lightBgColor: lightenColor("#FFAF00", 0.6),
+    darkBgColor: lightenColor("#FFAF00", 0.3),
     summary: [
       "Loves exploring new restaurants and trying exotic dishes",
       "Enjoys attending food festivals and culinary events",
@@ -14,22 +21,12 @@ const profilesData: Profile[] = [
     ],
   },
   {
-    name: "Marcus the Curious Artist",
-    gifSrc: "/images/TheArtist.gif",
-    photoSrc: "/images/TheArtist.png",
-    color: "#DF361F",
-    summary: [
-      "Passionate about art and creativity",
-      "Frequent visitor of theatres, museums, and art galleries",
-      "Enjoys painting, sculpting, and exploring new artistic techniques",
-      "Always curious about the cultural and historical aspects of art",
-    ],
-  },
-  {
     name: "Jade the Thrifty Connoisseur",
     gifSrc: "/images/TheConnoisseur.gif",
     photoSrc: "/images/TheConnoisseur.png",
-    color: "#43BCBC",
+    color: "#40F6CC",
+    lightBgColor: lightenColor("#2fd7b3", 0.58),
+    darkBgColor: lightenColor("#2fd7b3", 0.3),
     summary: [
       "Has a keen eye for unique and valuable thrift finds",
       "Loves shopping at flea markets and antique stores",
@@ -38,10 +35,26 @@ const profilesData: Profile[] = [
     ],
   },
   {
+    name: "Marcus the Curious Artist",
+    gifSrc: "/images/TheArtist.gif",
+    photoSrc: "/images/TheArtist.png",
+    color: "#fe3737",
+    lightBgColor: lightenColor("#fe3737", 0.56),
+    darkBgColor: lightenColor("#fe3737", 0.3),
+    summary: [
+      "Passionate about art and creativity",
+      "Frequent visitor of theatres, museums, and art galleries",
+      "Enjoys painting, sculpting, and exploring new artistic techniques",
+      "Always curious about the cultural and historical aspects of art",
+    ],
+  },
+  {
     name: "Alexi the Energetic Athlete",
     gifSrc: "/images/TheAthlete.gif",
     photoSrc: "/images/TheAthlete.png",
-    color: "#407BFF",
+    color: "#58abff",
+    lightBgColor: lightenColor("#58abff", 0.5),
+    darkBgColor: lightenColor("#58abff", 0.3),
     summary: [
       "Dedicated to maintaining a healthy and active lifestyle",
       "Spends time working out in the gym and running in parks",
@@ -53,7 +66,9 @@ const profilesData: Profile[] = [
     name: "Ernesto the Caring Dad",
     gifSrc: "/images/TheDad.gif",
     photoSrc: "/images/TheDad.png",
-    color: "#FF8331",
+    color: "#ff812c",
+    lightBgColor: lightenColor("#ff812c", 0.5),
+    darkBgColor: lightenColor("#ff812c", 0.3),
     summary: [
       "Nurturing and deeply family-oriented",
       "Enjoys grocery shopping and planning meals for the family",
@@ -62,15 +77,18 @@ const profilesData: Profile[] = [
     ],
   },
   {
-    name: "Leo the Social Maven",
+    name: "Leo the Social Engineer",
     gifSrc: "/images/TheSocialite.gif",
     photoSrc: "/images/TheSocialite.png",
-    color: "#7944BF",
+    color: "#AF4CFF",
+    lightBgColor: lightenColor("#AF4CFF", 0.55),
+    darkBgColor: lightenColor("#AF4CFF", 0.3),
     summary: [
-      "Extremely outgoing and enjoys networking",
+      "Extremely outgoing and enjoys networking at work and social events",
       "Thoroughly enjoys attending festivals, conferences, and social gatherings",
       "Skilled at connecting with new people and building relationships",
       "Always in the know about the latest social events and trends",
+      "Part of the tech community and enjoys attending hackathons",
     ],
   },
 ];

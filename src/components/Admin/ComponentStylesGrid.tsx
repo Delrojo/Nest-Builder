@@ -7,6 +7,7 @@ import {
   Input,
   IconButton,
 } from "@chakra-ui/react";
+import ColorTestDisplay from "./DemoProfileColors";
 
 const ComponentStylesGrid: React.FC = () => {
   return (
@@ -18,7 +19,10 @@ const ComponentStylesGrid: React.FC = () => {
         <Button variant={"solid"}>Solid Variant</Button>
         <IconButton aria-label="Example Icon Button" icon={<Box />} />
       </Box>
-      {/* Add more components as needed */}
+      <Box>
+        <Heading size="sm">Colors</Heading>
+        <ColorTestDisplay />
+      </Box>
       <Box>
         <Heading size="sm">Stepper</Heading>
       </Box>
