@@ -79,7 +79,11 @@ const DemoPage: React.FC = () => {
             {profilesData.map((profile, index) => (
               <VStack key={index} spacing={4}>
                 <AnimatedButton
-                  gifSrc={profile.gifSrc}
+                  gifSrc={
+                    colorMode === "light"
+                      ? profile.lightGifSrc
+                      : profile.darkGifSrc
+                  }
                   photoSrc={profile.photoSrc}
                   onClick={() => handleButtonClick(profile)}
                   bgColor={

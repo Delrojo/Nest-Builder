@@ -41,8 +41,8 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
       _focus={{ boxShadow: "none" }}
       w={"100%"}
       h={"100%"}
-      maxH={"12.5rem"}
-      maxW={"12.5rem"}
+      maxH={"14rem"}
+      maxW={"14rem"}
       borderRadius={"1.5rem"}
     >
       <Image borderRadius={"1.5rem"} src={imageSrc} alt="Animated Button" />

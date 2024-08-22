@@ -2,8 +2,10 @@ import { atom } from "recoil";
 
 export interface Profile {
   name: string;
-  gifSrc: string;
+  lightGifSrc: string;
+  darkGifSrc: string;
   photoSrc: string;
+  pfpSrc: string;
   color: string;
   lightBgColor: string;
   darkBgColor: string;
