@@ -8,16 +8,8 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
-import CategoryCard from "./CategoryCard";
-
-interface CategoryModel {
-  title: string;
-  isActive: boolean;
-  costPreference: string;
-  userPreferences: string;
-  relatedSubcategories: string[];
-  vibes: string[];
-}
+import CategoryCard, { CategoryStatus } from "./CategoryCard";
+import { CategoryModel } from "./CategoryCard";
 
 const OnboardCategories = () => {
   const [categories, setCategories] = useState<CategoryModel[]>([]);
@@ -28,7 +20,7 @@ const OnboardCategories = () => {
     const fetchedCategories: CategoryModel[] = [
       {
         title: "Restaurant",
-        isActive: true,
+        status: CategoryStatus.ACTIVE,
         costPreference: "$$",
         userPreferences:
           "Interest in Mediterranean cuisine and healthy dining options",
@@ -37,7 +29,7 @@ const OnboardCategories = () => {
       },
       {
         title: "Activities & Entertainment",
-        isActive: true,
+        status: CategoryStatus.ACTIVE,
         costPreference: "$",
         userPreferences: "Interest in museums, parks, and fitness activities",
         relatedSubcategories: ["Museums", "Parks", "Fitness"],
@@ -45,7 +37,7 @@ const OnboardCategories = () => {
       },
       {
         title: "Shopping",
-        isActive: false,
+        status: CategoryStatus.ACTIVE,
         costPreference: "$$$",
         userPreferences:
           "Frequent searches for grocery stores and athletic apparel",
@@ -63,20 +55,20 @@ const OnboardCategories = () => {
   const handleAddNewCategory = () => {
     const newCategory: CategoryModel = {
       title: "",
-      isActive: false,
+      status: CategoryStatus.EDIT,
       costPreference: "",
       userPreferences: "",
       relatedSubcategories: [],
       vibes: [],
     };
     setCategories([...categories, newCategory]);
-    toast({
-      title: "Category added.",
-      description: "You have added a new category.",
-      status: "info",
-      duration: 3000,
-      isClosable: true,
-    });
+  };
+
+  const handleDeleteCategory = (category: CategoryModel) => {
+    const updatedCategories = categories.filter(
+      (existingCategory) => existingCategory !== category
+    );
+    setCategories(updatedCategories);
   };
 
   return (
@@ -98,16 +90,22 @@ const OnboardCategories = () => {
           <AddIcon />
         </IconButton>
       </Flex>
+
       <Grid
         templateColumns={{
           sm: "repeat(1, 1fr)",
           md: "repeat(2, 1fr)",
-          lg: "repeat(3, 1fr)",
+          lg: "repeat(2, 1fr)",
         }}
-        gap={6}
+        gap={4}
       >
         {categories.map((category, index) => (
-          <CategoryCard key={index} categoryProp={category} />
+          <CategoryCard
+            key={index}
+            categoryProp={category}
+            deleteCategoryCallback={handleDeleteCategory}
+            editModeProp={category.status === CategoryStatus.EDIT}
+          />
         ))}
       </Grid>
     </Flex>

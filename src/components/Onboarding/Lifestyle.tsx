@@ -48,7 +48,7 @@ const Lifestyle: React.FC = () => {
   };
 
   return (
-    <VStack w="full" align="stretch">
+    <VStack w="full" align="stretch" p={6}>
       <Flex direction="column" align="center">
         <Heading as="h1" mt={4} textAlign="center" size="lg">
           What is important to you?

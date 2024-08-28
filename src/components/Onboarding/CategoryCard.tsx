@@ -5,22 +5,31 @@ import {
   IconButton,
   Stack,
   Text,
-  Tag,
-  TagLabel,
-  TagCloseButton,
   Textarea,
   useToast,
   useColorModeValue,
+  HStack,
+  Input,
+  Select,
+  useColorMode,
 } from "@chakra-ui/react";
 import { CheckIcon, DeleteIcon } from "@chakra-ui/icons";
 import { MdModeEdit } from "react-icons/md";
+import TagInput from "./TagInput";
 
-interface CategoryModel {
+export enum CategoryStatus {
+  ACTIVE = "active",
+  INACTIVE = "inactive",
+  EDIT = "edit",
+}
+
+export interface CategoryModel {
   title: string;
   costPreference: string;
   userPreferences: string;
   relatedSubcategories: string[];
   vibes: string[];
+  status: CategoryStatus;
 }
 
 interface CategoryCardProps {
@@ -38,6 +47,12 @@ const CategoryCard = ({
   const [category, setCategory] = useState(categoryProp);
   const cardBg = useColorModeValue("primary.100", "primary.800");
   const tagBg = useColorModeValue("primary.700", "primary.500");
+  const vibeBg = useColorModeValue("gray.300", "gray.500");
+  const deleteBg = useColorModeValue(
+    "rgba(255, 0, 0, 0.2)",
+    "rgba(139, 0, 0, 0.2)"
+  );
+  const { colorMode } = useColorMode();
 
   const toast = useToast();
 
@@ -48,27 +63,23 @@ const CategoryCard = ({
   const handleChange = (field: keyof CategoryModel, value: any) => {
     setCategory({ ...category, [field]: value });
   };
-
   const saveChanges = () => {
-    setEditMode(false);
-    toast({
-      title: "Changes saved.",
-      description: "Your changes have been saved successfully.",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
-  };
+    const isCategoryFilledOut =
+      category.title && category.costPreference && category.userPreferences;
 
+    if (isCategoryFilledOut) {
+      setEditMode(false);
+    } else {
+      toast({
+        title: "Please fill out all fields",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+  };
   const handleDelete = () => {
     deleteCategoryCallback && deleteCategoryCallback(category);
-    toast({
-      title: "Category deleted.",
-      description: "The category has been removed.",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    });
   };
 
   return (
@@ -79,67 +90,85 @@ const CategoryCard = ({
       backgroundColor={cardBg}
       shadow="md"
     >
-      <Flex justifyContent="space-between" alignItems="center">
-        <Text fontWeight="bold" fontSize="xl">
-          {category.title} | {category.costPreference}
-        </Text>
-        <IconButton
-          aria-label="Edit category"
-          icon={editMode ? <CheckIcon /> : <MdModeEdit />}
-          onClick={editMode ? saveChanges : handleEditToggle}
-          colorScheme="blue"
-          w="fit-content"
-          variant={"ghost"}
-        />
-        {editMode && (
+      <Flex justifyContent="space-between" gap={2} alignItems="center">
+        {editMode ? (
+          <>
+            <Input
+              value={category.title}
+              onChange={(e) => handleChange("title", e.target.value)}
+            />
+            <Select
+              value={category.costPreference}
+              onChange={(e) => handleChange("costPreference", e.target.value)}
+            >
+              <option value="$">$</option>
+              <option value="$$">$$</option>
+              <option value="$$$">$$$</option>
+              <option value="$$$$">$$$$</option>
+            </Select>
+          </>
+        ) : (
+          <Text fontSize="xl">
+            {category.title} | {category.costPreference}
+          </Text>
+        )}
+        <HStack>
+          {editMode && (
+            <IconButton
+              aria-label="Delete category"
+              icon={<DeleteIcon />}
+              onClick={handleDelete}
+              color="red"
+              w="fit-content"
+              variant={"ghost"}
+              sx={{
+                _hover: {
+                  color: "red",
+                  bg: deleteBg,
+                },
+              }}
+            />
+          )}
           <IconButton
-            aria-label="Delete category"
-            icon={<DeleteIcon />}
-            onClick={handleDelete}
-            colorScheme="red"
+            aria-label="Edit category"
+            icon={editMode ? <CheckIcon /> : <MdModeEdit />}
+            onClick={editMode ? saveChanges : handleEditToggle}
+            w="fit-content"
             variant={"ghost"}
           />
-        )}
+        </HStack>
       </Flex>
-      <Text mt={2}>{category.userPreferences}</Text>
-      <Stack direction="row" mt={2} spacing={2} wrap="wrap">
-        <Text fontWeight="bold">Related Subcategories:</Text>
-        {category.relatedSubcategories.map((subcategory, index) => (
-          <Tag key={index} bg={tagBg} borderRadius="full">
-            <TagLabel>{subcategory}</TagLabel>
-            {editMode && (
-              <TagCloseButton
-                onClick={() => {
-                  /* handle remove subcategory logic */
-                }}
-              />
-            )}
-          </Tag>
-        ))}
-      </Stack>
-      <Stack direction="row" mt={2} spacing={2} wrap="wrap">
-        <Text fontWeight="bold">Vibes:</Text>
-        {category.vibes.map((vibe, index) => (
-          <Tag key={index} bg={tagBg} borderRadius="full">
-            <TagLabel>{vibe}</TagLabel>
-            {editMode && (
-              <TagCloseButton
-                onClick={() => {
-                  /* handle remove vibe logic */
-                }}
-              />
-            )}
-          </Tag>
-        ))}
-      </Stack>
-      {editMode && (
+      {editMode ? (
         <Textarea
           placeholder="Enter your preferences here"
           value={category.userPreferences}
           onChange={(e) => handleChange("userPreferences", e.target.value)}
-          mt={2}
         />
+      ) : (
+        <Text mt={2}>{category.userPreferences}</Text>
       )}
+      <Stack direction="row" mt={2} spacing={2} wrap="wrap">
+        <Text fontSize={"sm"} w="full">
+          Related Subcategories:
+        </Text>
+        <TagInput
+          category={category}
+          editMode={editMode}
+          bgColor={vibeBg}
+          textColor={colorMode === "light" ? "text.light" : "text.dark"}
+        />
+      </Stack>
+      <Stack direction="row" mt={2} spacing={2} wrap="wrap">
+        <Text fontSize={"sm"} w="full">
+          Vibes:
+        </Text>
+        <TagInput
+          category={category}
+          editMode={editMode}
+          bgColor={tagBg}
+          textColor="white"
+        />
+      </Stack>
     </Box>
   );
 };

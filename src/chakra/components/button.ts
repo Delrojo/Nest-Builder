@@ -58,11 +58,11 @@ export const Button: ComponentStyleConfig = {
       color: props.colorMode === "light" ? "primary.500" : "primary.400",
       bg: "transparent",
       _hover: {
-        color: "primary.500",
+        color: props.colorMode === "light" ? "primary.500" : "primary.400",
         bg:
           props.colorMode === "light"
             ? "rgba(99, 167, 87, 0.2)"
-            : "rgba(56, 83, 55, 0.2)",
+            : "rgba(68, 116, 66, 0.2)",
       },
       _active: {
         bg: "transparent",
