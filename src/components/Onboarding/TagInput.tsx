@@ -7,6 +7,7 @@ interface TagInputProps {
   editMode: boolean;
   bgColor: string;
   textColor: string;
+  editColor: string;
 }
 
 const TagInput: React.FC<TagInputProps> = ({
@@ -14,6 +15,7 @@ const TagInput: React.FC<TagInputProps> = ({
   editMode,
   bgColor,
   textColor,
+  editColor,
 }) => {
   const [tags, setTags] = useState<string[]>(category.relatedSubcategories);
   const [inputValue, setInputValue] = useState<string>("");
@@ -32,31 +34,48 @@ const TagInput: React.FC<TagInputProps> = ({
   };
 
   return (
-    <Flex direction="column" gap={2} borderRadius="md" width={"100%"}>
-      <Flex wrap="wrap" gap={2}>
+    <Flex
+      direction="column"
+      gap={2}
+      p={editMode ? 2 : 0}
+      borderRadius="md"
+      width={"100%"}
+      border={editMode ? "1px" : "0px"}
+      borderColor={editMode ? bgColor : "transparent"}
+    >
+      <Flex wrap="wrap" gap={2} width={"fit-content"}>
         {tags.map((subcategory: string, index: number) => (
-          <Tag key={index} bg={bgColor} color={textColor} borderRadius="full">
+          <Tag
+            key={index}
+            bg={editMode ? "transparent" : bgColor}
+            borderWidth={editMode ? "2px" : "0px"}
+            borderColor={bgColor}
+            color={editMode ? editColor : textColor}
+            borderRadius="full"
+            variant={editMode ? "" : "solid"}
+          >
             <TagLabel p={1}>{subcategory}</TagLabel>
             {editMode && (
               <TagCloseButton onClick={() => handleRemoveTag(subcategory)} />
             )}
           </Tag>
         ))}
+        {editMode && (
+          <Input
+            variant="unstyled" // Removing default input styles
+            placeholder="Type and press enter"
+            value={inputValue}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setInputValue(e.target.value)
+            }
+            onKeyDown={handleAddTag}
+            width={"fit-content"}
+            minW={"10rem"}
+            height={"2rem"}
+            pl={0}
+          />
+        )}
       </Flex>
-
-      {editMode && (
-        <Input
-          placeholder="Type and press enter"
-          value={inputValue}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setInputValue(e.target.value)
-          }
-          onKeyDown={handleAddTag}
-          width="100%"
-          minW="100px"
-          flexGrow={1}
-        />
-      )}
     </Flex>
   );
 };

@@ -8,7 +8,6 @@ import {
   Textarea,
   useToast,
   useColorModeValue,
-  HStack,
   Input,
   Select,
   useColorMode,
@@ -89,8 +88,15 @@ const CategoryCard = ({
       p={4}
       backgroundColor={cardBg}
       shadow="md"
+      width="100%" // Set the Box to take full width
     >
-      <Flex justifyContent="space-between" gap={2} alignItems="center">
+      <Flex
+        justifyContent="space-between"
+        gap={2}
+        alignItems="center"
+        width="100%"
+        mb={2}
+      >
         {editMode ? (
           <>
             <Input
@@ -112,7 +118,7 @@ const CategoryCard = ({
             {category.title} | {category.costPreference}
           </Text>
         )}
-        <HStack>
+        <Flex gap={2}>
           {editMode && (
             <IconButton
               aria-label="Delete category"
@@ -120,6 +126,7 @@ const CategoryCard = ({
               onClick={handleDelete}
               color="red"
               w="fit-content"
+              h={"2.5rem"}
               variant={"ghost"}
               sx={{
                 _hover: {
@@ -134,9 +141,10 @@ const CategoryCard = ({
             icon={editMode ? <CheckIcon /> : <MdModeEdit />}
             onClick={editMode ? saveChanges : handleEditToggle}
             w="fit-content"
+            h={"2.5rem"}
             variant={"ghost"}
           />
-        </HStack>
+        </Flex>
       </Flex>
       {editMode ? (
         <Textarea
@@ -145,7 +153,9 @@ const CategoryCard = ({
           onChange={(e) => handleChange("userPreferences", e.target.value)}
         />
       ) : (
-        <Text mt={2}>{category.userPreferences}</Text>
+        <Text mt={2} mb={4}>
+          {category.userPreferences}
+        </Text>
       )}
       <Stack direction="row" mt={2} spacing={2} wrap="wrap">
         <Text fontSize={"sm"} w="full">
@@ -156,6 +166,7 @@ const CategoryCard = ({
           editMode={editMode}
           bgColor={vibeBg}
           textColor={colorMode === "light" ? "text.light" : "text.dark"}
+          editColor={colorMode === "light" ? "gray.500" : "text.dark"}
         />
       </Stack>
       <Stack direction="row" mt={2} spacing={2} wrap="wrap">
@@ -167,6 +178,7 @@ const CategoryCard = ({
           editMode={editMode}
           bgColor={tagBg}
           textColor="white"
+          editColor={colorMode === "light" ? "primary.700" : "primary.400"}
         />
       </Stack>
     </Box>
