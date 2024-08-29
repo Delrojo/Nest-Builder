@@ -60,7 +60,6 @@ const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
           flexDirection="column"
           justifyContent="center"
           alignItems="center"
-          color="#333"
           p={4}
         >
           <Heading as="h1" size="2xl">

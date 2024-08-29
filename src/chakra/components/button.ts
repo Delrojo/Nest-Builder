@@ -62,7 +62,7 @@ export const Button: ComponentStyleConfig = {
         bg:
           props.colorMode === "light"
             ? "rgba(99, 167, 87, 0.2)"
-            : "rgba(68, 116, 66, 0.2)",
+            : "rgba(68, 116, 66, 0.3)",
       },
       _active: {
         bg: "transparent",
