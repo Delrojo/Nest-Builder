@@ -23,6 +23,7 @@ export interface OnboardingStep {
 
 export interface OnboardingSteps {
   steps: OnboardingStep[];
+  currentStep: number;
 }
 
 const defaultOnboardingSteps: OnboardingSteps = {
@@ -68,6 +69,7 @@ const defaultOnboardingSteps: OnboardingSteps = {
       stepContent: Categories,
     },
   ],
+  currentStep: 0,
 };
 
 export const onboardingStepAtom = atom<OnboardingSteps>({

@@ -18,11 +18,11 @@ const ReviewInformation = () => {
   const tagBg = useColorModeValue("primary.700", "primary.500");
 
   const userInfo = {
-    name: "Shaan",
+    name: "Eesha",
     age: 23,
-    gender: "Male",
-    location: "San Jose 95117",
-    address: "3173 Payne Ave",
+    gender: "Female",
+    location: "River North, Chicago",
+    address: "1234 N LaSalle Dr, Chicago, IL 60610",
     travelModes: [
       { mode: "Walking", distance: "1.1 miles" },
       { mode: "Driving", distance: "4.7 miles" },
@@ -58,7 +58,7 @@ const ReviewInformation = () => {
         p={5}
         borderRadius="lg"
         boxShadow="md"
-        maxWidth="800px"
+        maxWidth="50rem"
         mx="auto"
         mt={5}
       >
@@ -79,7 +79,7 @@ const ReviewInformation = () => {
             I have the following routines and preferences in my locations:
           </Text>
           <Textarea
-            fontSize={"sm"}
+            fontSize={"md"}
             value={userInfo.routines}
             onChange={handleOnRoutineChange}
           />

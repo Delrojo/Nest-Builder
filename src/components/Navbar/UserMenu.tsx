@@ -37,7 +37,7 @@ const UserMenu = () => {
   }, [router]);
 
   const navigateToSettings = useCallback(() => {
-    router.push("/settings");
+    router.push("/onboarding");
   }, [router]);
 
   // Bind hotkeys
@@ -86,7 +86,7 @@ const UserMenu = () => {
           _hover={{ bg: menuItemBg }}
           onClick={navigateToSettings}
         >
-          Settings
+          My Profile
         </MenuItem>
         <MenuDivider />
         <MenuItem

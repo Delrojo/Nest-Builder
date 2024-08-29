@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Button,
@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { FaCheckCircle } from "react-icons/fa";
 import { useRouter } from "next/router";
-import { useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { onboardingStepAtom } from "@/atoms/onboardingStepAtom";
 import withAuth from "@/components/Modal/Auth/withAuth";
 
@@ -27,16 +27,59 @@ type OnboardingFlowProps = {};
  * @returns
  */
 const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
-  const { steps } = useRecoilValue(onboardingStepAtom);
+  const [onboardingState, setOnboardingState] =
+    useRecoilState(onboardingStepAtom);
+  const { steps, currentStep } = onboardingState;
   const { activeStep, setActiveStep } = useSteps({
-    index: 0,
+    index: currentStep,
     count: steps.length,
   });
-  const handleNext = () => setActiveStep((prev) => prev + 1);
-  const handlePrev = () => setActiveStep((prev) => prev - 1);
-  const iconColor = useColorModeValue("gray.300", "gray.500");
 
   const router = useRouter();
+
+  useEffect(() => {
+    // Check URL for hash and set current step accordingly
+    const hash = window.location.hash.replace("#", "").toLowerCase();
+    const stepIndex = steps.findIndex(
+      (step) => step.title.toLowerCase() === hash
+    );
+    if (stepIndex !== -1) {
+      setOnboardingState((prev) => ({
+        ...prev,
+        currentStep: stepIndex,
+      }));
+      setActiveStep(stepIndex);
+    }
+  }, [setOnboardingState, setActiveStep, steps]);
+
+  useEffect(() => {
+    // Update URL hash whenever the step changes
+    if (steps[activeStep]) {
+      window.history.replaceState(
+        null,
+        "",
+        `#${steps[activeStep].title.toLowerCase()}`
+      );
+    }
+  }, [activeStep, steps]);
+
+  const handleNext = () => {
+    setActiveStep((prev) => prev + 1);
+    setOnboardingState((prev) => ({
+      ...prev,
+      currentStep: prev.currentStep + 1,
+    }));
+  };
+
+  const handlePrev = () => {
+    setActiveStep((prev) => prev - 1);
+    setOnboardingState((prev) => ({
+      ...prev,
+      currentStep: prev.currentStep - 1,
+    }));
+  };
+
+  const iconColor = useColorModeValue("gray.300", "gray.500");
 
   const handleNextAndSubmit = () => {
     if (activeStep >= steps.length - 1) {

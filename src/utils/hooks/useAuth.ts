@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useResetRecoilState } from "recoil";
 import { userAtom, loadingAtom, User } from "@/atoms/userAtom";
 import {
   GoogleAuthProvider,
@@ -11,10 +11,12 @@ import { auth } from "@/firebase/firebaseConfig";
 import { useRouter } from "next/router";
 import { useToast } from "@chakra-ui/react";
 import { checkUserStatus } from "../functions/authFunctions";
+import { onboardingStepAtom } from "@/atoms/onboardingStepAtom";
 
 export function useAuth() {
   const [user, setUser] = useRecoilState(userAtom);
   const [loading, setLoading] = useRecoilState(loadingAtom);
+  const resetOnboardingState = useResetRecoilState(onboardingStepAtom);
   const router = useRouter();
   const toast = useToast();
 
@@ -91,6 +93,7 @@ export function useAuth() {
       setUser({
         user: null,
       });
+      resetOnboardingState();
       router.push("/");
       toast({
         title: "Logged out successfully.",

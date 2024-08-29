@@ -48,7 +48,7 @@ const Lifestyle: React.FC = () => {
   };
 
   return (
-    <VStack w="full" align="stretch" p={6}>
+    <VStack w="full" align="stretch">
       <Flex direction="column" align="center">
         <Heading as="h1" mt={4} textAlign="center" size="lg">
           What is important to you?
@@ -59,7 +59,11 @@ const Lifestyle: React.FC = () => {
         </Text>
       </Flex>
 
-      <Grid templateColumns="repeat(auto-fill, minmax(200px, 1fr))" gap={4}>
+      <Grid
+        templateColumns="repeat(auto-fill, minmax(200px, 1fr))"
+        gap={4}
+        p={12}
+      >
         {preferences.map((preference, index) => (
           <GridItem key={index}>
             <Button

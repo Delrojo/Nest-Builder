@@ -87,6 +87,12 @@ export const Input: ComponentStyleConfig = {
         _placeholder: {
           color: props.colorMode === "dark" ? "gray.400" : "gray.600",
         },
+        _focusVisible: {
+          bg:
+            props.colorMode === "dark"
+              ? "rgba(255, 255, 255, 0.1)"
+              : "rgba(0, 0, 0, 0.1)",
+        },
       },
     }),
   },
