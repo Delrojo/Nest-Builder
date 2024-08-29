@@ -15,7 +15,6 @@ export interface NewUser {
   name: string;
   text: string;
 }
-
 export async function checkUserStatus(
   email: string
 ): Promise<UserStatus | null> {
@@ -34,13 +33,13 @@ export async function checkUserStatus(
       getDoc(adminRef),
     ]);
 
-    const whitelistData = whitelistDoc.exists() ? whitelistDoc.data() : null;
-    const graylistData = graylistDoc.exists() ? graylistDoc.data() : null;
-    const adminData = adminDoc.exists() ? adminDoc.data() : null;
-
-    if (!whitelistData && !adminData) {
-      return null;
-    }
+    const whitelistData = whitelistDoc.exists()
+      ? whitelistDoc.data()?.user_emails
+      : null;
+    const graylistData = graylistDoc.exists()
+      ? graylistDoc.data()?.user_emails
+      : null;
+    const adminData = adminDoc.exists() ? adminDoc.data()?.user_emails : null;
 
     const isWhitelisted = whitelistData && email in whitelistData;
     const isGraylisted = graylistData && email in graylistData;
@@ -76,7 +75,7 @@ export const addUserToGraylist = async (user: NewUser) => {
 
     await setDoc(
       graylistRef,
-      { [email]: { uid, name, text } },
+      { user_emails: { [email]: { uid, name, text } } },
       { merge: true }
     );
   } catch (error) {
@@ -98,21 +97,17 @@ export const moveUserToWhitelist = async (user: NewUser) => {
     const graylistRef = doc(firestore, "config", "graylist");
     const whitelistRef = doc(firestore, "config", "whitelist");
 
-    const graylistDoc = await getDoc(graylistRef);
-    //TODO: This is not a good practice to delete information from a document
-    if (graylistDoc.exists()) {
-      const graylistData = graylistDoc.data();
+    // Remove user from graylist
+    await updateDoc(graylistRef, { [`user_emails.${email}`]: deleteField() });
 
-      if (graylistData[email]) {
-        delete graylistData[email];
-        await setDoc(graylistRef, graylistData);
-      }
-    }
+    // Add user to whitelist
+    await setDoc(
+      whitelistRef,
+      { user_emails: { [email]: { uid, name } } },
+      { merge: true }
+    );
 
-    // Attempt to delete the user from the graylist using updateDoc
-    await updateDoc(graylistRef, { [email]: deleteField() });
-
-    // await setDoc(whitelistRef, { [email]: { uid, name } }, { merge: true });
+    console.log(`User ${email} moved from graylist to whitelist successfully.`);
   } catch (error) {
     if (error instanceof FirebaseError) {
       console.error("Firebase error code:", error.code);
@@ -120,19 +115,18 @@ export const moveUserToWhitelist = async (user: NewUser) => {
     }
   }
 };
-
 export const getAllGraylistUsers = async (): Promise<NewUser[]> => {
   try {
     const graylistRef = doc(firestore, "config", "graylist");
     const graylistDoc = await getDoc(graylistRef);
 
     if (graylistDoc.exists()) {
-      const data = graylistDoc.data();
-      const userArray: NewUser[] = Object.keys(data).map((email) => ({
+      const userEmailsMap = graylistDoc.data()?.user_emails || {};
+      const userArray: NewUser[] = Object.keys(userEmailsMap).map((email) => ({
         email,
-        uid: data[email].uid,
-        name: data[email].name,
-        text: data[email].text,
+        uid: userEmailsMap[email].uid,
+        name: userEmailsMap[email].name,
+        text: userEmailsMap[email].text,
       }));
       return userArray;
     } else {

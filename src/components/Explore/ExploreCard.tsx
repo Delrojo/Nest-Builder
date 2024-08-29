@@ -3,12 +3,18 @@ import {
   Image,
   Text,
   Link,
-  Flex,
   Icon,
   useColorModeValue,
+  HStack,
+  VStack,
+  Heading,
+  Spacer,
+  IconButton,
+  Flex,
 } from "@chakra-ui/react";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
-import React from "react";
+import React, { useState } from "react";
+import { FaClock, FaRuler, FaMapMarkerAlt, FaEgg } from "react-icons/fa";
 
 export interface PlacesModel {
   title: string;
@@ -28,7 +34,13 @@ type ExploreCardProps = {
 const ExploreCard: React.FC<ExploreCardProps> = ({ place }) => {
   const cardBg = useColorModeValue("primary.100", "primary.800");
   const textColor = useColorModeValue("gray.700", "gray.200");
+  const iconColor = useColorModeValue("gray.500", "gray.400");
+  const highlightColor = useColorModeValue("primary.500", "primary.400");
+  const [isExpanded, setIsExpanded] = useState(false);
 
+  const toggleDescription = () => {
+    setIsExpanded(!isExpanded);
+  };
   return (
     <Box
       borderWidth="1px"
@@ -38,54 +50,88 @@ const ExploreCard: React.FC<ExploreCardProps> = ({ place }) => {
       shadow="md"
       maxW={"sm"}
     >
-      <Text fontSize="lg" fontWeight="bold" mb={2}>
+      <Heading fontSize="lg" mb={2} color={textColor}>
         {place.title}
-      </Text>
-      <Text fontSize="sm" color={textColor}>
-        {place.address} &bull; {place.distance} &bull; {place.time}
-      </Text>
+      </Heading>
 
-      <Image
-        src={place.imageSrc}
-        alt={place.title}
-        borderRadius="md"
-        mt={4}
-        mb={4}
-        width="100%"
-        height="auto"
-      />
-
-      <Flex justifyContent="space-between" alignItems="center" mb={2}>
-        <Text fontSize="md" fontWeight="bold" color={textColor}>
-          {place.matchLevel} Match Level
+      <HStack spacing={1} align="center" mb={4}>
+        <Icon as={FaMapMarkerAlt} color={highlightColor} />
+        <Text fontSize="sm" color={textColor} flex="1">
+          {place.address}
         </Text>
+        <Spacer />
         <Link
           href={place.googleMapsLink}
-          color="teal.500"
-          fontSize="sm"
+          color={highlightColor}
+          fontSize="xs"
           fontWeight="bold"
           isExternal
         >
           Open in Google Maps
         </Link>
-      </Flex>
+      </HStack>
 
-      <Text fontSize="sm" color={textColor} mb={4}>
-        {place.description}
-      </Text>
+      <Image
+        src={place.imageSrc}
+        alt={place.title}
+        borderRadius="md"
+        mb={4}
+        width="100%"
+        height="auto"
+      />
 
-      <Flex justifyContent="space-between" alignItems="center">
-        <Flex alignItems="center">
-          <Text fontSize="xs" color={textColor} mr={1}>
-            Generated with
+      <HStack justifyContent="space-between" mb={4}>
+        <HStack spacing={2}>
+          <Icon as={FaRuler} color={iconColor} />
+          <Text fontSize="sm" color={textColor}>
+            {place.distance}
           </Text>
-          <Link href="#" color="teal.500" fontSize="xs" fontWeight="bold">
-            Gemini
+        </HStack>
+        <HStack spacing={2}>
+          <Icon as={FaClock} color={iconColor} />
+          <Text fontSize="sm" color={textColor}>
+            {place.time}
+          </Text>
+        </HStack>
+      </HStack>
+
+      <VStack align="start" spacing={2}>
+        <Box>
+          <Text fontSize="sm" color={textColor} display="inline">
+            {isExpanded
+              ? place.description
+              : `${place.description.substring(0, 80)}...`}
+          </Text>
+          <Link
+            onClick={toggleDescription}
+            variant="link"
+            color={highlightColor}
+            display="inline"
+            ml={1}
+          >
+            <Text fontSize={"xs"} display="inline">
+              {isExpanded ? "See Less" : "See More"}
+            </Text>
           </Link>
-          <Icon as={InfoOutlineIcon} color="gray.400" ml={1} boxSize={3} />
+        </Box>
+        <Flex direction="row" justifyContent="space-between" w="100%">
+          <HStack spacing={1}>
+            <Text fontSize="LG" color={highlightColor}>
+              {place.matchLevel} Match Level
+            </Text>
+            <Icon as={InfoOutlineIcon} color={iconColor} ml={1} boxSize={3} />
+          </HStack>
+
+          <IconButton
+            variant="ghost"
+            icon={<Icon as={FaEgg} />}
+            color={highlightColor}
+            boxSize={4}
+            aria-label="Save place"
+            height={"2.5rem"}
+          />
         </Flex>
-        <Icon as={InfoOutlineIcon} color="green.500" boxSize={4} />
-      </Flex>
+      </VStack>
     </Box>
   );
 };
