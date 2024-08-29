@@ -5,7 +5,6 @@ import {
   Box,
   Flex,
   Heading,
-  IconButton,
   AccordionIcon,
   AccordionPanel,
   useColorModeValue,
@@ -24,6 +23,15 @@ const CategorySection: React.FC<CategorySectionProps> = ({
   title,
 }) => {
   const hoverBg = useColorModeValue("gray.100", "primary.200");
+  const buttonBg = useColorModeValue("gray.200", "primary.800");
+  const buttonColor = useColorModeValue("primary.500", "primary.400");
+
+  const OnCategoryClick = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    event.preventDefault();
+    alert("HELLO");
+  };
 
   return (
     <AccordionItem>
@@ -38,22 +46,28 @@ const CategorySection: React.FC<CategorySectionProps> = ({
               {title}
             </Heading>
           </Box>
-          <IconButton
-            icon={<SettingsIcon />}
-            onClick={(e) => {
-              e.preventDefault();
-              alert("HELLO");
-            }}
+          <Box
+            onClick={OnCategoryClick}
             aria-label="Settings"
-            variant={"ghost"}
-            w={"fit-content"}
+            display="inline-flex"
+            alignItems="center"
+            justifyContent="center"
+            w={"2.5rem"}
             h={"2.5rem"}
-          />
+            borderRadius={"full"}
+            color={buttonColor}
+            cursor="pointer"
+            _hover={{
+              bg: buttonBg,
+            }}
+          >
+            <SettingsIcon />
+          </Box>
           <AccordionIcon />
         </AccordionButton>
       </h2>
       <AccordionPanel pb={4}>
-        <Box overflowX="scroll" whiteSpace="nowrap" p={4}>
+        <Box overflowX="scroll" whiteSpace="nowrap" p={2}>
           <Flex>
             {results.map((result, index) => (
               <Box key={index} display="inline-block" mr={4}>

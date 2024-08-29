@@ -1,3 +1,6 @@
+import { onboardingProfileAtom } from "@/atoms/onboardingProfileAtom";
+import { userAtom } from "@/atoms/userAtom";
+import { getAge, snakeCaseToTitleCase } from "@/utils/functions/introFunctions";
 import {
   Box,
   Text,
@@ -12,36 +15,37 @@ import {
   FormControl,
   FormLabel,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
+import { useRecoilState } from "recoil";
+import React, { useEffect } from "react";
 
-const ReviewInformation = () => {
+const ReviewInformation: React.FC = () => {
+  const [onboardingProfile, setOnboardingProfile] = useRecoilState(
+    onboardingProfileAtom
+  );
+  const [userState] = useRecoilState(userAtom);
   const cardBg = useColorModeValue("primary.100", "primary.800");
   const tagBg = useColorModeValue("primary.700", "primary.500");
 
-  const userInfo = {
-    name: "Eesha",
-    age: 23,
-    gender: "Female",
-    location: "River North, Chicago",
-    address: "1234 N LaSalle Dr, Chicago, IL 60610",
-    travelModes: [
-      { mode: "Walking", distance: "1.1 miles" },
-      { mode: "Driving", distance: "4.7 miles" },
-    ],
-    routines: `I lead a busy life that balances work, health, and leisure. I value convenience and often seek out places to eat, exercise, and relax that are close to my home or work. Maintaining a healthy lifestyle is important to me, as evidenced by my interest in healthy dining options and activities. I also enjoy spending time in nature and exploring peaceful environments like parks and gardens.`,
-  };
+  const router = useRouter();
 
-  const preferences = [
-    "Active Lifestyle",
-    "Affordability",
-    "Convenient",
-    "Family Friendly",
-    "Green Spaces",
-    "Healthy",
-    "Quiet",
-  ];
+  useEffect(() => {
+    // Redirect to home if userState is not loaded
+    if (!userState.user) {
+      router.push("/");
+    }
+  }, [userState, router]);
+
+  // Return null or a loading spinner if the data isn't loaded yet
+  if (!userState.user || !onboardingProfile) {
+    return null; // or a loading spinner
+  }
 
   const handleOnRoutineChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    console.log(e.target.value);
+    setOnboardingProfile((prev) => ({
+      ...prev,
+      lifestyle_paragraph: e.target.value,
+    }));
   };
 
   return (
@@ -50,8 +54,8 @@ const ReviewInformation = () => {
         Review Information
       </Heading>
       <Text fontSize="md" mt={2} mb={4} textAlign="start">
-        Hey, {userInfo.name}! This is what Nested has learned from your answers
-        and Google takeout data. Is this correct?
+        Hey, {userState.user?.name}! This is what Nested has learned from your
+        answers and Google takeout data. Is this correct?
       </Text>
       <Box
         background={cardBg}
@@ -64,12 +68,15 @@ const ReviewInformation = () => {
       >
         <VStack spacing={4} align="stretch">
           <Text>
-            I am {userInfo.age} year old {userInfo.gender}, and I moved/am
-            moving to {userInfo.location}. My address is {userInfo.address}, and
-            I prefer to travel by{" "}
-            {userInfo.travelModes
-              .map((t) => `${t.mode} (${t.distance})`)
-              .join(" and ")}
+            I am {getAge(onboardingProfile.birthday)} year old{" "}
+            {onboardingProfile.gender}, and I moved/am moving to{" "}
+            {onboardingProfile.home_address}. I prefer to travel by{" "}
+            {onboardingProfile.transportations
+              ? Object.entries(onboardingProfile.transportations)
+                  .filter(([_, { selected }]) => selected)
+                  .map(([mode, { radius }]) => `${mode} (${radius} miles)`)
+                  .join(" and ")
+              : "Loading..."}
             .
           </Text>
 
@@ -80,7 +87,7 @@ const ReviewInformation = () => {
           </Text>
           <Textarea
             fontSize={"md"}
-            value={userInfo.routines}
+            value={onboardingProfile.lifestyle_paragraph || ""}
             onChange={handleOnRoutineChange}
           />
           <Divider my={1} />
@@ -90,11 +97,15 @@ const ReviewInformation = () => {
             following priorities:
           </Text>
           <Flex wrap="wrap" gap={2}>
-            {preferences.map((pref) => (
-              <Tag size="md" variant="solid" bg={tagBg} key={pref}>
-                {pref}
-              </Tag>
-            ))}
+            {onboardingProfile.lifestyle_traits
+              ? Object.keys(onboardingProfile.lifestyle_traits)
+                  .filter((trait) => onboardingProfile.lifestyle_traits[trait])
+                  .map((pref) => (
+                    <Tag size="md" variant="solid" bg={tagBg} key={pref}>
+                      {snakeCaseToTitleCase(pref)}
+                    </Tag>
+                  ))
+              : "Loading..."}
           </Flex>
 
           <Divider my={1} />
@@ -105,6 +116,13 @@ const ReviewInformation = () => {
               variant="ghost"
               placeholder="e.g., Any specific requirements or notes"
               size="md"
+              value={onboardingProfile.additional_info || ""}
+              onChange={(e) =>
+                setOnboardingProfile((prev) => ({
+                  ...prev,
+                  additional_info: e.target.value,
+                }))
+              }
             />
           </FormControl>
         </VStack>

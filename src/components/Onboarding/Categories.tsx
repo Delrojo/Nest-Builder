@@ -1,4 +1,3 @@
-import { useState, useEffect, useCallback } from "react";
 import {
   Flex,
   Grid,
@@ -10,67 +9,40 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
-import CategoryCard, { CategoryStatus } from "./CategoryCard";
-import { CategoryModel } from "./CategoryCard";
+import CategoryCard from "./CategoryCard";
+import { useRecoilState } from "recoil";
+import { Category, categoryAtom, CategoryStatus } from "@/atoms/categoryAtom";
 
 const OnboardCategories = () => {
-  const [categories, setCategories] = useState<CategoryModel[]>([]);
+  const [category, setCategoryAtom] = useRecoilState(categoryAtom);
   const toast = useToast();
 
-  // Simulate fetching data
-  const fetchCategories = useCallback(async () => {
-    const fetchedCategories: CategoryModel[] = [
-      {
-        title: "Restaurant",
-        status: CategoryStatus.ACTIVE,
-        costPreference: "$$",
-        userPreferences:
-          "Interest in Mediterranean cuisine and healthy dining options",
-        relatedSubcategories: ["Mediterranean", "Healthy Dining"],
-        vibes: ["Casual", "Family-Friendly"],
-      },
-      {
-        title: "Activities & Entertainment",
-        status: CategoryStatus.ACTIVE,
-        costPreference: "$",
-        userPreferences: "Interest in museums, parks, and fitness activities",
-        relatedSubcategories: ["Museums", "Parks", "Fitness"],
-        vibes: ["Family-Friendly", "Outdoor"],
-      },
-      {
-        title: "Shopping",
-        status: CategoryStatus.ACTIVE,
-        costPreference: "$$$",
-        userPreferences:
-          "Frequent searches for grocery stores and athletic apparel",
-        relatedSubcategories: ["Grocery Stores", "Athletic Apparel"],
-        vibes: ["Convenient", "Affordable"],
-      },
-    ];
-    setCategories(fetchedCategories);
-  }, []);
-
-  useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
-
   const handleAddNewCategory = () => {
-    const newCategory: CategoryModel = {
+    const newCategory: Category = {
       title: "",
-      status: CategoryStatus.EDIT,
-      costPreference: "",
-      userPreferences: "",
-      relatedSubcategories: [],
+      status: CategoryStatus.Edit,
+      cost: "",
+      preference: "",
+      subcategories: [],
       vibes: [],
     };
-    setCategories([...categories, newCategory]);
+    setCategoryAtom([
+      ...category,
+      {
+        category: newCategory,
+        results: [],
+      },
+    ]);
   };
 
-  const handleDeleteCategory = (category: CategoryModel) => {
-    const updatedCategories = categories.filter(
-      (existingCategory) => existingCategory !== category
-    );
-    setCategories(updatedCategories);
+  const handleDeleteCategory = (index: number) => {
+    setCategoryAtom(category.filter((_, i) => i !== index));
+    toast({
+      title: "Category deleted.",
+      status: "success",
+      duration: 2000,
+      isClosable: true,
+    });
   };
 
   return (
@@ -105,12 +77,11 @@ const OnboardCategories = () => {
           gap={4}
           width="100%"
         >
-          {categories.map((category, index) => (
+          {category.map((category, index) => (
             <CategoryCard
               key={index}
-              categoryProp={category}
-              deleteCategoryCallback={handleDeleteCategory}
-              editModeProp={category.status === CategoryStatus.EDIT}
+              category={category.category}
+              deleteCategoryCallback={() => handleDeleteCategory(index)}
             />
           ))}
         </Grid>

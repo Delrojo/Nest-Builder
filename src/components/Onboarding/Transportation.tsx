@@ -20,26 +20,42 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  TransportationMethod,
   createCircles,
   goToAddress,
 } from "@/utils/functions/transportationFunctions";
 import { BiTargetLock } from "react-icons/bi";
 import { FaHome } from "react-icons/fa";
+import { useRecoilState } from "recoil";
+import { onboardingProfileAtom } from "@/atoms/onboardingProfileAtom";
+
+type TransportationMethod = {
+  selected: boolean;
+  radius: number;
+};
+
+type Transportation = {
+  walking?: TransportationMethod;
+  biking?: TransportationMethod;
+  driving?: TransportationMethod;
+  bus?: TransportationMethod;
+  train?: TransportationMethod;
+};
 
 const Transportation: React.FC = () => {
   const bgColor = useColorModeValue("primary.100", "primary.800");
   const cardBg = useColorModeValue("white", "gray.700");
-
+  const [onboardingProfile, setOnboardingProfile] = useRecoilState(
+    onboardingProfileAtom
+  );
   const [homeAddress, setHomeAddress] = useState<string>(
-    "1 Microsoft Way, Redmond, WA 98052"
+    onboardingProfile.home_address || "1 Microsoft Way, Redmond, WA 98052"
   );
 
   const [geocodeLocation, setGeocodeLocation] =
     useState<google.maps.LatLng | null>(null);
 
   const sliderSettings: Record<
-    TransportationMethod,
+    keyof Transportation,
     { min: number; max: number; step: number }
   > = {
     walking: { min: 0, max: 5, step: 0.1 },
@@ -49,13 +65,9 @@ const Transportation: React.FC = () => {
     train: { min: 0, max: 200, step: 5 },
   };
 
-  const [transportation, setTransportation] = useState({
-    walking: { selected: false, radius: 0, color: "blue" },
-    biking: { selected: false, radius: 0, color: "green" },
-    driving: { selected: false, radius: 0, color: "orange" },
-    bus: { selected: false, radius: 0, color: "red" },
-    train: { selected: false, radius: 0, color: "purple" },
-  });
+  const [transportation, setTransportation] = useState<Transportation>(
+    onboardingProfile.transportations || {}
+  );
 
   const mapRef = useRef<HTMLDivElement | null>(null);
   const autocompleteRef = useRef<HTMLInputElement | null>(null);
@@ -66,7 +78,7 @@ const Transportation: React.FC = () => {
   const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const method = event.target.name as TransportationMethod;
+    const method = event.target.name as keyof Transportation;
     setTransportation({
       ...transportation,
       [method]: {
@@ -76,7 +88,7 @@ const Transportation: React.FC = () => {
     });
   };
 
-  const handleSliderChange = (method: TransportationMethod, value: number) => {
+  const handleSliderChange = (method: keyof Transportation, value: number) => {
     setTransportation({
       ...transportation,
       [method]: {
@@ -98,6 +110,9 @@ const Transportation: React.FC = () => {
       const gAutocomplete = new google.maps.places.Autocomplete(
         autocompleteRef.current as HTMLInputElement
       );
+      if (autocompleteRef.current) {
+        autocompleteRef.current.value = homeAddress;
+      }
       setAutoComplete(gAutocomplete);
       goToAddress(homeAddress, setGeocodeLocation, mapInstance);
     }
@@ -184,7 +199,8 @@ const Transportation: React.FC = () => {
             <Stack spacing={4} mt={4}>
               {Object.entries(transportation).map(
                 ([method, { selected, radius }]) => {
-                  const transportationMethod = method as TransportationMethod;
+                  const transportationMethod =
+                    method as keyof typeof transportation;
                   const { min, max, step } =
                     sliderSettings[transportationMethod];
 

@@ -36,6 +36,7 @@ import {
 import { BirthdayDTO } from "@/utils/functions/introFunctions";
 import { useRouter } from "next/router";
 import { useAuth } from "@/utils/hooks/useAuth";
+import { onboardingProfileAtom } from "@/atoms/onboardingProfileAtom";
 
 interface PeopleInfo {
   genders: GenderDTO[];
@@ -43,6 +44,9 @@ interface PeopleInfo {
 }
 
 const IntroPage = () => {
+  const [onboardingProfile, setOnboardingProfile] = useRecoilState(
+    onboardingProfileAtom
+  );
   const [birthday, setBirthday] = useState("");
   const [gender, setGender] = useState("");
   const [sectionStatus, setSectionStatus] = useState({
@@ -62,6 +66,7 @@ const IntroPage = () => {
   const handleBirthdayChange = (e: {
     target: { value: SetStateAction<string> };
   }) => {
+    console.log(e.target.value);
     setBirthday(e.target.value);
   };
 
@@ -86,24 +91,21 @@ const IntroPage = () => {
   }, []);
 
   useEffect(() => {
-    if (isAuthenticToken(userState.user?.googleAuthToken)) {
-      if (
-        userState.user?.googleAuthToken !==
-        "FirebaseAuthEmulatorFakeAccessToken_google.com"
-      ) {
-        getPeopleInfo(userState.user?.googleAuthToken as string);
-      } else {
-        console.log("User is using Firebase Auth Emulator");
-        setBirthday("2000-01-01");
-        setGender("Non-binary");
-      }
+    if (onboardingProfile) {
+      setBirthday(onboardingProfile.birthday || "");
+      setGender(onboardingProfile.gender || "");
     } else {
-      console.log("User's Google Auth Token is not valid");
-      logOut();
-      router.push("/");
+      const token = userState.user?.googleAuthToken;
+      if (token && isAuthenticToken(token)) {
+        getPeopleInfo(token);
+      } else {
+        console.log("Token is invalid");
+        logOut();
+        router.push("/");
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [onboardingProfile]);
 
   const extractUserInfo = (data: PeopleInfo) => {
     const birthday = findMostCompleteBirthday(data.birthdays);
@@ -121,7 +123,7 @@ const IntroPage = () => {
 
   const handleUpload = async () => {
     try {
-      setIsUploading(true); // Start processing
+      setIsUploading(true);
       const sectionNames = [
         "transportation",
         "lifestyle",
@@ -207,15 +209,6 @@ const IntroPage = () => {
             option to answer questions manually, up to you!{" "}
           </Text>
           <Flex alignItems="center" mb={4}>
-            {/* <Button
-              variant="solid"
-              onClick={handleUpload}
-              w="full"
-              isLoading={isUploading}
-              loadingText="Processing..."
-            >
-              Upload Google Takeout Data
-            </Button> */}
             <GoogleDriveButton />
             <Tooltip
               label="Don't know how to get your Google Maps data? No worries! We'll guide you through the process."

@@ -19,6 +19,13 @@ import { useRouter } from "next/router";
 import { useRecoilState } from "recoil";
 import { onboardingStepAtom } from "@/atoms/onboardingStepAtom";
 import withAuth from "@/components/Modal/Auth/withAuth";
+import {
+  fetchProfile,
+  fetchCategories,
+} from "@/utils/functions/onboardingDBFunctions";
+import { onboardingProfileAtom } from "@/atoms/onboardingProfileAtom";
+import { userAtom } from "@/atoms/userAtom";
+import { categoryAtom } from "@/atoms/categoryAtom";
 
 type OnboardingFlowProps = {};
 
@@ -27,8 +34,13 @@ type OnboardingFlowProps = {};
  * @returns
  */
 const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
+  const [user, setUser] = useRecoilState(userAtom);
   const [onboardingState, setOnboardingState] =
     useRecoilState(onboardingStepAtom);
+  const [onboardingProfile, setOnboardingProfile] = useRecoilState(
+    onboardingProfileAtom
+  );
+  const [category, setCategoryAtom] = useRecoilState(categoryAtom);
   const { steps, currentStep } = onboardingState;
   const { activeStep, setActiveStep } = useSteps({
     index: currentStep,
@@ -36,6 +48,34 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
   });
 
   const router = useRouter();
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/");
+      return;
+    } else {
+      const userId = user.user?.uid;
+      const userName = user.user?.name;
+      if (userId && userName) {
+        fetchProfile(userId, userName)
+          .then((profile) => {
+            if (profile) {
+              setOnboardingProfile(profile);
+              fetchCategories(userId).then((categories) => {
+                // console.log("Categories fetched:", categories);
+                setCategoryAtom(categories);
+              });
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching profile:", error);
+          });
+      } else {
+        console.error("User ID is undefined");
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     // Check URL for hash and set current step accordingly

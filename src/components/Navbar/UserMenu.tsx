@@ -37,7 +37,7 @@ const UserMenu = () => {
   }, [router]);
 
   const navigateToSettings = useCallback(() => {
-    router.push("/onboarding");
+    router.push("/onboarding#categories");
   }, [router]);
 
   // Bind hotkeys

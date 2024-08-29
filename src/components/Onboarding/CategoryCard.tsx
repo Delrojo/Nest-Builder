@@ -15,30 +15,16 @@ import {
 import { CheckIcon, DeleteIcon } from "@chakra-ui/icons";
 import { MdModeEdit } from "react-icons/md";
 import TagInput from "./TagInput";
-
-export enum CategoryStatus {
-  ACTIVE = "active",
-  INACTIVE = "inactive",
-  EDIT = "edit",
-}
-
-export interface CategoryModel {
-  title: string;
-  costPreference: string;
-  userPreferences: string;
-  relatedSubcategories: string[];
-  vibes: string[];
-  status: CategoryStatus;
-}
+import { Category } from "@/atoms/categoryAtom";
 
 interface CategoryCardProps {
-  categoryProp: CategoryModel;
-  deleteCategoryCallback?: (category: CategoryModel) => void;
+  category: Category;
+  deleteCategoryCallback?: (category: Category) => void;
   editModeProp?: boolean;
 }
 
 const CategoryCard = ({
-  categoryProp,
+  category: categoryProp,
   deleteCategoryCallback,
   editModeProp = false,
 }: CategoryCardProps) => {
@@ -59,12 +45,12 @@ const CategoryCard = ({
     setEditMode(!editMode);
   };
 
-  const handleChange = (field: keyof CategoryModel, value: any) => {
+  const handleChange = (field: keyof Category, value: any) => {
     setCategory({ ...category, [field]: value });
   };
   const saveChanges = () => {
     const isCategoryFilledOut =
-      category.title && category.costPreference && category.userPreferences;
+      category.title && category.cost && category.preference;
 
     if (isCategoryFilledOut) {
       setEditMode(false);
@@ -88,7 +74,7 @@ const CategoryCard = ({
       p={4}
       backgroundColor={cardBg}
       shadow="md"
-      width="100%" // Set the Box to take full width
+      width="100%"
     >
       <Flex
         justifyContent="space-between"
@@ -104,8 +90,8 @@ const CategoryCard = ({
               onChange={(e) => handleChange("title", e.target.value)}
             />
             <Select
-              value={category.costPreference}
-              onChange={(e) => handleChange("costPreference", e.target.value)}
+              value={category.cost}
+              onChange={(e) => handleChange("cost", e.target.value)}
             >
               <option value="$">$</option>
               <option value="$$">$$</option>
@@ -115,7 +101,7 @@ const CategoryCard = ({
           </>
         ) : (
           <Text fontSize="xl">
-            {category.title} | {category.costPreference}
+            {category.title} | {category.cost}
           </Text>
         )}
         <Flex gap={2}>
@@ -149,12 +135,12 @@ const CategoryCard = ({
       {editMode ? (
         <Textarea
           placeholder="Enter your preferences here"
-          value={category.userPreferences}
-          onChange={(e) => handleChange("userPreferences", e.target.value)}
+          value={category.preference}
+          onChange={(e) => handleChange("preference", e.target.value)}
         />
       ) : (
         <Text mt={2} mb={4}>
-          {category.userPreferences}
+          {category.preference}
         </Text>
       )}
       <Stack direction="row" mt={2} spacing={2} wrap="wrap">
@@ -162,7 +148,7 @@ const CategoryCard = ({
           Related Subcategories:
         </Text>
         <TagInput
-          category={category}
+          tagContent={category.subcategories}
           editMode={editMode}
           bgColor={vibeBg}
           textColor={colorMode === "light" ? "text.light" : "text.dark"}
@@ -174,7 +160,7 @@ const CategoryCard = ({
           Vibes:
         </Text>
         <TagInput
-          category={category}
+          tagContent={category.vibes}
           editMode={editMode}
           bgColor={tagBg}
           textColor="white"

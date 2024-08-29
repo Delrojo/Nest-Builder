@@ -13,37 +13,36 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
+import { onboardingProfileAtom } from "@/atoms/onboardingProfileAtom";
+import { useRecoilState } from "recoil";
+import { snakeCaseToTitleCase } from "@/utils/functions/introFunctions";
 
-// Define the button type
-type PreferenceButton = {
-  text: string;
-  isActive: boolean;
+type Preferences = {
+  [key: string]: boolean;
 };
 
 const Lifestyle: React.FC = () => {
-  const [preferences, setPreferences] = useState<PreferenceButton[]>([
-    { text: "Family-Friendly", isActive: false },
-    { text: "Cost-Effective", isActive: false },
-    { text: "Pet-Friendly", isActive: false },
-    { text: "Gym Access", isActive: false },
-    { text: "Public Transport", isActive: false },
-    { text: "Green Spaces", isActive: false },
-    { text: "Nightlife", isActive: false },
-  ]);
+  const [onboardingProfile, setOnboardingProfile] = useRecoilState(
+    onboardingProfileAtom
+  );
+  const [preferences, setPreferences] = useState<Preferences>(
+    onboardingProfile.lifestyle_traits || {}
+  );
   const [newPreference, setNewPreference] = useState<string>("");
 
-  const togglePreference = (index: number) => {
-    const updatedPreferences = [...preferences];
-    updatedPreferences[index].isActive = !updatedPreferences[index].isActive;
-    setPreferences(updatedPreferences);
+  const togglePreference = (key: string) => {
+    setPreferences((prevPreferences) => ({
+      ...prevPreferences,
+      [key]: !prevPreferences[key],
+    }));
   };
 
   const addPreference = () => {
     if (newPreference.trim() === "") return;
-    setPreferences([
-      ...preferences,
-      { text: newPreference.trim(), isActive: false },
-    ]);
+    setPreferences((prevPreferences) => ({
+      ...prevPreferences,
+      [newPreference.trim()]: false,
+    }));
     setNewPreference("");
   };
 
@@ -64,13 +63,13 @@ const Lifestyle: React.FC = () => {
         gap={4}
         p={12}
       >
-        {preferences.map((preference, index) => (
-          <GridItem key={index}>
+        {Object.entries(preferences).map(([key, isActive]) => (
+          <GridItem key={key}>
             <Button
-              onClick={() => togglePreference(index)}
-              variant={preference.isActive ? "solid" : "outline"}
+              onClick={() => togglePreference(key)}
+              variant={isActive ? "solid" : "outline"}
             >
-              {preference.text}
+              {snakeCaseToTitleCase(key)}
             </Button>
           </GridItem>
         ))}

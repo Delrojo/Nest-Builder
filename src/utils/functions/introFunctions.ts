@@ -77,10 +77,17 @@ const getAge = (birthDateString: string): number | string => {
   }
   return age;
 };
+const snakeCaseToTitleCase = (str: string): string => {
+  return str
+    .split("_") // Split the string by underscores
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
+    .join(" "); // Join the words with spaces
+};
 
 export {
   findMostCompleteGender,
   findMostCompleteBirthday,
   formatBirthday,
   getAge,
+  snakeCaseToTitleCase,
 };

@@ -1,9 +1,8 @@
 import { useState, ChangeEvent, KeyboardEvent } from "react";
 import { Flex, Input, Tag, TagLabel, TagCloseButton } from "@chakra-ui/react";
-import { CategoryModel } from "./CategoryCard";
 
 interface TagInputProps {
-  category: CategoryModel;
+  tagContent: string[];
   editMode: boolean;
   bgColor: string;
   textColor: string;
@@ -11,13 +10,13 @@ interface TagInputProps {
 }
 
 const TagInput: React.FC<TagInputProps> = ({
-  category,
+  tagContent,
   editMode,
   bgColor,
   textColor,
   editColor,
 }) => {
-  const [tags, setTags] = useState<string[]>(category.relatedSubcategories);
+  const [tags, setTags] = useState<string[]>(tagContent);
   const [inputValue, setInputValue] = useState<string>("");
 
   const handleAddTag = (event: KeyboardEvent<HTMLInputElement>) => {

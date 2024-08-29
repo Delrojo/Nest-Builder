@@ -128,16 +128,16 @@ const resultData = [
 const ExplorePage: React.FC<ExploreProps> = () => {
   return (
     <Flex direction="column" w={"100%"} h={"100%"}>
-      <Flex direction="column" align="center">
-        <Heading as="h1" textAlign="center" size="xl">
-          Explore
-        </Heading>
-        <Text fontSize="md" mt={2} mb={4} textAlign="center">
-          Nested believes these places are a good for your lifestyle, read the
-          explaination to see why.
-        </Text>
-      </Flex>
       <Box maxH="80vh" overflowY="auto">
+        <Flex direction="column" align="center">
+          <Heading as="h2" textAlign="center" size="lg">
+            Explore
+          </Heading>
+          <Text fontSize="md" mt={2} mb={4} textAlign="center">
+            Nested believes these places are a good for your lifestyle, read the
+            explaination to see why.
+          </Text>
+        </Flex>
         <Accordion defaultIndex={[0, 1]} allowMultiple>
           {resultData.map((category, index) => (
             <CategorySection

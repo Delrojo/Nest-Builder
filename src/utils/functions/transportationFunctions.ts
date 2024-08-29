@@ -1,11 +1,11 @@
 import { MutableRefObject } from "react";
 
-export type TransportationMethod =
-  | "walking"
-  | "driving"
-  | "biking"
-  | "train"
-  | "bus";
+type Transportation = {
+  [key: string]: {
+    selected: boolean;
+    radius: number;
+  };
+};
 
 export const createCircles = (
   mapInstance: React.MutableRefObject<google.maps.Map | null>,
@@ -14,10 +14,7 @@ export const createCircles = (
     google.maps.marker.AdvancedMarkerElement[]
   >,
   geocodeLocation: google.maps.LatLng | null,
-  transportation: Record<
-    TransportationMethod,
-    { selected: boolean; radius: number; color: string }
-  >
+  transportation: Transportation
 ) => {
   if (mapInstance.current) {
     circlesRef.current.forEach((circle) => {
@@ -27,8 +24,8 @@ export const createCircles = (
     circlesRef.current = [];
 
     markersRef.current.forEach((marker) => {
-      const method = marker.content?.textContent as TransportationMethod;
-      if (!transportation[method]?.selected) {
+      const method = marker.content?.textContent;
+      if (method && !transportation[method]?.selected) {
         marker.map = null;
       }
     });
@@ -37,36 +34,35 @@ export const createCircles = (
       (marker) => marker.map !== null
     );
 
-    Object.entries(transportation).forEach(
-      ([method, { selected, radius, color }]) => {
-        const transportationMethod = method as TransportationMethod;
-        if (selected) {
-          const circle = new google.maps.Circle({
-            map: mapInstance.current,
-            center: geocodeLocation,
-            radius: Number(radius) * 1609.34,
-            strokeColor: "#265728",
-            strokeOpacity: 0.5,
-            strokeWeight: 2,
-            fillColor: "#4caf50",
-            fillOpacity: 0.1,
-          });
+    Object.entries(transportation).forEach(([method, { selected, radius }]) => {
+      if (selected && geocodeLocation) {
+        const circle = new google.maps.Circle({
+          map: mapInstance.current,
+          center: geocodeLocation,
+          radius: Number(radius) * 1609.34,
+          strokeColor: "#265728",
+          strokeOpacity: 0.5,
+          strokeWeight: 2,
+          fillColor: "#4caf50",
+          fillOpacity: 0.1,
+        });
 
-          circlesRef.current.push(circle);
+        circlesRef.current.push(circle);
 
-          const labelElement = document.createElement("div");
-          labelElement.textContent = method;
-          labelElement.style.color = "#000821";
-          labelElement.style.fontSize = "14px";
-          labelElement.style.fontWeight = "bold";
+        const labelElement = document.createElement("div");
+        labelElement.textContent = method;
+        labelElement.style.color = "#000821";
+        labelElement.style.fontSize = "14px";
+        labelElement.style.fontWeight = "bold";
 
-          markersRef.current.forEach((marker) => {
-            if (marker.content?.textContent === transportationMethod) {
-              marker.map = null;
-            }
-          });
+        markersRef.current.forEach((marker) => {
+          if (marker.content?.textContent === method) {
+            marker.map = null;
+          }
+        });
 
-          const center = circle.getCenter() as google.maps.LatLng;
+        const center = circle.getCenter();
+        if (center) {
           const earthRadiusMeters = 6371000;
           const labelLat =
             center.lat() +
@@ -83,9 +79,11 @@ export const createCircles = (
           } else {
             markersRef.current.push(marker);
           }
+        } else {
+          console.error("Circle center is undefined.");
         }
       }
-    );
+    });
   }
 };
 

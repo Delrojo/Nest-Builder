@@ -59,7 +59,7 @@ const ExploreCard: React.FC<ExploreCardProps> = ({ place }) => {
     >
       <VStack spacing={2} align="stretch" flex="1">
         {/* Title */}
-        <Heading fontSize="lg" color={textColor}>
+        <Heading fontSize="xl" color={textColor}>
           {place.title}
         </Heading>
 
@@ -67,7 +67,7 @@ const ExploreCard: React.FC<ExploreCardProps> = ({ place }) => {
         <HStack spacing={1} align="center" justifyContent={"space-between"}>
           <HStack spacing={1}>
             <Icon as={FaMapMarkerAlt} color={highlightColor} />
-            <Text fontSize="xs" color={textColor}>
+            <Text fontSize="xs" color={textColor} mr={2}>
               {place.address}
             </Text>
           </HStack>
