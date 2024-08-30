@@ -128,7 +128,7 @@ const resultData = [
 const ExplorePage: React.FC<ExploreProps> = () => {
   return (
     <Flex direction="column" w={"100%"} h={"100%"}>
-      <Box maxH="80vh" overflowY="auto">
+      <Box maxH="90vh" overflowY="auto">
         <Flex direction="column" align="center">
           <Heading as="h2" textAlign="center" size="lg">
             Explore

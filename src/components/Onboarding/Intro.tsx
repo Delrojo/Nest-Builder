@@ -91,7 +91,7 @@ const IntroPage = () => {
   }, []);
 
   useEffect(() => {
-    if (onboardingProfile) {
+    if (onboardingProfile.birthday && onboardingProfile.gender) {
       setBirthday(onboardingProfile.birthday || "");
       setGender(onboardingProfile.gender || "");
     } else {
