@@ -142,6 +142,23 @@ const IntroPage = () => {
       const sectionNames = ["transportation", "lifestyle", "categories"];
       console.log("Uploading file:", fileJsonString);
 
+      // Step 1: Create a Blob from the JSON string
+      const blob = new Blob([fileJsonString], { type: "application/json" });
+      console.log("Blob created:", blob);
+
+      // Step 2: Convert the Blob to a File object
+      console.log("Converting Blob to File object");
+      const file = new File([blob], "uploadedFile.json", {
+        type: "application/json",
+      });
+      console.log("File object created:", file);
+
+      // Step 3: Create a FormData object and append the file and systemInstruction
+      console.log("Creating FormData object");
+      const formData = new FormData();
+      console.log("Appending file and systemInstruction to FormData");
+      formData.append("file", file);
+
       // Create an array to hold all API call promises
       const apiCallPromises = sectionNames.map(async (section) => {
         setSectionStatus((prevStatus) => ({
@@ -170,36 +187,30 @@ const IntroPage = () => {
             console.error("Invalid section name");
             return;
         }
-
-        // Step 1: Create a Blob from the JSON string
-        const blob = new Blob([fileJsonString], { type: "application/json" });
-        console.log("Blob created:", blob);
-
-        // Step 2: Convert the Blob to a File object
-        console.log("Converting Blob to File object");
-        const file = new File([blob], "uploadedFile.json", {
-          type: "application/json",
-        });
-        console.log("File object created:", file);
-
-        // Step 3: Create a FormData object and append the file and systemInstruction
-        console.log("Creating FormData object");
-        const formData = new FormData();
-        console.log("Appending file and systemInstruction to FormData");
-        formData.append("file", file);
         formData.append("systemInstruction", systemInstructions);
+        console.log("System instructions set");
 
-        // Iterate over the FormData entries and log each key-value pair
-        formData.forEach((value, key) => {
-          console.log("Key:", key, "Value:", value);
+        console.log("Sending GET request to /api/testAPICall");
+        const response = await fetch("/api/testAPICall", {
+          method: "POST",
+          body: formData,
         });
+        const data = await response.json();
+        console.log("Test Response data:", data);
 
         try {
           console.log("Sending POST request to /api/generateContentWithFile");
+
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds timeout
+
           const response = await fetch("/api/generateContentWithFile", {
             method: "POST",
             body: formData,
+            signal: controller.signal,
           });
+          clearTimeout(timeoutId);
+
           console.log("Response:", response);
 
           if (!response.ok) {
@@ -211,12 +222,19 @@ const IntroPage = () => {
 
           if (data.result) {
             console.log("Generated content:", data.result);
-            success = 1;
           } else {
             console.error("Error:", data.error);
           }
         } catch (error) {
-          console.error("Fetch error:", error);
+          if (error instanceof Error) {
+            if (error.name === "AbortError") {
+              console.error("Fetch request timed out");
+            } else {
+              console.error("Fetch error:", error);
+            }
+          } else {
+            console.error("Unknown error:", error);
+          }
         }
 
         // Update section status based on success
