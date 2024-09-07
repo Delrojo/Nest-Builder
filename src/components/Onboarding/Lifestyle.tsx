@@ -41,7 +41,7 @@ const Lifestyle: React.FC = () => {
     if (newPreference.trim() === "") return;
     setPreferences((prevPreferences) => ({
       ...prevPreferences,
-      [newPreference.trim()]: false,
+      [newPreference.trim()]: true,
     }));
     setNewPreference("");
   };
@@ -83,7 +83,7 @@ const Lifestyle: React.FC = () => {
               width={"full"}
               height={"full"}
             />
-            <InputRightElement>
+            <InputRightElement top="3px" right="3px">
               <IconButton
                 icon={<AddIcon />}
                 variant="ghost"

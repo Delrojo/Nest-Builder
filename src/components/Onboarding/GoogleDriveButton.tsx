@@ -107,13 +107,18 @@ const GoogleDriveButton = () => {
       const unzippedContent = await zip.loadAsync(zipBlob);
       console.log("Unzipped content:", unzippedContent);
 
+      const jsonFilePath = Object.keys(unzippedContent.files).find((fileName) =>
+        fileName.includes("MyActivity.json")
+      );
+      console.log("JSON file path:", jsonFilePath);
+
       // Now iterate and find the target file inside the ZIP
-      const folderName = "Takeout/MyActivity/Maps"; // Adjust based on your folder structure
+      const folderName = "Takeout/My Activity/Maps"; // Adjust based on your folder structure
       const jsonFileName = "MyActivity.json"; // Change this to the JSON file name
 
       let jsonFileContent = null;
       for (const fileName in unzippedContent.files) {
-        if (fileName.includes(`${folderName}/${jsonFileName}`)) {
+        if (fileName.includes(`MyActivity.json`)) {
           console.log(`Found target JSON file: ${fileName}`);
           jsonFileContent = await unzippedContent.files[fileName].async(
             "string"

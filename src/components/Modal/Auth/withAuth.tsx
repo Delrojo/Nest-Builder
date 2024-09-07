@@ -47,7 +47,7 @@ const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
         } else if (user.user?.googleAuthToken) {
           // Validate the token if the user has it
           console.log("Validating token...");
-          const refreshed = await validateAndRefreshToken();
+          const refreshed = validateAndRefreshToken().then((res) => res);
           console.log("Token refreshed:", refreshed);
           if (!refreshed) {
             setUser({ user: null });
@@ -58,14 +58,8 @@ const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
       };
 
       checkUserAuth();
-    }, [
-      user,
-      loading,
-      setAuthModalState,
-      router,
-      setUser,
-      validateAndRefreshToken,
-    ]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user, loading]);
 
     if (loading) {
       return <Spinner />;
