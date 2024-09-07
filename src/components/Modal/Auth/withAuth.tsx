@@ -23,26 +23,56 @@ import { useRouter } from "next/router";
  */
 const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
   const Wrapper: React.FC<P> = (props) => {
-    const { user } = useRecoilValue(userAtom);
+    const [user, setUser] = useRecoilState(userAtom);
     const loading = useRecoilValue(loadingAtom);
     const isMobile = useBreakpointValue({ base: true, md: false });
     const [authModal, setAuthModalState] = useRecoilState(authModalState);
     const router = useRouter();
 
-    useEffect(() => {
-      if (
-        (!loading && !user) ||
-        (user?.status !== "whitelist" && user?.status !== "admin")
-      ) {
-        if (user) {
-          router.push("/");
-          return;
+    // Function to validate the token by calling Google's tokeninfo API
+    const validateToken = async (token: string) => {
+      try {
+        const response = await fetch(
+          `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`
+        );
+        if (!response.ok) {
+          throw new Error("Invalid token");
         }
-
-        setAuthModalState({ isOpen: true, mode: "login" });
-        console.log("User is not authenticated, showing login modal...");
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error("Token validation failed:", error);
+        return null;
       }
-    }, [user, loading, setAuthModalState, router]);
+    };
+
+    useEffect(() => {
+      const checkUserAuth = async () => {
+        // If the user is not authenticated or doesn't have the right status
+        if (
+          (!loading && !user) ||
+          (user.user?.status !== "whitelist" && user.user?.status !== "admin")
+        ) {
+          if (user) {
+            router.push("/");
+            return;
+          }
+          setAuthModalState({ isOpen: true, mode: "login" });
+          console.log("User is not authenticated, showing login modal...");
+        } else if (user.user?.googleAuthToken) {
+          // Validate the token if the user has it
+          const tokenData = await validateToken(user.user.googleAuthToken);
+          if (!tokenData) {
+            // If the token is invalid, force re-authentication
+            setUser;
+            setAuthModalState({ isOpen: true, mode: "login" });
+            console.log("Invalid token, forcing re-authentication...");
+          }
+        }
+      };
+
+      checkUserAuth();
+    }, [user, loading, setAuthModalState, router, setUser]);
 
     if (loading) {
       return <Spinner />;
