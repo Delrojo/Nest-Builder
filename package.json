@@ -15,6 +15,7 @@
     "@emotion/styled": "^11.13.0",
     "@fontsource/open-sans": "^5.0.28",
     "@google-cloud/vertexai": "^1.4.0",
+    "@google/generative-ai": "^0.17.1",
     "@react-google-maps/api": "^2.19.3",
     "@svgr/webpack": "^8.1.0",
     "@types/react-router-dom": "^5.3.3",

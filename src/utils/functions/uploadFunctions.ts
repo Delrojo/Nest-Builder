@@ -25,26 +25,10 @@ export function createTransportationInstruction() {
   return `
     {
       "transportation": {
-        "walking": {
+        "[key:string]": { // The key is the mode of transportation, such as 'walking', 'biking', 'driving', 'bus', or 'train'
           "selected": "boolean", // Boolean value indicating if this is the preferred choice (true) or not (false). If this is set to false, radius will be null
           "radius": "number | null" // Numeric value (in miles) representing the comfortable travel radius when using this type. This is null if selected is false.
         },
-        "biking": {
-          "selected": "boolean",
-          "radius": "number | null"
-        },
-        "driving": {
-          "selected": "boolean",
-          "radius": "number | null"
-        },
-        "bus": {
-          "selected": "boolean",
-          "radius": "number | null"
-        },
-        "train": {
-          "selected": "boolean",
-          "radius": "number | null"
-        }
       },
       "homeAddress": "full Address", // The user's home address in full format (street, city, state, zip code) based on logical deductions from the data
     }
