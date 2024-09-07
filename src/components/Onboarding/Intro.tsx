@@ -172,7 +172,6 @@ const IntroPage = () => {
             console.error("Invalid section name");
         }
         // Step 1: Create a Blob from the JSON string
-        console.log("Creating Blob from JSON string:", fileJsonString);
         const blob = new Blob([fileJsonString], { type: "application/json" });
         console.log("Blob created:", blob);
 
@@ -198,13 +197,21 @@ const IntroPage = () => {
         );
         formData.append("systemInstruction", systemInstructions);
 
+        // Log the FormData object
         console.log("FormData object created:", formData);
 
+        // Iterate over the FormData entries and log each key-value pair
+        formData.forEach((value, key) => {
+          console.log("Key:", key, "Value:", value);
+        });
+
         try {
+          console.log("Sending POST request to /api/generateContentWithFile");
           const response = await fetch("/api/generateContentWithFile", {
             method: "POST",
             body: formData,
           });
+          console.log("Response:", response);
 
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
