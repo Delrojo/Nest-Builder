@@ -80,38 +80,41 @@ const GoogleDriveButton = () => {
   async function fetchGoogleDriveFile(fileId: string, accessToken: string) {
     try {
       console.log("Fetching Google Drive file with ID:", fileId);
+
+      // Fetch the file as a blob (since it's a ZIP file)
       const response = await fetch(
-        `/api/fetchGoogleDriveFile?fileId=${fileId}&accessToken=${accessToken}`
+        `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            Accept: "application/zip", // Ensure you're expecting a ZIP file
+          },
+        }
       );
 
+      console.log("Got a response in google drive file fetch", response);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error);
+        throw new Error(`Error fetching file: ${response.statusText}`);
       }
 
-      // Read the ZIP file as a blob
-      console.log("Fetching ZIP file...");
+      // Get the blob (binary data) from the response
       const zipBlob = await response.blob();
       console.log("ZIP file fetched:", zipBlob);
 
-      // Initialize JSZip to handle unzipping
+      // Process ZIP file using JSZip
       const zip = new JSZip();
-      console.log("Initializing JSZip...");
       const unzippedContent = await zip.loadAsync(zipBlob);
       console.log("Unzipped content:", unzippedContent);
 
-      // Iterate through the unzipped files and find the JSON inside the folder
-      const folderName = "Takeout/MyActivity/Maps"; // Change this to your folder inside the ZIP
+      // Now iterate and find the target file inside the ZIP
+      const folderName = "Takeout/MyActivity/Maps"; // Adjust based on your folder structure
       const jsonFileName = "MyActivity.json"; // Change this to the JSON file name
 
       let jsonFileContent = null;
-
       for (const fileName in unzippedContent.files) {
-        console.log("Checking file:", fileName);
-        // Check if the file is the target JSON in the specified folder
         if (fileName.includes(`${folderName}/${jsonFileName}`)) {
           console.log(`Found target JSON file: ${fileName}`);
-          // Read the file as text (since it's a JSON file)
           jsonFileContent = await unzippedContent.files[fileName].async(
             "string"
           );
@@ -120,7 +123,6 @@ const GoogleDriveButton = () => {
       }
 
       if (jsonFileContent) {
-        // Parse the JSON content
         console.log("Parsing JSON content...");
         const jsonData = JSON.parse(jsonFileContent);
         console.log("Extracted JSON data:", jsonData);
