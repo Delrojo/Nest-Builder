@@ -1,14 +1,3 @@
-import { Category } from "@/atoms/categoryAtom";
-import { Transportation } from "../../components/Onboarding/Transportation";
-import { Preferences } from "@/components/Onboarding/Lifestyle";
-
-export interface Profile {
-  homeAddress: string;
-  transportation: Transportation; //dictionary of transportation methods
-  categories: Category[]; //array of categories
-  socialPreferences: Preferences; //dictionary of social preferences
-}
-
 export const baseInstruction = `
 Act as a data scientist with expertise in Google APIs, particularly Google Maps and Places. Your primary role is to analyze and interpret user search data to create a profile focusing on transportation habits. Adopt a supportive, trustworthy, and approachable demeanor, using your strong analytical capabilities and understanding of user behavior to deliver precise results.
 `;
@@ -51,20 +40,19 @@ export function createCategoriesInstruction() {
   `;
 }
 
+//TODO: Maybe want to have descriptions for each trait as to why the AI thinks the user has that trait
 export function createLifestylePreferencesInstruction() {
   return `
     {
       "lifestyle": [
         {
-          [key: string]: boolean // Descriptors focusing on lifestyle preferences important to the user, such as 'Accessible', 'Safe', 'Affordable', 'Quiet'. These are not categories or types of location or transportation, but rather adjectives describing the place or experiences the user prefers
-          "description": "string" // Details the importance and relevance of this preference in the user's life.
+          [key: string]: boolean // Descriptors focusing on lifestyle preferences important to the user, such as 'Accessible', 'Safe', 'Affordable', 'Quiet'. These are adjectives describing the place or experiences the user prefers, not categories or types of location or transportation.
         }
-        // Additional preferences can be added as needed.
       ],
-       "otherPreferences": {
-        [key: string]: boolean // Extends the list to include 20 more general lifestyle preferences, such as 'Family Friendly', 'Convenient', 'Safety', 'Cleanliness', 'Accessibility', 'Affordability', 'Quietness', 'Community', 'Amenities', 'Green Spaces', 'Quiet'.
+      "otherPreferences": {
+        [key: string]: boolean // A collection of 20 more general lifestyle preferences like 'Family Friendly', 'Convenient', 'Safety', 'Cleanliness', 'Accessibility', 'Affordability', 'Quietness', 'Community', 'Amenities', 'Green Spaces', and 'Quiet'.
       },      
-      "lifestyleParagraph": "string" // A narrative in the first-person that describes the user's daily activities, community involvement, social interactions, and overall lifestyle preferences. This should offer a comprehensive, personal view without repeating the specifics of social preferences.
+      "lifestyleParagraph": "string" // A first-person narrative that details the user's daily activities, community engagement, social interactions, and overall lifestyle preferences. It provides a comprehensive, personal view of the user's lifestyle without repeating the specific preferences.
     }
   `;
 }

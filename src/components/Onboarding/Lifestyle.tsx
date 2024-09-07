@@ -16,16 +16,13 @@ import { AddIcon } from "@chakra-ui/icons";
 import { onboardingProfileAtom } from "@/atoms/onboardingProfileAtom";
 import { useRecoilState } from "recoil";
 import { snakeCaseToTitleCase } from "@/utils/functions/introFunctions";
-
-export type Preferences = {
-  [key: string]: boolean;
-};
+import { LifestyleDTO } from "@/atoms/onboardingProfileAtom";
 
 const Lifestyle: React.FC = () => {
   const [onboardingProfile, setOnboardingProfile] = useRecoilState(
     onboardingProfileAtom
   );
-  const [preferences, setPreferences] = useState<Preferences>(
+  const [preferences, setPreferences] = useState<LifestyleDTO>(
     onboardingProfile.lifestyle_traits || {}
   );
   const [newPreference, setNewPreference] = useState<string>("");
