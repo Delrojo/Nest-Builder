@@ -2,7 +2,6 @@ import useDrivePicker from "react-google-drive-picker";
 import { Button, useToast } from "@chakra-ui/react";
 import { isAuthenticToken, userAtom } from "@/atoms/userAtom";
 import { useRecoilState } from "recoil";
-import { useEffect } from "react";
 import { authModalState } from "@/atoms/authModalAtom";
 import JSZip from "jszip";
 
@@ -11,20 +10,6 @@ const GoogleDriveButton = () => {
   const [userState] = useRecoilState(userAtom);
   const [, setAuthModalState] = useRecoilState(authModalState);
   const toast = useToast();
-
-  useEffect(() => {
-    if (!userState.user || !userState.user?.googleAuthToken) {
-      console.error("User is not signed in.");
-      setAuthModalState({ isOpen: true, mode: "login" });
-      toast({
-        title: "Authentication required",
-        description: "Please sign in to continue.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  }, [setAuthModalState, userState.user, toast]);
 
   const handleOpenPicker = () => {
     try {

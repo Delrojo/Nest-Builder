@@ -26,6 +26,8 @@ import {
 import { onboardingProfileAtom } from "@/atoms/onboardingProfileAtom";
 import { userAtom } from "@/atoms/userAtom";
 import { categoryAtom } from "@/atoms/categoryAtom";
+import AuthModal from "@/components/Modal/Auth/AuthModal";
+import { authModalState } from "@/atoms/authModalAtom";
 
 type OnboardingFlowProps = {};
 
@@ -42,6 +44,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
   );
   const [category, setCategoryAtom] = useRecoilState(categoryAtom);
   const { steps, currentStep } = onboardingState;
+  const [authModal, setAuthModalState] = useRecoilState(authModalState);
   const { activeStep, setActiveStep } = useSteps({
     index: currentStep,
     count: steps.length,
@@ -50,6 +53,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
   const router = useRouter();
 
   useEffect(() => {
+    setAuthModalState({ isOpen: false, mode: "login" });
     if (!user) {
       router.push("/");
       return;
@@ -185,6 +189,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
           {activeStep >= steps.length - 1 ? "Explore" : "Next"}
         </Button>
       </Flex>
+      <AuthModal />
     </Flex>
   );
 };

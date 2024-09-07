@@ -91,15 +91,21 @@ const IntroPage = () => {
   }, []);
 
   useEffect(() => {
+    console.log("onboardingProfile:", onboardingProfile);
+
     if (onboardingProfile.birthday && onboardingProfile.gender) {
+      console.log("Setting birthday and gender from onboardingProfile");
       setBirthday(onboardingProfile.birthday || "");
       setGender(onboardingProfile.gender || "");
     } else {
       const token = userState.user?.googleAuthToken;
+      console.log("Token:", token);
+
       if (
         (token && isAuthenticToken(token)) ||
         token === "FirebaseAuthEmulatorFakeAccessToken_google.com"
       ) {
+        console.log("Token is valid, calling getPeopleInfo");
         getPeopleInfo(token);
       } else {
         console.log("Token is invalid");
@@ -109,7 +115,6 @@ const IntroPage = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onboardingProfile]);
-
   const extractUserInfo = (data: PeopleInfo) => {
     const birthday = findMostCompleteBirthday(data.birthdays);
     const gender = findMostCompleteGender(data.genders);
