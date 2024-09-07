@@ -136,7 +136,6 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
       if (jsonFileContent) {
         console.log("Parsing JSON content...");
         const jsonData = JSON.parse(jsonFileContent);
-        console.log("Extracted JSON data:", jsonData);
         handleCleanDataAndUploadResults(jsonData);
         return jsonData;
       } else {
@@ -208,9 +207,6 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
     const dataWithinLimit = ensureDataWithinLimit(cleanedData);
 
     const jsonString = JSON.stringify(dataWithinLimit);
-
-    console.log("Data within limit as JSON string:", jsonString);
-
     handleUpload(jsonString);
   };
 

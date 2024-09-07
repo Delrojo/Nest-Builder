@@ -171,23 +171,34 @@ const IntroPage = () => {
           default:
             console.error("Invalid section name");
         }
-
         // Step 1: Create a Blob from the JSON string
+        console.log("Creating Blob from JSON string:", fileJsonString);
         const blob = new Blob([fileJsonString], { type: "application/json" });
+        console.log("Blob created:", blob);
 
         // Step 2: Convert the Blob to a File object (optional if you need a File instead of Blob)
+        console.log("Converting Blob to File object");
         const file = new File([blob], "uploadedFile.json", {
           type: "application/json",
         });
+        console.log("File object created:", file);
 
         // Step 3: Create a FormData object
+        console.log("Creating FormData object");
         const formData = new FormData();
 
         // Append the file to the formData
+        console.log("Appending file to FormData");
         formData.append("file", file);
 
         // Append the systemInstruction to the formData
+        console.log(
+          "Appending systemInstruction to FormData:",
+          systemInstructions
+        );
         formData.append("systemInstruction", systemInstructions);
+
+        console.log("FormData object created:", formData);
 
         await fetch("/api/generateContentWithFile", {
           method: "POST",
