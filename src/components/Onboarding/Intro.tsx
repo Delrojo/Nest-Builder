@@ -38,12 +38,16 @@ import { useRouter } from "next/router";
 import { useAuth } from "@/utils/hooks/useAuth";
 import { onboardingProfileAtom } from "@/atoms/onboardingProfileAtom";
 import {
-  baseInstruction,
-  createCategoriesInstruction,
-  createLifestylePreferencesInstruction,
   createTransportationInstruction,
-  taskInstructions,
+  createLifestylePreferencesInstruction,
+  createCategoriesInstruction,
 } from "@/utils/functions/uploadFunctions";
+import { GoogleAIFileManager } from "@google/generative-ai/server";
+import {
+  updateCategories,
+  updateLifestyle,
+  updateTransportation,
+} from "@/utils/functions/onboardingDBFunctions";
 
 interface PeopleInfo {
   genders: GenderDTO[];
@@ -51,6 +55,7 @@ interface PeopleInfo {
 }
 
 const IntroPage = () => {
+  const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
   const [onboardingProfile, setOnboardingProfile] = useRecoilState(
     onboardingProfileAtom
   );
@@ -120,7 +125,7 @@ const IntroPage = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onboardingProfile]);
+  }, [onboardingProfile, userState.user]);
 
   const extractUserInfo = (data: PeopleInfo) => {
     const birthday = findMostCompleteBirthday(data.birthdays);
@@ -136,116 +141,100 @@ const IntroPage = () => {
     }
   };
 
-  const handleUpload = async (fileJsonString: string) => {
+  const handleUpload = async (fileUri: string) => {
+    console.log("Uploading file:", fileUri);
+    setIsUploading(true);
+
+    const sectionNames = ["transportation", "lifestyle", "categories"];
+
+    const apiCallPromises = sectionNames.map(async (section) => {
+      setSectionStatus((prevStatus) => ({
+        ...prevStatus,
+        [section]: "processing",
+      }));
+
+      let systemInstructions = "";
+
+      let dbFunction;
+
+      switch (section) {
+        case "transportation":
+          systemInstructions += createTransportationInstruction();
+          dbFunction = updateTransportation;
+          break;
+        case "lifestyle":
+          systemInstructions += createLifestylePreferencesInstruction();
+          dbFunction = updateLifestyle;
+          break;
+        case "categories":
+          systemInstructions += createCategoriesInstruction();
+          dbFunction = updateCategories;
+          break;
+        default:
+          console.error("Invalid section name");
+          return;
+      }
+
+      const requestBody = {
+        fileUri,
+        instructions: systemInstructions,
+      };
+
+      try {
+        console.log(
+          "Sending POST request to /api/fetchPredictionsWithFile with body:",
+          requestBody
+        );
+
+        const response = await fetch("/api/fetchPredictionsWithFile", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        });
+
+        console.log("Response from fetchPredictionsWithFile:", response);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Response data:", data);
+
+        if (data.result) {
+          console.log("Generated content:", data.result);
+          dbFunction(userState.user?.uid || "", data.result);
+        } else {
+          console.error("Error:", data.error);
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          if (error.name === "AbortError") {
+            console.error("Fetch request timed out");
+          } else {
+            console.error("Fetch error:", error);
+          }
+        } else {
+          console.error("Unknown error:", error);
+        }
+      }
+    });
+
     try {
-      setIsUploading(true);
-      const sectionNames = ["transportation", "lifestyle", "categories"];
-      console.log("Uploading file:", fileJsonString);
-
-      // Step 1: Create a Blob from the JSON string
-      const blob = new Blob([fileJsonString], { type: "application/json" });
-      console.log("Blob created:", blob);
-
-      // Step 2: Convert the Blob to a File object
-      console.log("Converting Blob to File object");
-      const file = new File([blob], "uploadedFile.json", {
-        type: "application/json",
-      });
-      console.log("File object created:", file);
-
-      // Step 3: Create a FormData object and append the file and systemInstruction
-      console.log("Creating FormData object");
-      const formData = new FormData();
-      console.log("Appending file and systemInstruction to FormData");
-      formData.append("file", file);
-
-      // Create an array to hold all API call promises
-      const apiCallPromises = sectionNames.map(async (section) => {
-        setSectionStatus((prevStatus) => ({
-          ...prevStatus,
-          [section]: "processing",
-        }));
-
-        let success = 0;
-        let systemInstructions = baseInstruction + taskInstructions;
-
-        // Create system instructions based on the section
-        switch (section) {
-          case "transportation":
-            systemInstructions += createTransportationInstruction();
-            console.log("Transportation section instructions:");
-            break;
-          case "lifestyle":
-            systemInstructions += createLifestylePreferencesInstruction();
-            console.log("Lifestyle section instructions:");
-            break;
-          case "categories":
-            systemInstructions += createCategoriesInstruction();
-            console.log("Categories section instructions:");
-            break;
-          default:
-            console.error("Invalid section name");
-            return;
-        }
-        formData.append("systemInstruction", systemInstructions);
-        console.log("System instructions set");
-
-        try {
-          console.log("Sending POST request to /api/generateContentWithFile");
-
-          // const controller = new AbortController();
-          // const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 seconds timeout
-
-          const response = await fetch("/api/generateContentWithFile", {
-            method: "POST",
-            body: formData,
-            // signal: controller.signal,
-          });
-          // clearTimeout(timeoutId);
-
-          console.log("Response:", response);
-
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          const data = await response.json();
-          console.log("Response data:", data);
-
-          if (data.result) {
-            console.log("Generated content:", data.result);
-          } else {
-            console.error("Error:", data.error);
-          }
-        } catch (error) {
-          if (error instanceof Error) {
-            if (error.name === "AbortError") {
-              console.error("Fetch request timed out");
-            } else {
-              console.error("Fetch error:", error);
-            }
-          } else {
-            console.error("Unknown error:", error);
-          }
-        }
-
-        // Update section status based on success
-        setSectionStatus((prevStatus) => ({
-          ...prevStatus,
-          [section]: success ? "success" : "failed",
-        }));
-
-        return success;
-      });
-
-      // Run all API calls concurrently
       await Promise.all(apiCallPromises);
-
-      console.log("All API calls completed");
-    } catch (error) {
-      console.error("Upload Failed", error);
     } finally {
       setIsUploading(false);
+      // Remove the file from Gemini
+      const fileManager = new GoogleAIFileManager(API_KEY);
+      try {
+        console.log("Deleting file from Gemini");
+        await fileManager.deleteFile(fileUri);
+        console.log("File deleted successfully");
+      } catch (error) {
+        console.error("Error deleting file from Gemini:", error);
+      }
     }
   };
 

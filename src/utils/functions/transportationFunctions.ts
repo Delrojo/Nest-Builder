@@ -1,11 +1,5 @@
 import { MutableRefObject } from "react";
-
-type Transportation = {
-  [key: string]: {
-    selected: boolean;
-    radius: number;
-  };
-};
+import { TransportationDTO } from "@/atoms/onboardingProfileAtom";
 
 export const createCircles = (
   mapInstance: React.MutableRefObject<google.maps.Map | null>,
@@ -14,7 +8,7 @@ export const createCircles = (
     google.maps.marker.AdvancedMarkerElement[]
   >,
   geocodeLocation: google.maps.LatLng | null,
-  transportation: Transportation
+  transportation: TransportationDTO
 ) => {
   if (mapInstance.current) {
     circlesRef.current.forEach((circle) => {
