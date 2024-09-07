@@ -96,7 +96,10 @@ const IntroPage = () => {
       setGender(onboardingProfile.gender || "");
     } else {
       const token = userState.user?.googleAuthToken;
-      if (token && isAuthenticToken(token)) {
+      if (
+        (token && isAuthenticToken(token)) ||
+        token === "FirebaseAuthEmulatorFakeAccessToken_google.com"
+      ) {
         getPeopleInfo(token);
       } else {
         console.log("Token is invalid");

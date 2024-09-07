@@ -4,6 +4,7 @@ import { isAuthenticToken, userAtom } from "@/atoms/userAtom";
 import { useRecoilState } from "recoil";
 import { useEffect } from "react";
 import { authModalState } from "@/atoms/authModalAtom";
+import JSZip from "jszip";
 
 const GoogleDriveButton = () => {
   const [openPicker] = useDrivePicker();
@@ -12,7 +13,7 @@ const GoogleDriveButton = () => {
   const toast = useToast();
 
   useEffect(() => {
-    if (!userState.user) {
+    if (!userState.user || !userState.user?.googleAuthToken) {
       console.error("User is not signed in.");
       setAuthModalState({ isOpen: true, mode: "login" });
       toast({
@@ -23,22 +24,11 @@ const GoogleDriveButton = () => {
         isClosable: true,
       });
     }
-    if (!userState.user?.googleAuthToken) {
-      console.error("User has not authenticated with Google.");
-      setAuthModalState({ isOpen: true, mode: "login" });
-      toast({
-        title: "Google Authentication required",
-        description: "Please authenticate with Google to continue.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
   }, [setAuthModalState, userState.user, toast]);
 
   const handleOpenPicker = () => {
     try {
-      const token = isAuthenticToken(userState.user?.googleAuthToken)
+      let token = isAuthenticToken(userState.user?.googleAuthToken)
         ? (userState.user?.googleAuthToken as string)
         : "";
       const clientId = process.env.NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID ?? "";
@@ -114,9 +104,48 @@ const GoogleDriveButton = () => {
         throw new Error(errorData.error);
       }
 
-      const data = await response.json();
-      console.log("Fetched file data:", data);
-      return data;
+      // Read the ZIP file as a blob
+      console.log("Fetching ZIP file...");
+      const zipBlob = await response.blob();
+      console.log("ZIP file fetched:", zipBlob);
+
+      // Initialize JSZip to handle unzipping
+      const zip = new JSZip();
+      console.log("Initializing JSZip...");
+      const unzippedContent = await zip.loadAsync(zipBlob);
+      console.log("Unzipped content:", unzippedContent);
+
+      // Iterate through the unzipped files and find the JSON inside the folder
+      const folderName = "Takeout/MyActivity/Maps"; // Change this to your folder inside the ZIP
+      const jsonFileName = "MyActivity.json"; // Change this to the JSON file name
+
+      let jsonFileContent = null;
+
+      for (const fileName in unzippedContent.files) {
+        console.log("Checking file:", fileName);
+        // Check if the file is the target JSON in the specified folder
+        if (fileName.includes(`${folderName}/${jsonFileName}`)) {
+          console.log(`Found target JSON file: ${fileName}`);
+          // Read the file as text (since it's a JSON file)
+          jsonFileContent = await unzippedContent.files[fileName].async(
+            "string"
+          );
+          break;
+        }
+      }
+
+      if (jsonFileContent) {
+        // Parse the JSON content
+        console.log("Parsing JSON content...");
+        const jsonData = JSON.parse(jsonFileContent);
+        console.log("Extracted JSON data:", jsonData);
+        return jsonData;
+      } else {
+        console.error(`JSON file ${jsonFileName} not found in the ZIP folder.`);
+        throw new Error(
+          `JSON file ${jsonFileName} not found in the ZIP folder.`
+        );
+      }
     } catch (error) {
       console.error("Error fetching Google Drive file:", error);
       toast({
