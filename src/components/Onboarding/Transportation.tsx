@@ -28,12 +28,12 @@ import { FaHome } from "react-icons/fa";
 import { useRecoilState } from "recoil";
 import { onboardingProfileAtom } from "@/atoms/onboardingProfileAtom";
 
-type TransportationMethod = {
+export type TransportationMethod = {
   selected: boolean;
   radius: number;
 };
 
-type Transportation = {
+export type Transportation = {
   walking?: TransportationMethod;
   biking?: TransportationMethod;
   driving?: TransportationMethod;

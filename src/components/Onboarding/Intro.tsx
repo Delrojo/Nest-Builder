@@ -22,7 +22,7 @@ import {
   InfoOutlineIcon,
   WarningIcon,
 } from "@chakra-ui/icons";
-import { FaCar, FaListAlt, FaAlignJustify, FaTags } from "react-icons/fa";
+import { FaCar, FaListAlt, FaTags } from "react-icons/fa";
 import StepNavigation from "./TakeoutStepNavigation";
 import { isAuthenticToken, userAtom } from "@/atoms/userAtom";
 import { useRecoilState } from "recoil";
@@ -37,6 +37,13 @@ import { BirthdayDTO } from "@/utils/functions/introFunctions";
 import { useRouter } from "next/router";
 import { useAuth } from "@/utils/hooks/useAuth";
 import { onboardingProfileAtom } from "@/atoms/onboardingProfileAtom";
+import {
+  baseInstruction,
+  createCategoriesInstruction,
+  createLifestylePreferencesInstruction,
+  createTransportationInstruction,
+  taskInstructions,
+} from "@/utils/functions/uploadFunctions";
 
 interface PeopleInfo {
   genders: GenderDTO[];
@@ -52,7 +59,6 @@ const IntroPage = () => {
   const [sectionStatus, setSectionStatus] = useState({
     transportation: "neutral",
     lifestyle: "neutral",
-    review: "neutral",
     categories: "neutral",
   });
   const [isUploading, setIsUploading] = useState(false);
@@ -115,6 +121,7 @@ const IntroPage = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onboardingProfile]);
+
   const extractUserInfo = (data: PeopleInfo) => {
     const birthday = findMostCompleteBirthday(data.birthdays);
     const gender = findMostCompleteGender(data.genders);
@@ -129,15 +136,11 @@ const IntroPage = () => {
     }
   };
 
-  const handleUpload = async () => {
+  const handleUpload = async (fileJsonString: string) => {
     try {
       setIsUploading(true);
-      const sectionNames = [
-        "transportation",
-        "lifestyle",
-        "review",
-        "categories",
-      ];
+      const sectionNames = ["transportation", "lifestyle", "categories"];
+      console.log("Uploading file:", fileJsonString);
       for (let i = 0; i < sectionNames.length; i++) {
         const section = sectionNames[i];
 
@@ -149,6 +152,33 @@ const IntroPage = () => {
         await new Promise((resolve) => setTimeout(resolve, 1500));
 
         const success = Math.random() > 0.5;
+
+        let system_instructions = baseInstruction + taskInstructions;
+        //Instead needs a switch statement to call seperate functions that call the API
+        switch (section) {
+          case "transportation":
+            system_instructions += createTransportationInstruction();
+            console.log(
+              "Transportation section instructions:",
+              system_instructions
+            );
+            break;
+          case "lifestyle":
+            system_instructions += createLifestylePreferencesInstruction();
+            console.log("Lifestyle section instructions:", system_instructions);
+            break;
+          case "categories":
+            system_instructions += createCategoriesInstruction();
+            console.log(
+              "Categories section instructions:",
+              system_instructions
+            );
+            break;
+          default:
+            console.error("Invalid section name");
+        }
+
+        //TODO: Call API call and determine if it was successful
 
         setSectionStatus((prevStatus) => ({
           ...prevStatus,
@@ -217,7 +247,7 @@ const IntroPage = () => {
             option to answer questions manually, up to you!{" "}
           </Text>
           <Flex alignItems="center" mb={4}>
-            <GoogleDriveButton />
+            <GoogleDriveButton handleUpload={handleUpload} />
             <Tooltip
               label="Don't know how to get your Google Maps data? No worries! We'll guide you through the process."
               maxWidth={"14rem"}
@@ -251,11 +281,6 @@ const IntroPage = () => {
                 label: "Lifestyle",
                 status: sectionStatus.lifestyle,
                 icon: FaListAlt,
-              },
-              {
-                label: "Review",
-                status: sectionStatus.review,
-                icon: FaAlignJustify,
               },
               {
                 label: "Categories",
@@ -294,7 +319,9 @@ const IntroPage = () => {
       <StepNavigation
         isOpen={isOpen}
         onClose={onClose}
-        onAuthorize={handleUpload}
+        onAuthorize={() => {
+          console.log("Authorized");
+        }}
       />
     </Flex>
   );

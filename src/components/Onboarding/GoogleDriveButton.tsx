@@ -5,7 +5,25 @@ import { useRecoilState } from "recoil";
 import { authModalState } from "@/atoms/authModalAtom";
 import JSZip from "jszip";
 
-const GoogleDriveButton = () => {
+type LocationInfo = {
+  name: string;
+  url: string;
+  source: string;
+};
+
+type Activity = {
+  header: string;
+  title: string;
+  titleUrl?: string;
+  time: string;
+  locationInfos?: LocationInfo[];
+};
+
+interface GoogleDriveButtonProps {
+  handleUpload: (jsonString: string) => void;
+}
+
+const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
   const [openPicker] = useDrivePicker();
   const [userState] = useRecoilState(userAtom);
   const [, setAuthModalState] = useRecoilState(authModalState);
@@ -131,6 +149,7 @@ const GoogleDriveButton = () => {
         console.log("Parsing JSON content...");
         const jsonData = JSON.parse(jsonFileContent);
         console.log("Extracted JSON data:", jsonData);
+        handleCleanDataAndUploadResults(jsonData);
         return jsonData;
       } else {
         console.error(`JSON file ${jsonFileName} not found in the ZIP folder.`);
@@ -149,6 +168,62 @@ const GoogleDriveButton = () => {
       });
     }
   }
+
+  const handleCleanDataAndUploadResults = async (jsonData: any) => {
+    function cleanDataForAIPrediction(data: Activity[]): Activity[] {
+      return data.map((activity) => {
+        const {
+          header, // Activity type (e.g., "Maps")
+          title, // Specific user action (e.g., "Searched for X")
+          titleUrl, // URL of the activity, if available
+          time, // Timestamp of the activity
+          locationInfos, // Location details if available
+        } = activity;
+
+        return {
+          header,
+          title,
+          titleUrl,
+          time,
+          locationInfos,
+        };
+      });
+    }
+
+    function ensureDataWithinLimit(
+      data: Activity[],
+      limit: number = 1_000_000
+    ): Activity[] {
+      let jsonString = JSON.stringify(data);
+      if (jsonString.length <= limit) {
+        return data;
+      }
+
+      // Truncate data to fit within the limit
+      let truncatedData = [];
+      let currentSize = 0;
+
+      for (let i = 0; i < data.length; i++) {
+        const activity = data[i];
+        const activityString = JSON.stringify(activity);
+        if (currentSize + activityString.length > limit) {
+          break;
+        }
+        truncatedData.push(activity);
+        currentSize += activityString.length;
+      }
+
+      return truncatedData;
+    }
+
+    // Example usage
+    const cleanedData = cleanDataForAIPrediction(jsonData);
+    const dataWithinLimit = ensureDataWithinLimit(cleanedData);
+    console.log("Data within limit:", dataWithinLimit);
+    const jsonString = JSON.stringify(dataWithinLimit);
+    console.log("Data within limit as JSON string:", jsonString);
+    handleUpload(jsonString);
+  };
 
   return (
     <Button

@@ -59,7 +59,7 @@ const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
 
       checkUserAuth();
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user, loading]);
+    }, []);
 
     if (loading) {
       return <Spinner />;

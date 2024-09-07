@@ -17,7 +17,7 @@ import { onboardingProfileAtom } from "@/atoms/onboardingProfileAtom";
 import { useRecoilState } from "recoil";
 import { snakeCaseToTitleCase } from "@/utils/functions/introFunctions";
 
-type Preferences = {
+export type Preferences = {
   [key: string]: boolean;
 };
 
