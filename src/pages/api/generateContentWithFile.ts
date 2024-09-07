@@ -111,8 +111,11 @@ export default async function handler(
   console.log("Request method is POST");
 
   const form = new IncomingForm({ multiples: false });
+  console.log("Starting form parsing");
 
   form.parse(req, async (err: Error | null, fields: Fields, files: Files) => {
+    console.log("Form parsing callback called");
+
     if (err) {
       console.error("Error parsing the form data:", err);
       return res.status(500).json({ error: "Error processing the request" });

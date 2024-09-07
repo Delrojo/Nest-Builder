@@ -193,15 +193,15 @@ const IntroPage = () => {
         try {
           console.log("Sending POST request to /api/generateContentWithFile");
 
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 seconds timeout
+          // const controller = new AbortController();
+          // const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 seconds timeout
 
           const response = await fetch("/api/generateContentWithFile", {
             method: "POST",
             body: formData,
-            signal: controller.signal,
+            // signal: controller.signal,
           });
-          clearTimeout(timeoutId);
+          // clearTimeout(timeoutId);
 
           console.log("Response:", response);
 
