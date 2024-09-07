@@ -153,40 +153,45 @@ const IntroPage = () => {
 
         let success = 0;
 
-        let system_instructions = baseInstruction + taskInstructions;
+        let systemInstructions = baseInstruction + taskInstructions;
         //Instead needs a switch statement to call seperate functions that call the API
         switch (section) {
           case "transportation":
-            system_instructions += createTransportationInstruction();
-            console.log(
-              "Transportation section instructions:",
-              system_instructions
-            );
+            systemInstructions += createTransportationInstruction();
+            console.log("Transportation section instructions:");
             break;
           case "lifestyle":
-            system_instructions += createLifestylePreferencesInstruction();
-            console.log("Lifestyle section instructions:", system_instructions);
+            systemInstructions += createLifestylePreferencesInstruction();
+            console.log("Lifestyle section instructions:");
             break;
           case "categories":
-            system_instructions += createCategoriesInstruction();
-            console.log(
-              "Categories section instructions:",
-              system_instructions
-            );
+            systemInstructions += createCategoriesInstruction();
+            console.log("Categories section instructions:");
             break;
           default:
             console.error("Invalid section name");
         }
 
-        fetch("/api/generateContentWithFile", {
+        // Step 1: Create a Blob from the JSON string
+        const blob = new Blob([fileJsonString], { type: "application/json" });
+
+        // Step 2: Convert the Blob to a File object (optional if you need a File instead of Blob)
+        const file = new File([blob], "uploadedFile.json", {
+          type: "application/json",
+        });
+
+        // Step 3: Create a FormData object
+        const formData = new FormData();
+
+        // Append the file to the formData
+        formData.append("file", file);
+
+        // Append the systemInstruction to the formData
+        formData.append("systemInstruction", systemInstructions);
+
+        await fetch("/api/generateContent", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            fileContent: fileJsonString,
-            systemInstruction: system_instructions,
-          }),
+          body: formData,
         })
           .then((response) => response.json())
           .then((data) => {
@@ -211,7 +216,7 @@ const IntroPage = () => {
     } catch (error) {
       console.error("Upload Failed", error);
     } finally {
-      setIsUploading(false); // Reset to allow new uploads
+      setIsUploading(false);
     }
   };
 
@@ -288,11 +293,10 @@ const IntroPage = () => {
           </Flex>
 
           <SimpleGrid
-            columns={{ base: 1, md: 2 }}
-            spacing={4}
+            columns={3}
             mt={8}
             justifyContent="center"
-            alignItems="center"
+            justifyItems="center"
           >
             {[
               {

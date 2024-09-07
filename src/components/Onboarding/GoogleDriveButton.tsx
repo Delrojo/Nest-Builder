@@ -115,25 +115,13 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
       if (!response.ok) {
         throw new Error(`Error fetching file: ${response.statusText}`);
       }
-
-      // Get the blob (binary data) from the response
       const zipBlob = await response.blob();
-      console.log("ZIP file fetched:", zipBlob);
-
-      // Process ZIP file using JSZip
       const zip = new JSZip();
       const unzippedContent = await zip.loadAsync(zipBlob);
-      console.log("Unzipped content:", unzippedContent);
 
       const jsonFilePath = Object.keys(unzippedContent.files).find((fileName) =>
         fileName.includes("MyActivity.json")
       );
-      console.log("JSON file path:", jsonFilePath);
-
-      // Now iterate and find the target file inside the ZIP
-      const folderName = "Takeout/My Activity/Maps"; // Adjust based on your folder structure
-      const jsonFileName = "MyActivity.json"; // Change this to the JSON file name
-
       let jsonFileContent = null;
       for (const fileName in unzippedContent.files) {
         if (fileName.includes(`MyActivity.json`)) {
@@ -152,9 +140,9 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
         handleCleanDataAndUploadResults(jsonData);
         return jsonData;
       } else {
-        console.error(`JSON file ${jsonFileName} not found in the ZIP folder.`);
+        console.error(`JSON file ${jsonFilePath} not found in the ZIP folder.`);
         throw new Error(
-          `JSON file ${jsonFileName} not found in the ZIP folder.`
+          `JSON file ${jsonFilePath} not found in the ZIP folder.`
         );
       }
     } catch (error) {
@@ -216,12 +204,13 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
       return truncatedData;
     }
 
-    // Example usage
     const cleanedData = cleanDataForAIPrediction(jsonData);
     const dataWithinLimit = ensureDataWithinLimit(cleanedData);
-    console.log("Data within limit:", dataWithinLimit);
+
     const jsonString = JSON.stringify(dataWithinLimit);
+
     console.log("Data within limit as JSON string:", jsonString);
+
     handleUpload(jsonString);
   };
 
