@@ -29,9 +29,6 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
   const toast = useToast();
 
   const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
-  if (!API_KEY) {
-    throw new Error("API key is missing.");
-  }
 
   /**
    * Function to open the Google Drive Picker
@@ -307,6 +304,10 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
    * @returns
    */
   const uploadFileToGemini = async (file: File): Promise<string> => {
+    if (API_KEY.length === 0) {
+      console.error("API Key is missing.");
+      throw new Error("API key is missing.");
+    }
     console.log("In the uploadFileToGemini function");
     const filePath = file.name;
     const mimeType = "text/plain"; // Correct mimeType

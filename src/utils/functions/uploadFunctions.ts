@@ -52,7 +52,7 @@ export function createLifestylePreferencesInstruction() {
       "otherPreferences": {
         [key: string]: boolean // A collection of 20 more general lifestyle preferences like 'Family Friendly', 'Convenient', 'Safety', 'Cleanliness', 'Accessibility', 'Affordability', 'Quietness', 'Community', 'Amenities', 'Green Spaces', and 'Quiet'.
       },      
-      "lifestyleParagraph": "string" // A first-person narrative that details the user's daily activities, community engagement, social interactions, and overall lifestyle preferences. It provides a holistic view of the user's lifestyle without repeating the specific preferences.
+      "lifestyleParagraph": "string" // A first-person narrative that details the user's daily activities, community engagement, social interactions, and overall lifestyle preferences. It provides a comprehensive, personal view of the user's lifestyle without repeating the specific preferences.
     }
   `;
 }

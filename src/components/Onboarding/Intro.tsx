@@ -140,7 +140,6 @@ const IntroPage = () => {
       setGender(gender.formattedValue);
     }
   };
-
   const handleUpload = async (fileUri: string) => {
     console.log("Uploading file:", fileUri);
     setIsUploading(true);
@@ -148,25 +147,29 @@ const IntroPage = () => {
     const sectionNames = ["transportation", "lifestyle", "categories"];
 
     const apiCallPromises = sectionNames.map(async (section) => {
+      console.log(`Processing section: ${section}`);
       setSectionStatus((prevStatus) => ({
         ...prevStatus,
         [section]: "processing",
       }));
 
+      let success = 0;
       let systemInstructions = "";
-
       let dbFunction;
 
       switch (section) {
         case "transportation":
+          console.log("Creating transportation instructions");
           systemInstructions += createTransportationInstruction();
           dbFunction = updateTransportation;
           break;
         case "lifestyle":
+          console.log("Creating lifestyle instructions");
           systemInstructions += createLifestylePreferencesInstruction();
           dbFunction = updateLifestyle;
           break;
         case "categories":
+          console.log("Creating categories instructions");
           systemInstructions += createCategoriesInstruction();
           dbFunction = updateCategories;
           break;
@@ -206,6 +209,7 @@ const IntroPage = () => {
         if (data.result) {
           console.log("Generated content:", data.result);
           dbFunction(userState.user?.uid || "", data.result);
+          success = 1;
         } else {
           console.error("Error:", data.error);
         }
@@ -219,13 +223,27 @@ const IntroPage = () => {
         } else {
           console.error("Unknown error:", error);
         }
+      } finally {
+        // Update section status based on success or failure
+        setSectionStatus((prevStatus) => ({
+          ...prevStatus,
+          [section]: success ? "success" : "failed",
+        }));
+        console.log(
+          `HELLO HERE IT IS! Section ${section} processing ${
+            success ? "succeeded" : "failed"
+          }`
+        );
       }
     });
 
     try {
+      console.log("Waiting for all API calls to complete");
       await Promise.all(apiCallPromises);
     } finally {
       setIsUploading(false);
+      console.log("All API calls completed, uploading status set to false");
+
       // Remove the file from Gemini
       const fileManager = new GoogleAIFileManager(API_KEY);
       try {
@@ -233,6 +251,9 @@ const IntroPage = () => {
         await fileManager.deleteFile(fileUri);
         console.log("File deleted successfully");
       } catch (error) {
+        if (API_KEY.length === 0) {
+          console.error("API Key is missing.");
+        }
         console.error("Error deleting file from Gemini:", error);
       }
     }
