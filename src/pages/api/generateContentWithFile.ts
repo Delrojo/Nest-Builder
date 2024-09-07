@@ -71,6 +71,14 @@ const generateContentWithFile = async (
       const newText = extractJsonFromOutput(response.data);
       return newText;
     } catch (error: any) {
+      if (error.response) {
+        console.error("Error response data:", error.response.data);
+        console.error("Error response status:", error.response.status);
+        console.error("Error response headers:", error.response.headers);
+      } else {
+        console.error("Error message:", error.message);
+      }
+
       if (error.response?.status === 503 || error.response?.status === 429) {
         console.log("Resource exhausted or service unavailable. Retrying...");
         await new Promise((resolve) => setTimeout(resolve, 10000));
@@ -94,6 +102,13 @@ export default async function handler(
   res: NextApiResponse
 ) {
   console.log("Handler function started");
+
+  if (req.method !== "POST") {
+    console.error("Invalid request method:", req.method);
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  console.log("Request method is POST");
 
   const form = new IncomingForm({ multiples: false });
 

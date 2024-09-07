@@ -200,24 +200,30 @@ const IntroPage = () => {
 
         console.log("FormData object created:", formData);
 
-        await fetch("/api/generateContentWithFile", {
-          method: "POST",
-          body: formData,
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.result) {
-              console.log("Generated content for ", section, data.result);
-              success = 1;
-            } else {
-              success = 0;
-              console.error("Error:", data.error);
-            }
-          })
-          .catch((error) => {
-            success = 0;
-            console.error("Error:", error);
+        try {
+          const response = await fetch("/api/generateContentWithFile", {
+            method: "POST",
+            body: formData,
           });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          console.log("Response data:", data);
+
+          if (data.result) {
+            console.log("Generated content:", data.result);
+            success = 1;
+          } else {
+            success = 0;
+            console.error("Error:", data.error);
+          }
+        } catch (error) {
+          success = 0;
+          console.error("Fetch error:", error);
+        }
 
         setSectionStatus((prevStatus) => ({
           ...prevStatus,
