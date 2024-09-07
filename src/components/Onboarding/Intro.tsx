@@ -190,19 +190,11 @@ const IntroPage = () => {
         formData.append("systemInstruction", systemInstructions);
         console.log("System instructions set");
 
-        console.log("Sending GET request to /api/testAPICall");
-        const response = await fetch("/api/testAPICall", {
-          method: "POST",
-          body: formData,
-        });
-        const data = await response.json();
-        console.log("Test Response data:", data);
-
         try {
           console.log("Sending POST request to /api/generateContentWithFile");
 
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds timeout
+          const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 seconds timeout
 
           const response = await fetch("/api/generateContentWithFile", {
             method: "POST",
