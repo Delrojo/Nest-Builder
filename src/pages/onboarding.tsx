@@ -79,7 +79,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     // Check URL for hash and set current step accordingly

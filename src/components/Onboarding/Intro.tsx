@@ -151,7 +151,7 @@ const IntroPage = () => {
 
         await new Promise((resolve) => setTimeout(resolve, 1500));
 
-        const success = Math.random() > 0.5;
+        let success = 0;
 
         let system_instructions = baseInstruction + taskInstructions;
         //Instead needs a switch statement to call seperate functions that call the API
@@ -178,7 +178,30 @@ const IntroPage = () => {
             console.error("Invalid section name");
         }
 
-        //TODO: Call API call and determine if it was successful
+        fetch("/api/generateContentWithFile", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            fileContent: fileJsonString,
+            systemInstruction: system_instructions,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.result) {
+              console.log("Generated content for ", section, data.result);
+              success = 1;
+            } else {
+              success = 0;
+              console.error("Error:", data.error);
+            }
+          })
+          .catch((error) => {
+            success = 0;
+            console.error("Error:", error);
+          });
 
         setSectionStatus((prevStatus) => ({
           ...prevStatus,
