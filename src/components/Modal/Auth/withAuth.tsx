@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import UnauthenticatedSkeleton from "@/components/Loading/UnauthenticatedSkeleton";
 import { useRouter } from "next/router";
+import { useAuth } from "@/utils/hooks/useAuth";
 
 /**
  * Higher-order component (HOC) to restrict access to certain pages based on user authentication
@@ -28,29 +29,7 @@ const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
     const isMobile = useBreakpointValue({ base: true, md: false });
     const [authModal, setAuthModalState] = useRecoilState(authModalState);
     const router = useRouter();
-    // const { googleSignIn } = useAuth();
-
-    const isValidToken = async (token: string): Promise<boolean> => {
-      console.log("Validating token:", token);
-      if (token === "FirebaseAuthEmulatorFakeAccessToken_google.com") {
-        console.warn("Detected emulator token, valid.");
-        return true;
-      }
-
-      try {
-        const response = await fetch(
-          `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`
-        );
-        if (response.status === 401) {
-          console.warn("Token is invalid or expired.");
-          return false;
-        }
-        return response.ok;
-      } catch (error) {
-        console.error("Error validating token:", error);
-        return false;
-      }
-    };
+    const { validateAndRefreshToken } = useAuth();
 
     useEffect(() => {
       const checkUserAuth = async () => {
@@ -67,8 +46,10 @@ const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
           console.log("User is not authenticated, showing login modal...");
         } else if (user.user?.googleAuthToken) {
           // Validate the token if the user has it
-          const validToken = await isValidToken(user.user.googleAuthToken);
-          if (!validToken) {
+          console.log("Validating token...");
+          const refreshed = await validateAndRefreshToken();
+          console.log("Token refreshed:", refreshed);
+          if (!refreshed) {
             setUser({ user: null });
             setAuthModalState({ isOpen: true, mode: "login" });
             console.log("Invalid token, forcing re-authentication...");
@@ -77,7 +58,14 @@ const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
       };
 
       checkUserAuth();
-    }, [user, loading, setAuthModalState, router, setUser]);
+    }, [
+      user,
+      loading,
+      setAuthModalState,
+      router,
+      setUser,
+      validateAndRefreshToken,
+    ]);
 
     if (loading) {
       return <Spinner />;
