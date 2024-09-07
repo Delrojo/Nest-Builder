@@ -1,7 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import fs from "fs/promises"; // Use promises for async file operations
+import fs from "fs/promises"; // For async file operations
 import axios from "axios";
 import { Fields, Files, IncomingForm } from "formidable";
+
+// Configuration to disable Next.js body parser
+export const config = {
+  api: {
+    bodyParser: false, // Disable Next.js body parser for form parsing
+  },
+};
 
 const GENERATION_CONFIG = {
   temperature: 1,
@@ -21,12 +28,14 @@ const GEMINI_MODEL_URL =
 
 // Helper function to extract JSON from the AI output
 const extractJsonFromOutput = (output: string): any | null => {
+  console.log("Attempting to extract JSON from output");
   const pattern = /```json\n([\s\S]*?)\n```/;
   const match = output.match(pattern);
 
   if (match) {
     let jsonString = match[1];
     try {
+      console.log("Extracted JSON:", jsonString);
       return JSON.parse(jsonString);
     } catch (error) {
       console.error("Error parsing JSON:", error);
@@ -43,6 +52,7 @@ const generateContentWithFile = async (
   fileContent: string,
   systemInstruction: string
 ) => {
+  console.log("Calling Gemini API with instructions and file content");
   const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
 
   if (!API_KEY) {
@@ -53,6 +63,7 @@ const generateContentWithFile = async (
 
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
+      console.log(`Attempt ${attempt + 1}: Sending request to Gemini API`);
       response = await axios.post(
         GEMINI_MODEL_URL,
         {
@@ -68,6 +79,7 @@ const generateContentWithFile = async (
         }
       );
 
+      console.log("Received response from Gemini API");
       const newText = extractJsonFromOutput(response.data);
       return newText;
     } catch (error: any) {
@@ -96,7 +108,25 @@ const generateContentWithFile = async (
   return null;
 };
 
-// Handler function to store file temporarily and process the request
+// Helper function to parse form data
+const parseForm = (
+  req: NextApiRequest
+): Promise<{ fields: Fields; files: Files }> => {
+  console.log("Parsing form data");
+  const form = new IncomingForm({ multiples: false });
+  return new Promise((resolve, reject) => {
+    form.parse(req, (err, fields, files) => {
+      if (err) {
+        console.error("Error parsing form data:", err);
+        return reject(err);
+      }
+      console.log("Form parsed successfully", { fields, files });
+      resolve({ fields, files });
+    });
+  });
+};
+
+// Handler to parse form and process file and systemInstruction
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -108,86 +138,68 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  console.log("Request method is POST");
+  let filePath = "";
 
-  const form = new IncomingForm({ multiples: false });
-  console.log("Starting form parsing");
+  try {
+    const { fields, files } = await parseForm(req);
 
-  form.parse(req, async (err: Error | null, fields: Fields, files: Files) => {
-    console.log("Form parsing callback called");
+    // Extract file and systemInstruction from the form fields
+    const file =
+      files.file && Array.isArray(files.file) ? files.file[0] : files.file;
+    const systemInstruction =
+      fields.systemInstruction && Array.isArray(fields.systemInstruction)
+        ? fields.systemInstruction[0]
+        : fields.systemInstruction;
 
-    if (err) {
-      console.error("Error parsing the form data:", err);
-      return res.status(500).json({ error: "Error processing the request" });
+    console.log("Extracted file:", file);
+    console.log("Extracted systemInstruction:", systemInstruction);
+
+    if (!file) {
+      console.error("No file uploaded");
+      return res.status(400).json({ error: "No file uploaded" });
     }
 
-    console.log("Form parsed successfully");
-    console.log("Fields:", fields);
-    console.log("Files:", files);
+    if (!systemInstruction) {
+      console.error("No system instruction provided");
+      return res.status(400).json({ error: "No system instruction provided" });
+    }
 
+    // Step 3: Read the uploaded file content
+    filePath = file.filepath; // Temp path where the file is stored
+    console.log("File path:", filePath);
+
+    const fileContent = await fs.readFile(filePath, "utf-8");
+    console.log("File content read successfully:", fileContent);
+
+    // Call the Gemini model with the file content and system instruction
+    const result = await generateContentWithFile(
+      fileContent,
+      systemInstruction
+    );
+
+    console.log("Result from generateContentWithFile:", result);
+
+    if (result) {
+      console.log("Content generated successfully");
+      return res.status(200).json({ result });
+    } else {
+      console.error("Failed to generate content after retries");
+      return res
+        .status(500)
+        .json({ error: "Failed to generate content after retries" });
+    }
+  } catch (error) {
+    console.error("Error in handler:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  } finally {
+    // Clean up the temporary file after processing
     try {
-      // Step 2: Extract the file and systemInstruction from the form fields
-      const file =
-        files.file && Array.isArray(files.file) ? files.file[0] : files.file;
-      const systemInstruction =
-        fields.systemInstruction && Array.isArray(fields.systemInstruction)
-          ? fields.systemInstruction[0]
-          : fields.systemInstruction;
-
-      console.log("Extracted file:", file);
-      console.log("Extracted systemInstruction:", systemInstruction);
-
-      if (!file) {
-        console.error("No file uploaded");
-        return res.status(400).json({ error: "No file uploaded" });
+      if (filePath) {
+        await fs.unlink(filePath);
+        console.log("Temporary file cleaned up successfully");
       }
-
-      if (!systemInstruction) {
-        console.error("No system instruction provided");
-        return res
-          .status(400)
-          .json({ error: "No system instruction provided" });
-      }
-
-      // Step 3: Read the uploaded file content
-      const filePath = file.filepath; // this is the temp path where the file is stored
-      console.log("File path:", filePath);
-
-      const fileContent = await fs.readFile(filePath, "utf-8");
-      console.log("File content read successfully");
-
-      // Step 4: Call the Gemini model with the file content and system instruction
-      const result = await generateContentWithFile(
-        fileContent,
-        systemInstruction
-      );
-
-      console.log("Result from generateContentWithFile:", result);
-
-      if (result) {
-        console.log("Content generated successfully");
-        return res.status(200).json({ result });
-      } else {
-        console.error("Failed to generate content after retries");
-        return res
-          .status(500)
-          .json({ error: "Failed to generate content after retries" });
-      }
-    } catch (error) {
-      console.error("Error generating content:", error);
-      return res.status(500).json({ error: "Internal Server Error" });
-    } finally {
-      // Clean up the temporary file after processing
-      try {
-        if (files.file) {
-          await fs.unlink(files.file[0].filepath);
-          console.log("Temporary file cleaned up successfully");
-        }
-      } catch (err) {
-        console.error("Error cleaning up file:", err);
-      }
+    } catch (err) {
+      console.error("Error cleaning up file:", err);
     }
-  });
-
-  console.log("Handler function ended");
+  }
 }
