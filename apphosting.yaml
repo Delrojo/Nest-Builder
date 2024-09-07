@@ -37,3 +37,6 @@ env:
 
   - variable: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
     secret: google_maps_api_key
+
+  - variable: NEXT_PUBLIC_GEMINI_API_KEY
+    secret: google_maps_api_key

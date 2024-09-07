@@ -141,20 +141,18 @@ const IntroPage = () => {
       setIsUploading(true);
       const sectionNames = ["transportation", "lifestyle", "categories"];
       console.log("Uploading file:", fileJsonString);
-      for (let i = 0; i < sectionNames.length; i++) {
-        const section = sectionNames[i];
 
+      // Create an array to hold all API call promises
+      const apiCallPromises = sectionNames.map(async (section) => {
         setSectionStatus((prevStatus) => ({
           ...prevStatus,
           [section]: "processing",
         }));
 
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-
         let success = 0;
-
         let systemInstructions = baseInstruction + taskInstructions;
-        //Instead needs a switch statement to call seperate functions that call the API
+
+        // Create system instructions based on the section
         switch (section) {
           case "transportation":
             systemInstructions += createTransportationInstruction();
@@ -170,35 +168,26 @@ const IntroPage = () => {
             break;
           default:
             console.error("Invalid section name");
+            return;
         }
+
         // Step 1: Create a Blob from the JSON string
         const blob = new Blob([fileJsonString], { type: "application/json" });
         console.log("Blob created:", blob);
 
-        // Step 2: Convert the Blob to a File object (optional if you need a File instead of Blob)
+        // Step 2: Convert the Blob to a File object
         console.log("Converting Blob to File object");
         const file = new File([blob], "uploadedFile.json", {
           type: "application/json",
         });
         console.log("File object created:", file);
 
-        // Step 3: Create a FormData object
+        // Step 3: Create a FormData object and append the file and systemInstruction
         console.log("Creating FormData object");
         const formData = new FormData();
-
-        // Append the file to the formData
-        console.log("Appending file to FormData");
+        console.log("Appending file and systemInstruction to FormData");
         formData.append("file", file);
-
-        // Append the systemInstruction to the formData
-        console.log(
-          "Appending systemInstruction to FormData:",
-          systemInstructions
-        );
         formData.append("systemInstruction", systemInstructions);
-
-        // Log the FormData object
-        console.log("FormData object created:", formData);
 
         // Iterate over the FormData entries and log each key-value pair
         formData.forEach((value, key) => {
@@ -224,19 +213,25 @@ const IntroPage = () => {
             console.log("Generated content:", data.result);
             success = 1;
           } else {
-            success = 0;
             console.error("Error:", data.error);
           }
         } catch (error) {
-          success = 0;
           console.error("Fetch error:", error);
         }
 
+        // Update section status based on success
         setSectionStatus((prevStatus) => ({
           ...prevStatus,
           [section]: success ? "success" : "failed",
         }));
-      }
+
+        return success;
+      });
+
+      // Run all API calls concurrently
+      await Promise.all(apiCallPromises);
+
+      console.log("All API calls completed");
     } catch (error) {
       console.error("Upload Failed", error);
     } finally {
