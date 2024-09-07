@@ -189,7 +189,7 @@ const IntroPage = () => {
         // Append the systemInstruction to the formData
         formData.append("systemInstruction", systemInstructions);
 
-        await fetch("/api/generateContent", {
+        await fetch("/api/generateContentWithFile", {
           method: "POST",
           body: formData,
         })
