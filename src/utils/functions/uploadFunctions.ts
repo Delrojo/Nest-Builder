@@ -1,25 +1,25 @@
 export const baseInstruction = `
-Act as a data scientist with expertise in Google APIs, particularly Google Maps and Places. Your primary role is to analyze and interpret user search data to create a profile focusing on transportation habits. Adopt a supportive, trustworthy, and approachable demeanor, using your strong analytical capabilities and understanding of user behavior to deliver precise results.
+You are a data scientist with expertise in Google APIs, specifically Google Maps and Places. Your task is to analyze and interpret user search data to build a profile focusing on transportation, lifestyle habits, and search categories. You must use your analytical skills to derive precise insights based on user behavior, presenting the data in a clear, structured format. Always maintain a professional and approachable demeanor, and ensure that your results are accurate, actionable, and concise.
 `;
 
 export const taskInstructions = `
-1. Extract and read the JSON data from the uploaded .txt file silently.
-2. Analyze the JSON data to identify key search terms and locations silently.
-3. Access Google Maps & Places APIs for additional insights into the search data silently.
-4. Analyze patterns in the search data to deduce lifestyle preferences and routine activities of the user silently.
-5. Generate and output a JSON structure with preferences of the user based on the analysis. The output should strictly adhere to the specified JSON format without additional commentary.
+1. Extract the JSON data from the uploaded .txt file.
+2. Analyze the data to identify key search terms, locations, and transportation modes.
+3. Use Google Maps & Places APIs to gather additional context about these locations.
+4. Identify patterns in the search data to infer the user's lifestyle preferences and routine activities.
+5. Generate a JSON structure representing the user's preferences, adhering strictly to the specified format without commentary.
 `;
 
 export function createTransportationInstruction() {
   return `
     {
       "transportation": {
-        "[key:string]": { // The key is the mode of transportation, such as 'walking', 'biking', 'driving', 'bus', or 'train'
-          "selected": "boolean", // Boolean value indicating if this is the preferred choice (true) or not (false). If this is set to false, radius will be null
-          "radius": "number | null" // Numeric value (in miles) representing the comfortable travel radius when using this type. This is null if selected is false.
-        },
+        "[key:string]": { // Mode of transportation, such as 'walking', 'biking', 'driving', 'bus', or 'train'
+          "selected": "boolean", // Indicates whether this is the user's preferred mode (true) or not (false). If false, "radius" must be null.
+          "radius": "number | null" // Distance in miles for this mode of transportation, or null if "selected" is false.
+        }
       },
-      "homeAddress": "full Address", // The user's home address in full format (street, city, state, zip code) based on logical deductions from the data
+      "homeAddress": "string" // Full address of the user's home (street, city, state, zip code), deduced from the data.
     }
   `;
 }
@@ -28,14 +28,14 @@ export function createCategoriesInstruction() {
   return `
     "categories": [
       {
-        "title": "string", // The category name, such as 'restaurant', 'entertainment', or 'shopping', etc. Do not include transportation as a category.
-        "preference": "string", // A narrative in the first-person that describes the user's preferences in this category, based on historical data and user inputs. Includes preferences like brands, visit frequency, spending habits, and favored times.
-        "vibes": ["string"], // Up to 6 adjectives describing the environment the user prefers for this category in Title Case
-        "subcategories": ["string"], // Related subcategories within the main category, e.g., types of cuisines or forms of entertainment.
-        "cost": "string", // Text string representing the user's preferred cost range for this category represented by one of these options '$', '$$', $$$, $$$$)
-        "confidence": "number" // The system's confidence level in its recommendations, on a scale from 0 to 1.
+        "title": "string", // The category name, such as 'restaurant', 'entertainment', 'grocery', 'shopping', 'fitness', 'personal care', 'outdoors', 'religion', 'workspaces', 'nightlife', 'education', etc.
+        "preference": "string", // A first-person narrative describing the user's preferences in this category (e.g., favorite brands, visit frequency, spending habits, and favored times).
+        "vibes": ["string"], // A list of up to 6 adjectives in Title Case that describe the user's preferred environment for this category.
+        "subcategories": ["string"], // Related subcategories within the main category, such as cuisines for 'restaurant' or types of activities for 'entertainment'.
+        "cost": "string", // The user's preferred cost range (choose from: '$', '$$', '$$$', or '$$$$').
+        "confidence": "number" // A confidence score (0 to 1) indicating how confident the system is in these preferences.
       }
-      // More categories can be added in this format
+      // Additional categories can follow this structure.
     ]
   `;
 }
@@ -44,9 +44,9 @@ export function createCategoriesInstruction() {
 export function createLifestylePreferencesInstruction() {
   return `
     {
-      "lifestyle": ["string"], // Descriptors focusing on lifestyle preferences important to the user, such as 'Accessible', 'Safe', 'Affordable', 'Quiet'. These are adjectives describing the place or experiences the user prefers, these should NOT be related categories or types of location or transportation.
-      "otherPreferences": ["string"], // A collection of 20 more general lifestyle preferences like 'Family Friendly', 'Convenient', 'Safety', 'Cleanliness', 'Accessibility', 'Affordability', 'Quietness', 'Community', 'Amenities', 'Green Spaces', and 'Quiet'.
-      "lifestyleParagraph": "string" // A first-person narrative that details the user's daily activities, community engagement, social interactions, and overall lifestyle preferences. It provides a comprehensive, personal view of the user's lifestyle without repeating the specific preferences.
+      "lifestyle": ["string"], // A list of adjectives describing the user’s priorities when choosing places or experiences, such as 'Accessible', 'Safe', 'Affordable', 'Quiet', etc. These should not reference specific locations or transportation modes.
+      "otherPreferences": ["string"], // A broader set of up to 20 general lifestyle preferences, such as 'Family Friendly', 'Convenient', 'Cleanliness', 'Amenities', 'Community', 'Green Spaces', etc.
+      "lifestyleParagraph": "string" // A first-person narrative summarizing the user's daily routines, social interactions, and community engagement. This should provide a well-rounded view of the user's lifestyle, without repeating specific preferences.
     }
   `;
 }

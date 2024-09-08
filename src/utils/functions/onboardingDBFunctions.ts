@@ -183,10 +183,12 @@ export const updateCategories = async (
         "Categories subcollection exists. Deleting existing documents for user:",
         userId
       );
-      // Subcollection exists, so clear it by deleting all existing documents
-      querySnapshot.forEach((doc) => {
+
+      // Clear it by deleting all existing documents using a for loop
+      for (const doc of querySnapshot.docs) {
         batch.delete(doc.ref);
-      });
+      }
+
       console.log("Existing documents deleted for user:", userId);
     } else {
       console.log(
@@ -197,7 +199,8 @@ export const updateCategories = async (
 
     // Step 2: Add new categories
     console.log("Adding new categories for user:", userId);
-    categories.forEach((category: Category, index) => {
+
+    for (const category of categories) {
       const newCategoryRef = doc(categoriesRef); // Automatically generates unique ID for each category
       const categoryData = {
         title: category.title || "",
@@ -210,7 +213,8 @@ export const updateCategories = async (
       };
 
       batch.set(newCategoryRef, categoryData);
-    });
+    }
+
     console.log("New categories added for user:", userId);
 
     // Step 3: Commit the batch operations (deletes + sets)
