@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Button,
   Grid,
@@ -26,29 +26,35 @@ const Lifestyle: React.FC = () => {
     onboardingProfile.lifestyle_traits || {}
   );
   const [newPreference, setNewPreference] = useState<string>("");
-
   const togglePreference = (key: string) => {
-    setPreferences((prevPreferences) => ({
-      ...prevPreferences,
-      [key]: !prevPreferences[key],
-    }));
+    setPreferences((prevPreferences) => {
+      const updatedPreferences = {
+        ...prevPreferences,
+        [key]: !prevPreferences[key],
+      };
+      setOnboardingProfile((prevProfile) => ({
+        ...prevProfile,
+        lifestyle_traits: updatedPreferences,
+      }));
+      return updatedPreferences;
+    });
   };
 
   const addPreference = () => {
     if (newPreference.trim() === "") return;
-    setPreferences((prevPreferences) => ({
-      ...prevPreferences,
-      [newPreference.trim()]: true,
-    }));
+    setPreferences((prevPreferences) => {
+      const updatedPreferences = {
+        ...prevPreferences,
+        [newPreference.trim()]: true,
+      };
+      setOnboardingProfile((prevProfile) => ({
+        ...prevProfile,
+        lifestyle_traits: updatedPreferences,
+      }));
+      return updatedPreferences;
+    });
     setNewPreference("");
   };
-
-  // Trigger save when navigating away from the page
-  useEffect(() => {
-    return () => {
-      console.log("Saving lifestyle traits to database");
-    };
-  }, []);
 
   return (
     <VStack w="full" align="stretch">

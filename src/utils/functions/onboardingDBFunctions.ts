@@ -3,6 +3,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  setDoc,
   updateDoc,
   writeBatch,
 } from "firebase/firestore";
@@ -37,6 +38,38 @@ export const fetchProfile = async (userId: string, userName: string) => {
     }
   } catch (error) {
     console.error("Error fetching user profile for userId:", userId, error);
+  }
+};
+
+export const updateProfile = async (userId: string, profileData: Profile) => {
+  try {
+    const userDocRef = doc(firestore, "users", userId);
+
+    // Create a partial update object with only non-null/undefined fields
+    const updateData: Partial<Profile> = {};
+
+    if (profileData.name) updateData.name = profileData.name;
+    if (profileData.birthday) {
+      const birthdayDate = new Date(profileData.birthday);
+      updateData.birthday = birthdayDate.toISOString();
+    }
+    if (profileData.gender) updateData.gender = profileData.gender;
+    if (profileData.home_address)
+      updateData.home_address = profileData.home_address;
+    if (profileData.transportations)
+      updateData.transportations = profileData.transportations;
+    if (profileData.lifestyle_traits)
+      updateData.lifestyle_traits = profileData.lifestyle_traits;
+    if (profileData.lifestyle_paragraph)
+      updateData.lifestyle_paragraph = profileData.lifestyle_paragraph;
+    if (profileData.additional_info)
+      updateData.additional_info = profileData.additional_info;
+
+    await setDoc(userDocRef, updateData, { merge: true });
+
+    console.log("Profile updated successfully for userId:", userId);
+  } catch (error) {
+    console.error("Error updating user profile for userId:", userId, error);
   }
 };
 

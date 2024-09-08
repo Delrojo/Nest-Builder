@@ -48,6 +48,15 @@ const ReviewInformation: React.FC = () => {
     }));
   };
 
+  const handleAdditionalInfoChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setOnboardingProfile((prev) => ({
+      ...prev,
+      additional_info: e.target.value,
+    }));
+  };
+
   return (
     <Flex direction="column" align="center" height="100%" width="100%">
       <Heading as="h1" mt={4} textAlign="center" size="lg">
@@ -117,12 +126,7 @@ const ReviewInformation: React.FC = () => {
               placeholder="e.g., Any specific requirements or notes"
               size="md"
               value={onboardingProfile.additional_info || ""}
-              onChange={(e) =>
-                setOnboardingProfile((prev) => ({
-                  ...prev,
-                  additional_info: e.target.value,
-                }))
-              }
+              onChange={handleAdditionalInfoChange}
             />
           </FormControl>
         </VStack>

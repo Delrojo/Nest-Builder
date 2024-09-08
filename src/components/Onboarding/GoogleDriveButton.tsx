@@ -1,3 +1,4 @@
+import { useState } from "react";
 import useDrivePicker from "react-google-drive-picker";
 import { Button, useToast } from "@chakra-ui/react";
 import { isAuthenticToken, userAtom } from "@/atoms/userAtom";
@@ -26,6 +27,7 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
   const [openPicker] = useDrivePicker();
   const [userState] = useRecoilState(userAtom);
   const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
 
@@ -107,6 +109,7 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
    */
   async function fetchGoogleDriveFile(fileId: string, accessToken: string) {
     console.log("Fetching Google Drive file with ID:", fileId);
+    setIsLoading(true);
     try {
       // Fetch the file as a blob (since it's a ZIP file)
       const response = await fetch(
@@ -148,6 +151,8 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -324,6 +329,7 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
       variant="solid"
       w="full"
       loadingText="Processing..."
+      isLoading={isLoading}
       onClick={handleOpenPicker}
     >
       Upload Google Takeout Data

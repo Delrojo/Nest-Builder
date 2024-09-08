@@ -22,6 +22,7 @@ import withAuth from "@/components/Modal/Auth/withAuth";
 import {
   fetchProfile,
   fetchCategories,
+  updateProfile,
 } from "@/utils/functions/onboardingDBFunctions";
 import { onboardingProfileAtom } from "@/atoms/onboardingProfileAtom";
 import { userAtom } from "@/atoms/userAtom";
@@ -116,6 +117,10 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
   };
 
   const handlePrev = () => {
+    if (activeStep < steps.length - 1) {
+      //Don't want to submit the profile on the last step (categories)
+      submitProfileToDB();
+    }
     setActiveStep((prev) => prev - 1);
     setOnboardingState((prev) => ({
       ...prev,
@@ -125,10 +130,16 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
 
   const iconColor = useColorModeValue("gray.300", "gray.500");
 
+  const submitProfileToDB = async () => {
+    console.log("SUBMITTING PROFILE TO DB");
+    updateProfile(user.user?.uid || "", onboardingProfile);
+  };
+
   const handleNextAndSubmit = () => {
     if (activeStep >= steps.length - 1) {
       router.push("/explore");
     } else {
+      submitProfileToDB();
       handleNext();
     }
   };

@@ -1,4 +1,4 @@
-import { SetStateAction, useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Box,
   Text,
@@ -77,17 +77,21 @@ const IntroPage = () => {
 
   const cardBg = useColorModeValue("primary.100", "primary.800");
 
-  const handleBirthdayChange = (e: {
-    target: { value: SetStateAction<string> };
-  }) => {
-    console.log(e.target.value);
-    setBirthday(e.target.value);
+  const handleBirthdayChange = (e: { target: { value: string } }) => {
+    const newBirthday = e.target.value;
+    setBirthday(newBirthday);
+    setOnboardingProfile((prevProfile) => ({
+      ...prevProfile,
+      birthday: newBirthday,
+    }));
   };
-
-  const handleGenderChange = (e: {
-    target: { value: SetStateAction<string> };
-  }) => {
-    setGender(e.target.value);
+  const handleGenderChange = (e: { target: { value: string } }) => {
+    const newGender = e.target.value;
+    setGender(newGender);
+    setOnboardingProfile((prevProfile) => ({
+      ...prevProfile,
+      gender: newGender,
+    }));
   };
 
   const getPeopleInfo = useCallback(async (token: string) => {
@@ -103,13 +107,6 @@ const IntroPage = () => {
       console.error("Failed to fetch people info");
     }
   }, []);
-
-  // Trigger save when navigating away from the page
-  useEffect(() => {
-    return () => {
-      console.log("Saving birthday and gender to database");
-    };
-  }, [birthday, gender]);
 
   useEffect(() => {
     console.log("onboardingProfile:", onboardingProfile);
@@ -144,10 +141,18 @@ const IntroPage = () => {
     if (birthday) {
       const formattedBirthday = formatBirthday(birthday);
       setBirthday(formattedBirthday);
+      setOnboardingProfile((prevProfile) => ({
+        ...prevProfile,
+        birthday: formattedBirthday,
+      }));
     }
 
     if (gender?.formattedValue) {
       setGender(gender.formattedValue);
+      setOnboardingProfile((prevProfile) => ({
+        ...prevProfile,
+        gender: gender.formattedValue || "",
+      }));
     }
   };
 
@@ -263,7 +268,13 @@ const IntroPage = () => {
       try {
         const profile = await fetchProfile(userId, userName);
         if (profile) {
-          setOnboardingProfile(profile);
+          // Update Recoil state with the fetched profile but keep the existing birthday and gender
+          setOnboardingProfile((prevProfile) => ({
+            ...profile,
+            birthday: prevProfile.birthday,
+            gender: prevProfile.gender,
+            name: prevProfile.name,
+          }));
           const categories = await fetchCategories(userId);
           setCategoryAtom(categories);
         }
