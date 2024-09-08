@@ -24,6 +24,7 @@
     "firebase": "^10.12.4",
     "formidable": "^3.5.1",
     "framer-motion": "^11.3.19",
+    "fs": "^0.0.1-security",
     "gapi-script": "^1.2.0",
     "jszip": "^3.10.1",
     "next": "^13.0.0",

@@ -47,11 +47,13 @@ const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, profile }) => {
           </DrawerHeader>
           <DrawerBody>
             <Box mb={4}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={profile.photoSrc}
                 alt={`${profile.name} gif`}
                 width="100%"
                 height="auto"
+                loading="lazy"
                 style={{ borderRadius: "8px" }}
               />
             </Box>
