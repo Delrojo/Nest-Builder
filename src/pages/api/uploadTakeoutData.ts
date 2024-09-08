@@ -22,14 +22,11 @@ const uploadFileToGemini = async (
     throw new Error("API key is missing.");
   }
 
-  console.log("In the uploadFileToGemini function");
   const fileManager = new GoogleAIFileManager(API_KEY);
-
-  console.log(`Uploading file ${filePath} to Gemini...`);
   const uploadResult = await fileManager.uploadFile(filePath, { mimeType });
   const fileUri = uploadResult.file.uri;
-
   console.log(`File uploaded successfully with URI: ${fileUri}`);
+
   return fileUri;
 };
 
@@ -37,15 +34,14 @@ const uploadFileToGemini = async (
 const parseForm = (
   req: NextApiRequest
 ): Promise<{ fields: Fields; files: Files }> => {
-  console.log("Parsing form data...");
   const form = new IncomingForm({ multiples: false });
   return new Promise((resolve, reject) => {
     form.parse(req, (err: any, fields: Fields, files: Files) => {
       if (err) {
         console.error("Error parsing form data:", err);
+
         return reject(err);
       }
-      console.log("Form data parsed successfully.");
       resolve({ fields, files });
     });
   });
@@ -55,8 +51,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log("Received request:", req.method);
-
   if (req.method !== "POST") {
     console.error("Invalid request method:", req.method);
     return res.status(405).json({ error: "Method not allowed" });
@@ -72,15 +66,13 @@ export default async function handler(
       // Proceed with file processing
       const filePath = file.filepath; // or file.path in older versions
       const mimeType = file.mimetype || "text/plain"; // Use file's mimetype or default to text
-      console.log("File uploaded:", filePath, "MIME type:", mimeType);
 
       try {
-        console.log("Uploading file to Gemini...");
         const fileUri = await uploadFileToGemini(filePath, mimeType);
-        console.log("File uploaded successfully. URI:", fileUri);
         res.status(200).json({ fileUri });
       } catch (error) {
         console.error("Error uploading file:", error);
+
         res.status(500).json({ message: "Internal server error" });
       } finally {
         // Clean up the temporary file
@@ -99,6 +91,7 @@ export default async function handler(
     }
   } catch (error) {
     console.error("Error handling request:", error);
+
     res.status(500).json({ message: "Internal server error" });
   }
 }

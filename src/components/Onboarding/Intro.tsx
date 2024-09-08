@@ -140,13 +140,13 @@ const IntroPage = () => {
     }
   };
   const handleUpload = async (fileUri: string) => {
-    console.log("Uploading file:", fileUri);
     setIsUploading(true);
 
     const sectionNames = ["transportation", "lifestyle", "categories"];
 
     const apiCallPromises = sectionNames.map(async (section) => {
       console.log(`Processing section: ${section}`);
+
       setSectionStatus((prevStatus) => ({
         ...prevStatus,
         [section]: "processing",
@@ -158,22 +158,20 @@ const IntroPage = () => {
 
       switch (section) {
         case "transportation":
-          console.log("Creating transportation instructions");
           systemInstructions += createTransportationInstruction();
           dbFunction = updateTransportation;
           break;
         case "lifestyle":
-          console.log("Creating lifestyle instructions");
           systemInstructions += createLifestylePreferencesInstruction();
           dbFunction = updateLifestyle;
           break;
         case "categories":
-          console.log("Creating categories instructions");
           systemInstructions += createCategoriesInstruction();
           dbFunction = updateCategories;
           break;
         default:
           console.error("Invalid section name");
+
           return;
       }
 
@@ -183,11 +181,6 @@ const IntroPage = () => {
       };
 
       try {
-        console.log(
-          "Sending POST request to /api/fetchPredictionsWithFile with body:",
-          requestBody
-        );
-
         const response = await fetch("/api/fetchPredictionsWithFile", {
           method: "POST",
           headers: {
@@ -196,17 +189,13 @@ const IntroPage = () => {
           body: JSON.stringify(requestBody),
         });
 
-        console.log("Response from fetchPredictionsWithFile:", response);
-
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
-        console.log("Response data:", data);
 
         if (data.result) {
-          console.log("Generated content:", data.result);
           dbFunction(userState.user?.uid || "", data.result);
           success = 1;
         } else {
@@ -228,20 +217,13 @@ const IntroPage = () => {
           ...prevStatus,
           [section]: success ? "success" : "failed",
         }));
-        console.log(
-          `HELLO HERE IT IS! Section ${section} processing ${
-            success ? "succeeded" : "failed"
-          }`
-        );
       }
     });
 
     try {
-      console.log("Waiting for all API calls to complete");
       await Promise.all(apiCallPromises);
     } finally {
       setIsUploading(false);
-      console.log("All API calls completed, uploading status set to false");
       try {
         const response = await fetch("/api/removeTakeoutData", {
           method: "DELETE",
@@ -253,7 +235,6 @@ const IntroPage = () => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("File deleted successfully:", data.message);
         } else {
           console.error("Failed to delete the file");
         }

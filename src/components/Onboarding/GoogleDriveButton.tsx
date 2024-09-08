@@ -188,7 +188,6 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
    * @param jsonData - The raw JSON data from Google Takeout
    */
   const handleCleanDataAndUploadResults = async (jsonData: any) => {
-    console.log("In the handleCleanDataAndUploadResults function");
     try {
       const dataWithinLimit = cleanAndLimitData(jsonData);
       const file = createFileFromJson(dataWithinLimit);
@@ -211,7 +210,6 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
    * @returns
    */
   const cleanAndLimitData = (jsonData: any): Activity[] => {
-    console.log("In the cleanAndLimitData function");
     // Check if jsonData is an array
     if (!Array.isArray(jsonData)) {
       console.error("Invalid data: jsonData is not an array");
@@ -227,7 +225,6 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
    * @returns The cleaned data in Activity JSON format
    */
   function cleanDataForAIPrediction(data: Activity[]): Activity[] {
-    console.log("In the cleanDataForAIPrediction function");
     return data.map((activity) => {
       const {
         header, // Activity type (e.g., "Maps")
@@ -258,12 +255,10 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
     data: Activity[],
     limit: number = 1_000_000
   ): Activity[] {
-    console.log("In the ensureDataWithinLimit function");
     let jsonString = JSON.stringify(data);
     if (jsonString.length <= limit) {
       return data;
     }
-
     // Truncate data to fit within the limit
     let truncatedData = [];
     let currentSize = 0;
@@ -277,8 +272,6 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
       truncatedData.push(activity);
       currentSize += activityString.length;
     }
-
-    console.log("Successfully truncated data to fit within the limit.");
     return truncatedData;
   }
 
@@ -288,17 +281,11 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
    * @returns
    */
   const createFileFromJson = (data: Activity[]): File => {
-    console.log("In the createFileFromJson function");
     const jsonString = JSON.stringify(data);
-    console.log("Uploading file:", jsonString);
-
     const blob = new Blob([jsonString], { type: "text/plain" });
-    console.log("Blob created:", blob);
-
     const file = new File([blob], "takeoutData.txt", {
       type: "text/plain",
     });
-    console.log("File object created:", file);
     return file;
   };
 
@@ -310,7 +297,6 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
   const uploadFileToGemini = async (
     file: File
   ): Promise<string | undefined> => {
-    console.log("In the uploadFileToGemini function");
     const formData = new FormData();
     formData.append("file", file); // Append the selected file
 
@@ -321,9 +307,7 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
       });
 
       if (response.ok) {
-        console.log("File uploaded successfully.");
         const data = await response.json();
-        console.log("File URI:", data.fileUri);
         return data.fileUri;
       } else {
         console.error("Failed to upload file. Status:", response.status);
@@ -332,7 +316,7 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
       console.error("Error uploading file:", error);
     }
 
-    console.log("Failed to upload file.");
+    console.error("Failed to upload file.");
     return undefined;
   };
 
