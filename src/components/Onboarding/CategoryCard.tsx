@@ -53,6 +53,8 @@ const CategoryCard = ({
       category.title && category.cost && category.preference;
 
     if (isCategoryFilledOut) {
+      // TODO: Call to the backend to update the category given the ID
+
       setEditMode(false);
     } else {
       toast({

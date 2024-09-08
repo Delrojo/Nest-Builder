@@ -18,7 +18,10 @@ const OnboardCategories = () => {
   const toast = useToast();
 
   const handleAddNewCategory = () => {
+    //TODO: API call to add a category and get the id once it succeeds
+
     const newCategory: Category = {
+      id: "2", //TODO: Replace this with the actual id from the API
       title: "",
       status: CategoryStatus.Edit,
       cost: "",
@@ -35,8 +38,10 @@ const OnboardCategories = () => {
     ]);
   };
 
-  const handleDeleteCategory = (index: number) => {
-    setCategoryAtom(category.filter((_, i) => i !== index));
+  const handleDeleteCategory = (categoryId: string) => {
+    //TODO: Add a call to delete the category from the database given an id if it succeeds
+
+    setCategoryAtom(category.filter((cat) => cat.category.id !== categoryId));
     toast({
       title: "Category deleted.",
       status: "success",
@@ -77,11 +82,13 @@ const OnboardCategories = () => {
           gap={4}
           width="100%"
         >
-          {category.map((category, index) => (
+          {category.map((categoryObj) => (
             <CategoryCard
-              key={index}
-              category={category.category}
-              deleteCategoryCallback={() => handleDeleteCategory(index)}
+              key={categoryObj.category.id}
+              category={categoryObj.category}
+              deleteCategoryCallback={() =>
+                handleDeleteCategory(categoryObj.category.id)
+              }
             />
           ))}
         </Grid>

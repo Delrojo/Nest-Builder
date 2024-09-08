@@ -79,23 +79,33 @@ const Transportation: React.FC = () => {
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const method = event.target.name as keyof Transportation;
-    setTransportation({
+    const updatedTransportation = {
       ...transportation,
       [method]: {
         ...transportation[method],
         selected: event.target.checked,
       },
-    });
+    };
+    setTransportation(updatedTransportation);
+    setOnboardingProfile((prevProfile) => ({
+      ...prevProfile,
+      transportation: updatedTransportation,
+    }));
   };
 
   const handleSliderChange = (method: keyof Transportation, value: number) => {
-    setTransportation({
+    const updatedTransportation = {
       ...transportation,
       [method]: {
         ...transportation[method],
         radius: value,
       },
-    });
+    };
+    setTransportation(updatedTransportation);
+    setOnboardingProfile((prevProfile) => ({
+      ...prevProfile,
+      transportation: updatedTransportation,
+    }));
   };
 
   useEffect(() => {
@@ -123,7 +133,12 @@ const Transportation: React.FC = () => {
       autoComplete.setFields(["formatted_address", "geometry", "name"]);
       autoComplete.addListener("place_changed", () => {
         const place = autoComplete.getPlace();
-        setHomeAddress(place.formatted_address as string);
+        const newAddress = place.formatted_address as string;
+        setHomeAddress(newAddress);
+        setOnboardingProfile((prevProfile) => ({
+          ...prevProfile,
+          home_address: newAddress,
+        }));
         if (!place.geometry) {
           return;
         }

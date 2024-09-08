@@ -131,7 +131,6 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = () => {
   const iconColor = useColorModeValue("gray.300", "gray.500");
 
   const submitProfileToDB = async () => {
-    console.log("SUBMITTING PROFILE TO DB");
     updateProfile(user.user?.uid || "", onboardingProfile);
   };
 

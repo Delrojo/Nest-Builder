@@ -1,11 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { GoogleAIFileManager } from "@google/generative-ai/server";
 
-
 const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
 if (!API_KEY) {
   throw new Error("API key is missing.");
 }
+
 const deleteFileFromGemini = async (fileUri: string): Promise<void> => {
   if (API_KEY.length === 0) {
     console.error("API Key is missing.");
@@ -16,8 +16,18 @@ const deleteFileFromGemini = async (fileUri: string): Promise<void> => {
   const fileManager = new GoogleAIFileManager(API_KEY);
 
   console.log(`Deleting file with URI: ${fileUri} from Gemini...`);
-  await fileManager.deleteFile(fileUri);
-  console.log(`File deleted successfully from Gemini.`);
+  try {
+    await fileManager.deleteFile(fileUri);
+    console.log(`File deleted successfully from Gemini.`);
+  } catch (error: Error | any) {
+    if (error.response && error.response.status === 404) {
+      console.error("File not found:", error);
+      throw new Error("File not found");
+    } else {
+      console.error("Error deleting file:", error);
+      throw error;
+    }
+  }
 };
 
 export default async function handler(
@@ -38,8 +48,12 @@ export default async function handler(
   try {
     await deleteFileFromGemini(fileUri);
     res.status(200).json({ message: "File deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting file:", error);
-    res.status(500).json({ message: "Internal server error" });
+  } catch (error: Error | any) {
+    if (error.message === "File not found") {
+      res.status(404).json({ message: "File not found" });
+    } else {
+      console.error("Error deleting file:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
   }
 }

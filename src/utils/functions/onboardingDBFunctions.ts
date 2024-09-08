@@ -45,7 +45,6 @@ export const updateProfile = async (userId: string, profileData: Profile) => {
   try {
     const userDocRef = doc(firestore, "users", userId);
 
-    // Create a partial update object with only non-null/undefined fields
     const updateData: Partial<Profile> = {};
 
     if (profileData.name) updateData.name = profileData.name;
@@ -64,6 +63,11 @@ export const updateProfile = async (userId: string, profileData: Profile) => {
       updateData.lifestyle_paragraph = profileData.lifestyle_paragraph;
     if (profileData.additional_info)
       updateData.additional_info = profileData.additional_info;
+
+    if (Object.keys(updateData).length === 0) {
+      console.log("Nothing to update for user:", userId);
+      return;
+    }
 
     await setDoc(userDocRef, updateData, { merge: true });
 
@@ -85,6 +89,7 @@ export const fetchCategories = async (
 
       const category: CategoryAtom = {
         category: {
+          id: doc.id,
           title: data.title || "",
           cost: data.cost || "",
           preference: data.preference || "",

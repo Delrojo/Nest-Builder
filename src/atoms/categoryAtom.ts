@@ -8,6 +8,7 @@ export enum CategoryStatus {
 }
 
 export interface Category {
+  id: string;
   title: string;
   cost: string;
   preference: string;
@@ -24,6 +25,7 @@ export interface CategoryAtom {
 const defaultCategoryAtom: CategoryAtom[] = [
   {
     category: {
+      id: "1",
       title: "Food",
       cost: "$",
       preference: "Casual",
