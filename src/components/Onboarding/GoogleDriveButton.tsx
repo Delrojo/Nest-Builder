@@ -125,7 +125,6 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
           if (jsonFileContent === undefined) {
             throw new Error("JSON content is null");
           }
-          console.log("JSON content is valid:", jsonFileContent);
           const jsonData = JSON.parse(jsonFileContent);
           console.log("Cleaning and uploading the data...");
           handleCleanDataAndUploadResults(jsonData);

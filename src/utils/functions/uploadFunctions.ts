@@ -44,14 +44,8 @@ export function createCategoriesInstruction() {
 export function createLifestylePreferencesInstruction() {
   return `
     {
-      "lifestyle": [
-        {
-          [key: string]: boolean // Descriptors focusing on lifestyle preferences important to the user, such as 'Accessible', 'Safe', 'Affordable', 'Quiet'. These are adjectives describing the place or experiences the user prefers, not categories or types of location or transportation.
-        }
-      ],
-      "otherPreferences": {
-        string[] // A collection of 20 more general lifestyle preferences like 'Family Friendly', 'Convenient', 'Safety', 'Cleanliness', 'Accessibility', 'Affordability', 'Quietness', 'Community', 'Amenities', 'Green Spaces', and 'Quiet'.
-      },      
+      "lifestyle": ["string"], // Descriptors focusing on lifestyle preferences important to the user, such as 'Accessible', 'Safe', 'Affordable', 'Quiet'. These are adjectives describing the place or experiences the user prefers, these should NOT be related categories or types of location or transportation.
+      "otherPreferences": ["string"], // A collection of 20 more general lifestyle preferences like 'Family Friendly', 'Convenient', 'Safety', 'Cleanliness', 'Accessibility', 'Affordability', 'Quietness', 'Community', 'Amenities', 'Green Spaces', and 'Quiet'.
       "lifestyleParagraph": "string" // A first-person narrative that details the user's daily activities, community engagement, social interactions, and overall lifestyle preferences. It provides a comprehensive, personal view of the user's lifestyle without repeating the specific preferences.
     }
   `;

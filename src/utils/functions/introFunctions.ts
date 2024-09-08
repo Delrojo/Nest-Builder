@@ -84,10 +84,18 @@ const snakeCaseToTitleCase = (str: string): string => {
     .join(" "); // Join the words with spaces
 };
 
+const titleCaseToSnakeCase = (str: string): string => {
+  return str
+    .split(" ") // Split the string by spaces
+    .map((word) => word.toLowerCase()) // Convert each word to lowercase
+    .join("_"); // Join the words with underscores
+};
+
 export {
   findMostCompleteGender,
   findMostCompleteBirthday,
   formatBirthday,
   getAge,
   snakeCaseToTitleCase,
+  titleCaseToSnakeCase,
 };

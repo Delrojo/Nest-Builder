@@ -7,9 +7,10 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { firestore } from "@/firebase/firebaseConfig";
-import { LifestyleDTO, Profile } from "@/atoms/onboardingProfileAtom";
+import { Profile } from "@/atoms/onboardingProfileAtom";
 import { Category, CategoryAtom, CategoryStatus } from "@/atoms/categoryAtom";
 import { TransportationDTO } from "@/atoms/onboardingProfileAtom";
+import { titleCaseToSnakeCase } from "./introFunctions";
 
 export const fetchProfile = async (userId: string, userName: string) => {
   try {
@@ -115,7 +116,7 @@ export const updateTransportation = async (
 };
 
 export interface UpdateLifestyleResult {
-  lifestyle: LifestyleDTO;
+  lifestyle: string[];
   otherPreferences: string[];
   lifestyleParagraph: string;
 }
@@ -128,19 +129,17 @@ export const updateLifestyle = async (
   console.log("Lifestyle:", lifestyleData);
 
   try {
-    // Extract keys from lifestyle object
-    const lifestyleKeys = Object.keys(lifestyleData.lifestyle);
-
-    // Combine with otherPreferences and remove duplicates
-    const combinedKeys = Array.from(
-      new Set([...lifestyleKeys, ...lifestyleData.otherPreferences])
-    );
-
-    // Set otherPreferences values to false
-    const combinedPreferences = combinedKeys.reduce((acc, key) => {
-      acc[key] = lifestyleData.lifestyle[key] ?? false;
-      return acc;
-    }, {} as LifestyleDTO);
+    // Combine the lifestyle and other preferences as a set of preferences
+    // Make this into a dictionary with the key being the preference and the value being true if lifestyle, false if other preference
+    const combinedPreferences: Record<string, boolean> = {};
+    lifestyleData.otherPreferences.forEach((preference) => {
+      preference = titleCaseToSnakeCase(preference);
+      combinedPreferences[preference] = false;
+    });
+    lifestyleData.lifestyle.forEach((preference) => {
+      preference = titleCaseToSnakeCase(preference);
+      combinedPreferences[preference] = true;
+    });
 
     console.log("Combined Preferences:", combinedPreferences);
     console.log("Lifestyle Paragraph:", lifestyleData.lifestyleParagraph);
@@ -164,47 +163,63 @@ export const updateCategories = async (
   userId: string,
   categories: Category[]
 ) => {
-  console.log("Within DB function, updating categories for user:", userId);
-  console.log("Categories:", categories);
+  console.log("Starting updateCategories function for user:", userId);
+  console.log("Categories to update:", categories);
+
+  const categoriesRef = collection(firestore, `users/${userId}/categories`);
 
   try {
     const batch = writeBatch(firestore);
 
-    try {
-      const categoriesRef = collection(firestore, `users/${userId}/categories`);
+    // Step 1: Check if the categories subcollection exists by querying documents in it
+    console.log(
+      "Checking if categories subcollection exists for user:",
+      userId
+    );
+    const querySnapshot = await getDocs(categoriesRef);
 
-      // Step 1: Clear existing categories by deleting the documents in the subcollection
-      const oldCategoriesSnapshot = await getDocs(categoriesRef);
-
-      oldCategoriesSnapshot.forEach((doc) => {
-        batch.delete(doc.ref); // Delete each document in the categories subcollection
+    if (!querySnapshot.empty) {
+      console.log(
+        "Categories subcollection exists. Deleting existing documents for user:",
+        userId
+      );
+      // Subcollection exists, so clear it by deleting all existing documents
+      querySnapshot.forEach((doc) => {
+        batch.delete(doc.ref);
       });
-
-      // Step 2: Add new categories
-      categories.forEach((category: Category, index) => {
-        const newCategoryRef = doc(categoriesRef); // Create a new document reference will auto-generated ID
-        const categoryData = {
-          title: category.title,
-          cost: category.cost,
-          preference: category.preference,
-          subcategories: category.subcategories,
-          vibes: category.vibes,
-          status: category.status,
-          favorite_places: {},
-        };
-
-        batch.set(newCategoryRef, categoryData);
-      });
-
-      // Commit the batch operations (deletes + sets)
-      await batch.commit();
-      console.log("Successfully replaced categories");
-    } catch (error) {
-      console.error("Error replacing categories for userId:", userId, error);
+      console.log("Existing documents deleted for user:", userId);
+    } else {
+      console.log(
+        "Categories subcollection does not exist or is empty for user:",
+        userId
+      );
     }
 
-    console.log("Categories updated successfully.");
+    // Step 2: Add new categories
+    console.log("Adding new categories for user:", userId);
+    categories.forEach((category: Category, index) => {
+      const newCategoryRef = doc(categoriesRef); // Automatically generates unique ID for each category
+      const categoryData = {
+        title: category.title || "",
+        cost: category.cost || "",
+        preference: category.preference || "",
+        subcategories: category.subcategories || [],
+        vibes: category.vibes || [],
+        status: category.status || "Active", // Default status if not provided
+        favorite_places: {}, // Handle favorite_places if provided, default to empty
+      };
+
+      batch.set(newCategoryRef, categoryData);
+    });
+    console.log("New categories added for user:", userId);
+
+    // Step 3: Commit the batch operations (deletes + sets)
+    console.log("Committing batch operations for user:", userId);
+    await batch.commit();
+    console.log("Batch operations committed successfully for user:", userId);
+
+    console.log("Categories successfully replaced for user:", userId);
   } catch (error) {
-    console.error("Error updating categories for userId:", userId, error);
+    console.error("Error updating categories for user:", userId, error);
   }
 };

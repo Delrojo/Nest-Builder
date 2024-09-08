@@ -43,10 +43,13 @@ import {
   createCategoriesInstruction,
 } from "@/utils/functions/uploadFunctions";
 import {
+  fetchCategories,
+  fetchProfile,
   updateCategories,
   updateLifestyle,
   updateTransportation,
 } from "@/utils/functions/onboardingDBFunctions";
+import { categoryAtom } from "@/atoms/categoryAtom";
 
 interface PeopleInfo {
   genders: GenderDTO[];
@@ -58,6 +61,7 @@ const IntroPage = () => {
   const [onboardingProfile, setOnboardingProfile] = useRecoilState(
     onboardingProfileAtom
   );
+  const [_, setCategoryAtom] = useRecoilState(categoryAtom);
   const [birthday, setBirthday] = useState("");
   const [gender, setGender] = useState("");
   const [sectionStatus, setSectionStatus] = useState({
@@ -223,6 +227,7 @@ const IntroPage = () => {
     try {
       await Promise.all(apiCallPromises);
     } finally {
+      refreshData(userState.user?.uid || "", userState.user?.name || "");
       setIsUploading(false);
       try {
         const response = await fetch("/api/removeTakeoutData", {
@@ -234,12 +239,28 @@ const IntroPage = () => {
         });
 
         if (response.ok) {
+          console.log("File removed successfully");
           const data = await response.json();
         } else {
           console.error("Failed to delete the file");
         }
       } catch (error) {
         console.error("Error removing file:", error);
+      }
+    }
+  };
+
+  const refreshData = async (userId: string, userName: string) => {
+    if (userId && userName) {
+      try {
+        const profile = await fetchProfile(userId, userName);
+        if (profile) {
+          setOnboardingProfile(profile);
+          const categories = await fetchCategories(userId);
+          setCategoryAtom(categories);
+        }
+      } catch (error) {
+        console.error("Error refreshing data:", error);
       }
     }
   };
