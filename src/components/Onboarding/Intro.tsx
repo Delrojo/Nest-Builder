@@ -42,7 +42,6 @@ import {
   createLifestylePreferencesInstruction,
   createCategoriesInstruction,
 } from "@/utils/functions/uploadFunctions";
-import { GoogleAIFileManager } from "@google/generative-ai/server";
 import {
   updateCategories,
   updateLifestyle,
@@ -243,18 +242,23 @@ const IntroPage = () => {
     } finally {
       setIsUploading(false);
       console.log("All API calls completed, uploading status set to false");
-
-      // Remove the file from Gemini
-      const fileManager = new GoogleAIFileManager(API_KEY);
       try {
-        console.log("Deleting file from Gemini");
-        await fileManager.deleteFile(fileUri);
-        console.log("File deleted successfully");
-      } catch (error) {
-        if (API_KEY.length === 0) {
-          console.error("API Key is missing.");
+        const response = await fetch("/api/removeTakeoutData", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ fileUri }), // Pass the file URI to the API
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("File deleted successfully:", data.message);
+        } else {
+          console.error("Failed to delete the file");
         }
-        console.error("Error deleting file from Gemini:", error);
+      } catch (error) {
+        console.error("Error removing file:", error);
       }
     }
   };

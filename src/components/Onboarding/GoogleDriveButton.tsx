@@ -3,7 +3,6 @@ import { Button, useToast } from "@chakra-ui/react";
 import { isAuthenticToken, userAtom } from "@/atoms/userAtom";
 import { useRecoilState } from "recoil";
 import JSZip from "jszip";
-import { GoogleAIFileManager } from "@google/generative-ai/server";
 
 type LocationInfo = {
   name: string;
@@ -195,6 +194,11 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
       const file = createFileFromJson(dataWithinLimit);
       const fileUri = await uploadFileToGemini(file);
 
+      if (!fileUri) {
+        console.error("File URI is undefined after upload");
+        throw new Error("File URI is undefined after upload");
+      }
+
       handleUpload(fileUri);
     } catch (error) {
       console.error("Error in handleCleanDataAndUploadResults:", error);
@@ -303,22 +307,33 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
    * @param file  The file to be uploaded
    * @returns
    */
-  const uploadFileToGemini = async (file: File): Promise<string> => {
-    if (API_KEY.length === 0) {
-      console.error("API Key is missing.");
-      throw new Error("API key is missing.");
-    }
+  const uploadFileToGemini = async (
+    file: File
+  ): Promise<string | undefined> => {
     console.log("In the uploadFileToGemini function");
-    const filePath = file.name;
-    const mimeType = "text/plain"; // Correct mimeType
+    const formData = new FormData();
+    formData.append("file", file); // Append the selected file
 
-    const fileManager = new GoogleAIFileManager(API_KEY);
-    console.log(`Uploading file ${filePath} to Gemini...`);
+    try {
+      const response = await fetch("/api/uploadTakeoutData", {
+        method: "POST",
+        body: formData, // Send the form data, including the file
+      });
 
-    const uploadResult = await fileManager.uploadFile(filePath, { mimeType });
-    const fileUri = uploadResult.file.uri;
-    console.log(`File uploaded successfully with URI: ${fileUri}`);
-    return fileUri;
+      if (response.ok) {
+        console.log("File uploaded successfully.");
+        const data = await response.json();
+        console.log("File URI:", data.fileUri);
+        return data.fileUri;
+      } else {
+        console.error("Failed to upload file. Status:", response.status);
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+
+    console.log("Failed to upload file.");
+    return undefined;
   };
 
   return (
