@@ -1,8 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { GoogleAIFileManager } from "@google/generative-ai/server";
 
-const API_KEY = process.env.GOOGLE_AI_API_KEY || "";
 
+const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
+if (!API_KEY) {
+  throw new Error("API key is missing.");
+}
 const deleteFileFromGemini = async (fileUri: string): Promise<void> => {
   if (API_KEY.length === 0) {
     console.error("API Key is missing.");

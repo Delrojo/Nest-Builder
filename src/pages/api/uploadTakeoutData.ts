@@ -3,8 +3,10 @@ import { GoogleAIFileManager } from "@google/generative-ai/server";
 import formidable, { IncomingForm, Fields, Files } from "formidable";
 import fs from "fs";
 
-const API_KEY = process.env.GOOGLE_AI_API_KEY || "";
-
+const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
+if (!API_KEY) {
+  throw new Error("API key is missing.");
+}
 export const config = {
   api: {
     bodyParser: false, // Disable bodyParser so we can manually handle file uploads
