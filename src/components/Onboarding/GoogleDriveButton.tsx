@@ -317,7 +317,7 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
     try {
       const response = await fetch("/api/uploadTakeoutData", {
         method: "POST",
-        body: formData, // Send the form data, including the file
+        body: formData,
       });
 
       if (response.ok) {
