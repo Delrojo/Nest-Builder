@@ -1,4 +1,11 @@
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+  writeBatch,
+} from "firebase/firestore";
 import { firestore } from "@/firebase/firebaseConfig";
 import { LifestyleDTO, Profile } from "@/atoms/onboardingProfileAtom";
 import { Category, CategoryAtom, CategoryStatus } from "@/atoms/categoryAtom";
@@ -92,16 +99,14 @@ export const updateTransportation = async (
   });
 
   try {
-    // // Create a reference to the user's document in Firestore
-    // const userDocRef = doc(firestore, "users", userId);
+    // Create a reference to the user's document in Firestore
+    const userDocRef = doc(firestore, "users", userId);
 
-    // // Update the user's transportation data and home address in Firestore
-    // await updateDoc(userDocRef, {
-    //   transportations: result.transportation,
-    //   home_address: result.homeAddress,
-    // });
-
-    console.log("MOCKING updateTransportation DB function until it works.");
+    // Update the user's transportation data and home address in Firestore
+    await updateDoc(userDocRef, {
+      transportations: result.transportation,
+      home_address: result.homeAddress,
+    });
 
     console.log("Transportation and home address updated successfully.");
   } catch (error) {
@@ -140,16 +145,14 @@ export const updateLifestyle = async (
     console.log("Combined Preferences:", combinedPreferences);
     console.log("Lifestyle Paragraph:", lifestyleData.lifestyleParagraph);
 
-    // // Create a reference to the user's document in Firestore
-    // const userDocRef = doc(firestore, "users", userId);
+    // Create a reference to the user's document in Firestore
+    const userDocRef = doc(firestore, "users", userId);
 
-    // // Update the user's lifestyle data in Firestore
-    // await updateDoc(userDocRef, {
-    //   lifestyle_traits: combinedPreferences,
-    //   lifestyle_paragraph: lifestyleData.lifestyleParagraph,
-    // });
-
-    console.log("MOCKING updateLifestyle DB function until it works.");
+    // Update the user's lifestyle data in Firestore
+    await updateDoc(userDocRef, {
+      lifestyle_traits: combinedPreferences,
+      lifestyle_paragraph: lifestyleData.lifestyleParagraph,
+    });
 
     console.log("Lifestyle updated successfully.");
   } catch (error) {
@@ -165,15 +168,40 @@ export const updateCategories = async (
   console.log("Categories:", categories);
 
   try {
-    // // Create a reference to the user's document in Firestore
-    // const userDocRef = doc(firestore, "users", userId);
+    const batch = writeBatch(firestore);
 
-    // // Update the user's categories data in Firestore
-    // await updateDoc(userDocRef, {
-    //   categories: categories,
-    // });
+    try {
+      const categoriesRef = collection(firestore, `users/${userId}/categories`);
 
-    console.log("MOCKING updateCategories DB function until it works.");
+      // Step 1: Clear existing categories by deleting the documents in the subcollection
+      const oldCategoriesSnapshot = await getDocs(categoriesRef);
+
+      oldCategoriesSnapshot.forEach((doc) => {
+        batch.delete(doc.ref); // Delete each document in the categories subcollection
+      });
+
+      // Step 2: Add new categories
+      categories.forEach((category: Category, index) => {
+        const newCategoryRef = doc(categoriesRef); // Create a new document reference will auto-generated ID
+        const categoryData = {
+          title: category.title,
+          cost: category.cost,
+          preference: category.preference,
+          subcategories: category.subcategories,
+          vibes: category.vibes,
+          status: category.status,
+          favorite_places: {},
+        };
+
+        batch.set(newCategoryRef, categoryData);
+      });
+
+      // Commit the batch operations (deletes + sets)
+      await batch.commit();
+      console.log("Successfully replaced categories");
+    } catch (error) {
+      console.error("Error replacing categories for userId:", userId, error);
+    }
 
     console.log("Categories updated successfully.");
   } catch (error) {

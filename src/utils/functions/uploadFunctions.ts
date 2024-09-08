@@ -28,7 +28,7 @@ export function createCategoriesInstruction() {
   return `
     "categories": [
       {
-        "title": "string", // The category name, such as 'restaurant', 'entertainment', or 'shopping', etc.
+        "title": "string", // The category name, such as 'restaurant', 'entertainment', or 'shopping', etc. Do not include transportation as a category.
         "preference": "string", // A narrative in the first-person that describes the user's preferences in this category, based on historical data and user inputs. Includes preferences like brands, visit frequency, spending habits, and favored times.
         "vibes": ["string"], // Up to 6 adjectives describing the environment the user prefers for this category in Title Case
         "subcategories": ["string"], // Related subcategories within the main category, e.g., types of cuisines or forms of entertainment.
@@ -50,7 +50,7 @@ export function createLifestylePreferencesInstruction() {
         }
       ],
       "otherPreferences": {
-        [key: string]: boolean // A collection of 20 more general lifestyle preferences like 'Family Friendly', 'Convenient', 'Safety', 'Cleanliness', 'Accessibility', 'Affordability', 'Quietness', 'Community', 'Amenities', 'Green Spaces', and 'Quiet'.
+        string[] // A collection of 20 more general lifestyle preferences like 'Family Friendly', 'Convenient', 'Safety', 'Cleanliness', 'Accessibility', 'Affordability', 'Quietness', 'Community', 'Amenities', 'Green Spaces', and 'Quiet'.
       },      
       "lifestyleParagraph": "string" // A first-person narrative that details the user's daily activities, community engagement, social interactions, and overall lifestyle preferences. It provides a comprehensive, personal view of the user's lifestyle without repeating the specific preferences.
     }
