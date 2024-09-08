@@ -33,9 +33,8 @@ export function createCategoriesInstruction() {
         "vibes": ["string"], // A list of up to 6 adjectives in Title Case that describe the user's preferred environment for this category.
         "subcategories": ["string"], // Related subcategories within the main category, such as cuisines for 'restaurant' or types of activities for 'entertainment'.
         "cost": "string", // The user's preferred cost range (choose from: '$', '$$', '$$$', or '$$$$').
-        "confidence": "number" // A confidence score (0 to 1) indicating how confident the system is in these preferences.
       }
-      // Additional categories can follow this structure.
+      // Plus Additional categories can follow this structure.
     ]
   `;
 }

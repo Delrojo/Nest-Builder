@@ -104,6 +104,13 @@ const IntroPage = () => {
     }
   }, []);
 
+  // Trigger save when navigating away from the page
+  useEffect(() => {
+    return () => {
+      console.log("Saving birthday and gender to database");
+    };
+  }, [birthday, gender]);
+
   useEffect(() => {
     console.log("onboardingProfile:", onboardingProfile);
 
@@ -143,6 +150,7 @@ const IntroPage = () => {
       setGender(gender.formattedValue);
     }
   };
+
   const handleUpload = async (fileUri: string) => {
     setIsUploading(true);
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Grid,
@@ -42,6 +42,13 @@ const Lifestyle: React.FC = () => {
     }));
     setNewPreference("");
   };
+
+  // Trigger save when navigating away from the page
+  useEffect(() => {
+    return () => {
+      console.log("Saving lifestyle traits to database");
+    };
+  }, []);
 
   return (
     <VStack w="full" align="stretch">

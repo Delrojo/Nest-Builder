@@ -159,12 +159,15 @@ export const updateLifestyle = async (
   }
 };
 
+interface updateCategoriesResult {
+  categories: Category[];
+}
 export const updateCategories = async (
   userId: string,
-  categories: Category[]
+  categories: updateCategoriesResult
 ) => {
   console.log("Starting updateCategories function for user:", userId);
-  console.log("Categories to update:", categories);
+  console.log("Categories to update:", categories.categories);
 
   const categoriesRef = collection(firestore, `users/${userId}/categories`);
 
@@ -200,7 +203,7 @@ export const updateCategories = async (
     // Step 2: Add new categories
     console.log("Adding new categories for user:", userId);
 
-    for (const category of categories) {
+    for (const category of categories.categories) {
       const newCategoryRef = doc(categoriesRef); // Automatically generates unique ID for each category
       const categoryData = {
         title: category.title || "",
