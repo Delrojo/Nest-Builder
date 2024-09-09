@@ -1,5 +1,6 @@
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -11,8 +12,25 @@ import { firestore } from "@/firebase/firebaseConfig";
 import { Profile } from "@/atoms/onboardingProfileAtom";
 import { Category, CategoryAtom, CategoryStatus } from "@/atoms/categoryAtom";
 import { TransportationDTO } from "@/atoms/onboardingProfileAtom";
-import { titleCaseToSnakeCase } from "./introFunctions";
+import { formatBirthday, titleCaseToSnakeCase } from "./introFunctions";
 
+interface UpdateTransportationResult {
+  transportation: TransportationDTO;
+  homeAddress: string;
+}
+
+export interface UpdateLifestyleResult {
+  lifestyle: string[];
+  otherPreferences: string[];
+  lifestyleParagraph: string;
+}
+
+/**
+ * Fetches the user's profile data from Firestore
+ * @param userId - The unique ID of the user
+ * @param userName - The name of the user (for logging purposes)
+ * @returns The user's profile data
+ */
 export const fetchProfile = async (userId: string, userName: string) => {
   try {
     const userDocRef = doc(firestore, "users", userId);
@@ -23,7 +41,7 @@ export const fetchProfile = async (userId: string, userName: string) => {
 
       const profileData: Profile = {
         name: data?.name || "",
-        birthday: data?.birthday || "",
+        birthday: data?.birthday ? formatBirthday(data.birthday) : "",
         gender: data?.gender || "",
         home_address: data?.home_address || "",
         transportations: data?.transportations || {},
@@ -39,6 +57,12 @@ export const fetchProfile = async (userId: string, userName: string) => {
   }
 };
 
+/**
+ * Updates the profile data for a user in Firestore
+ * @param userId  The unique ID of the user
+ * @param profileData  The updated profile data
+ * @returns
+ */
 export const updateProfile = async (userId: string, profileData: Profile) => {
   try {
     const userDocRef = doc(firestore, "users", userId);
@@ -75,6 +99,87 @@ export const updateProfile = async (userId: string, profileData: Profile) => {
   }
 };
 
+/**
+ * Adds a new category for a user in Firestore
+ * @param userId - The unique ID of the user
+ * @param category - The category data to add
+ * @returns The category ID
+ */
+export const addCategory = async (
+  userId: string,
+  category: Category
+): Promise<string> => {
+  try {
+    const categoriesRef = collection(firestore, `users/${userId}/categories`);
+    const newCategoryRef = doc(categoriesRef); // Automatically generates unique ID for each category
+
+    const categoryData = {
+      title: category.title || "",
+      cost: category.cost || "",
+      preference: category.preference || "",
+      subcategories: category.subcategories || [],
+      vibes: category.vibes || [],
+      status: category.status || "Active", // Default status if not provided
+      favorite_places: {}, // Handle favorite_places if provided, default to empty
+    };
+
+    await setDoc(newCategoryRef, categoryData);
+    console.log("Category added successfully for user:", userId);
+    return newCategoryRef.id;
+  } catch (error) {
+    console.error("Error adding category for user:", userId, error);
+    throw Error("Error adding category for user.");
+  }
+};
+
+/**
+ * Deletes a category for a user in Firestore
+ * @param userId  The unique ID of the user
+ * @param categoryId  The unique ID of the category to delete
+ * @returns void
+ */
+export const deleteCategory = async (userId: string, categoryId: string) => {
+  try {
+    const categoryDocRef = doc(
+      firestore,
+      `users/${userId}/categories/${categoryId}`
+    );
+    await deleteDoc(categoryDocRef);
+    console.log("Category deleted successfully for user:", userId);
+  } catch (error) {
+    console.error("Error deleting category for user:", userId, error);
+    throw Error("Error deleting category for user.");
+  }
+};
+
+/**
+ * Updates a category for a user in Firestore
+ * @param userId The unique ID of the user
+ * @param categoryId The unique ID of the category to update
+ * @param updatedData The updated category data
+ */
+export const updateCategory = async (
+  userId: string,
+  categoryId: string,
+  updatedData: Partial<Category>
+) => {
+  try {
+    const categoryDocRef = doc(
+      firestore,
+      `users/${userId}/categories/${categoryId}`
+    );
+    await updateDoc(categoryDocRef, updatedData);
+    console.log("Category updated successfully for user:", userId);
+  } catch (error) {
+    console.error("Error updating category for user:", userId, error);
+  }
+};
+
+/**
+ * Gets all categories for a user from Firestore
+ * @param userId The unique ID of the user
+ * @returns An array of CategoryAtom objects which contain the category data and results
+ */
 export const fetchCategories = async (
   userId: string
 ): Promise<CategoryAtom[]> => {
@@ -120,11 +225,11 @@ export const fetchCategories = async (
   }
 };
 
-interface UpdateTransportationResult {
-  transportation: TransportationDTO;
-  homeAddress: string;
-}
-
+/**
+ * Updates the transportation data for a user in Firestore
+ * @param userId The unique ID of the user
+ * @param result The updated transportation data
+ */
 export const updateTransportation = async (
   userId: string,
   result: UpdateTransportationResult
@@ -151,12 +256,11 @@ export const updateTransportation = async (
   }
 };
 
-export interface UpdateLifestyleResult {
-  lifestyle: string[];
-  otherPreferences: string[];
-  lifestyleParagraph: string;
-}
-
+/**
+ * Updates the lifestyle data for a user in Firestore
+ * @param userId The unique ID of the user
+ * @param lifestyleData The updated lifestyle data
+ */
 export const updateLifestyle = async (
   userId: string,
   lifestyleData: UpdateLifestyleResult
@@ -192,9 +296,19 @@ export const updateLifestyle = async (
   }
 };
 
+interface CategoryGroup {
+  categories: Category[];
+}
+
+/**
+ * Updates the predicted categories for a user in Firestore
+ * by replacing the existing categories with the new data
+ * @param userId The unique ID of the user
+ * @param categories The updated categories data
+ */
 export const updatePredictedCategories = async (
   userId: string,
-  categories: Category[]
+  categories: CategoryGroup[]
 ) => {
   if (!categories || categories.length === 0) {
     console.error("No categories provided for user:", userId);
@@ -206,7 +320,7 @@ export const updatePredictedCategories = async (
   console.log("Full categories object:", categories);
   console.log(Array.isArray(categories));
   console.log("Categories to update:", categories[0]);
-  console.log(Array.isArray(categories[0]));
+  console.log(Array.isArray(categories[0].categories));
   console.log("__________________________________________________________");
 
   const categoriesRef = collection(firestore, `users/${userId}/categories`);
@@ -231,7 +345,7 @@ export const updatePredictedCategories = async (
       );
     }
 
-    for (const category of categories) {
+    for (const category of categories[0].categories) {
       const newCategoryRef = doc(categoriesRef); // Automatically generates unique ID for each category
       const categoryData = {
         title: category.title || "",

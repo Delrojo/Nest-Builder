@@ -43,8 +43,8 @@ export function createCategoriesInstruction() {
 export function createLifestylePreferencesInstruction() {
   return `
     {
-      "lifestyle": ["string"], // A list of adjectives describing the user’s priorities when choosing places or experiences, such as 'Accessible', 'Safe', 'Affordable', 'Quiet', etc. These should not reference specific locations or transportation modes.
-      "otherPreferences": ["string"], // A broader set of up to 20 general lifestyle preferences, such as 'Family Friendly', 'Convenient', 'Cleanliness', 'Amenities', 'Community', 'Green Spaces', etc.
+      "lifestyle": ["string"], // A list of traits important for lifestyle decisions, such as 'Wheelchair Accessible', 'Curbside Pickup', 'Family-Friendly', etc. Users will see these when asked: When deciding on the places I go frequently, I care about the following priorities:"
+      "otherPreferences": ["string"], // Up to 20 general lifestyle priorities, like 'Great for Groups', 'Fast Service', 'Vegetarian Options', 'Cozy Atmosphere', etc., to refine the user's search. This will help craft personalized recommendations based on their lifestyle choices.      "otherPreferences": ["string"], // A broader set of up to 20 general lifestyle preferences, such as 'Family Friendly', 'Convenient', 'Cleanliness', 'Amenities', 'Community', 'Green Spaces', etc.
       "lifestyleParagraph": "string" // A first-person narrative summarizing the user's daily routines, social interactions, and community engagement. This should provide a well-rounded view of the user's lifestyle, without repeating specific preferences.
     }
   `;

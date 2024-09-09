@@ -16,6 +16,9 @@ import { CheckIcon, DeleteIcon } from "@chakra-ui/icons";
 import { MdModeEdit } from "react-icons/md";
 import TagInput from "./TagInput";
 import { Category } from "@/atoms/categoryAtom";
+import { useRecoilState } from "recoil";
+import { userAtom } from "@/atoms/userAtom";
+import { updateCategory } from "@/utils/functions/onboardingDBFunctions";
 
 interface CategoryCardProps {
   category: Category;
@@ -30,6 +33,7 @@ const CategoryCard = ({
 }: CategoryCardProps) => {
   const [editMode, setEditMode] = useState(editModeProp);
   const [category, setCategory] = useState(categoryProp);
+  const [user, setUser] = useRecoilState(userAtom);
   const cardBg = useColorModeValue("primary.100", "primary.800");
   const tagBg = useColorModeValue("primary.700", "primary.500");
   const vibeBg = useColorModeValue("gray.300", "gray.500");
@@ -53,9 +57,20 @@ const CategoryCard = ({
       category.title && category.cost && category.preference;
 
     if (isCategoryFilledOut) {
-      // TODO: Call to the backend to update the category given the ID
-
-      setEditMode(false);
+      if (user.user?.uid && category.id && category) {
+        updateCategory(user.user.uid, category.id, category)
+          .then(() => {
+            setEditMode(false);
+          })
+          .catch((error) => {
+            toast({
+              title: "An error occurred. Please try again later.",
+              status: "error",
+              duration: 2000,
+              isClosable: true,
+            });
+          });
+      }
     } else {
       toast({
         title: "Please fill out all fields",

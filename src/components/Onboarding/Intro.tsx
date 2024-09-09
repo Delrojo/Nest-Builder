@@ -94,19 +94,47 @@ const IntroPage = () => {
     }));
   };
 
-  const getPeopleInfo = useCallback(async (token: string) => {
-    console.log("Making API call to fetch extra user information");
-    const response = await fetch(
-      `/api/fetchExtraUserInformation?token=${token}`
-    );
+  const extractUserInfo = useCallback(
+    (data: PeopleInfo) => {
+      const birthday = findMostCompleteBirthday(data.birthdays);
+      const gender = findMostCompleteGender(data.genders);
 
-    if (response.ok) {
-      const data = await response.json();
-      extractUserInfo(data);
-    } else {
-      console.error("Failed to fetch people info");
-    }
-  }, []);
+      if (birthday) {
+        const formattedBirthday = formatBirthday(birthday);
+        setBirthday(formattedBirthday);
+        setOnboardingProfile((prevProfile) => ({
+          ...prevProfile,
+          birthday: formattedBirthday,
+        }));
+      }
+
+      if (gender?.formattedValue) {
+        setGender(gender.formattedValue);
+        setOnboardingProfile((prevProfile) => ({
+          ...prevProfile,
+          gender: gender.formattedValue || "",
+        }));
+      }
+    },
+    [setBirthday, setOnboardingProfile, setGender]
+  );
+
+  const getPeopleInfo = useCallback(
+    async (token: string) => {
+      console.log("Making API call to fetch extra user information");
+      const response = await fetch(
+        `/api/fetchExtraUserInformation?token=${token}`
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        extractUserInfo(data);
+      } else {
+        console.error("Failed to fetch people info");
+      }
+    },
+    [extractUserInfo]
+  );
 
   useEffect(() => {
     if (onboardingProfile.birthday && onboardingProfile.gender) {
@@ -127,28 +155,6 @@ const IntroPage = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onboardingProfile, userState.user]);
-
-  const extractUserInfo = (data: PeopleInfo) => {
-    const birthday = findMostCompleteBirthday(data.birthdays);
-    const gender = findMostCompleteGender(data.genders);
-
-    if (birthday) {
-      const formattedBirthday = formatBirthday(birthday);
-      setBirthday(formattedBirthday);
-      setOnboardingProfile((prevProfile) => ({
-        ...prevProfile,
-        birthday: formattedBirthday,
-      }));
-    }
-
-    if (gender?.formattedValue) {
-      setGender(gender.formattedValue);
-      setOnboardingProfile((prevProfile) => ({
-        ...prevProfile,
-        gender: gender.formattedValue || "",
-      }));
-    }
-  };
 
   const handleUpload = async (fileUri: string, fileName: string) => {
     setIsUploading(true);
