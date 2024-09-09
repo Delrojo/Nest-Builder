@@ -16,7 +16,10 @@ export const config = {
 const uploadFileToGemini = async (
   filePath: string,
   mimeType: string
-): Promise<string> => {
+): Promise<{
+  fileUri: string;
+  fileName: string;
+}> => {
   if (API_KEY.length === 0) {
     console.error("API Key is missing.");
     throw new Error("API key is missing.");
@@ -24,10 +27,12 @@ const uploadFileToGemini = async (
 
   const fileManager = new GoogleAIFileManager(API_KEY);
   const uploadResult = await fileManager.uploadFile(filePath, { mimeType });
-  const fileUri = uploadResult.file.uri;
-  console.log(`File uploaded successfully with URI: ${fileUri}`);
+  console.log(`File uploaded successfully with URI: ${uploadResult.file.name}`);
 
-  return fileUri;
+  return {
+    fileUri: uploadResult.file.uri,
+    fileName: uploadResult.file.name,
+  };
 };
 
 // Helper function to parse form data (file + system instructions)
@@ -68,8 +73,11 @@ export default async function handler(
       const mimeType = file.mimetype || "text/plain"; // Use file's mimetype or default to text
 
       try {
-        const fileUri = await uploadFileToGemini(filePath, mimeType);
-        res.status(200).json({ fileUri });
+        const { fileUri, fileName } = await uploadFileToGemini(
+          filePath,
+          mimeType
+        );
+        res.status(200).json({ fileUri, fileName });
       } catch (error) {
         console.error("Error uploading file:", error);
 

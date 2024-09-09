@@ -51,8 +51,7 @@ export function useAuth() {
 
     // Check if the user exists and accessToken is present
     const currentUser = auth.currentUser;
-    console.log("HEY IM IN THE VALIDATE AND REFRESH TOKEN FUNCTION");
-    console.log("currentUser", currentUser);
+
     if (!currentUser || !googleAuthToken) {
       console.warn("User not authenticated or access token is missing.");
       return false;
@@ -60,18 +59,15 @@ export function useAuth() {
 
     // Function to validate token
     const isValidToken = async (token: string): Promise<boolean> => {
-      console.log("Validating token:", token);
       if (token === "FirebaseAuthEmulatorFakeAccessToken_google.com") {
-        console.warn("Detected emulator token, valid.");
+        console.warn("Detected emulator token, considering it valid.");
         return true;
       }
 
       try {
-        console.log("Checking token validity with Google API...");
         const response = await fetch(
           `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`
         );
-        console.log("Response:", response);
         if (response.status === 401) {
           console.warn("Token is invalid or expired.");
           return false;
@@ -90,19 +86,19 @@ export function useAuth() {
       return true;
     }
 
-    console.log(
-      "Token is invalid or expired, attempting silent re-authentication."
-    );
-
     // Perform silent refresh using Google Sign-In
     const provider = new GoogleAuthProvider();
     try {
+      console.log("Attempting to refresh token via Google Sign-In...");
       const result = await signInWithPopup(auth, provider);
       const credential = GoogleAuthProvider.credentialFromResult(result);
       const newGoogleAuthToken = credential?.accessToken;
 
       if (newGoogleAuthToken) {
         // Store the new token in localStorage and update Recoil state
+        console.log(
+          "New token obtained, updating localStorage and Recoil state..."
+        );
         const status = await checkUserStatus(currentUser.email || "");
         localStorage.setItem("accessToken", newGoogleAuthToken);
         setUser((prevUser) => ({
@@ -116,16 +112,14 @@ export function useAuth() {
             googleAuthToken: newGoogleAuthToken, // Set the new Google Auth Token
           },
         }));
-        console.log("Successfully refreshed token.");
         return true; // Token refreshed successfully
       }
     } catch (error) {
-      console.error("Failed to refresh token via Google Sign-In: ", error);
+      console.error("Failed to refresh token via Google Sign-In:", error);
       return false;
     }
     return false;
   };
-
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     provider.addScope("https://www.googleapis.com/auth/user.birthday.read");

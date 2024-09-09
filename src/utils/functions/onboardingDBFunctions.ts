@@ -23,9 +23,7 @@ export const fetchProfile = async (userId: string, userName: string) => {
 
       const profileData: Profile = {
         name: data?.name || "",
-        birthday: data?.birthday
-          ? data.birthday.toDate().toISOString().split("T")[0]
-          : "",
+        birthday: data?.birthday || "",
         gender: data?.gender || "",
         home_address: data?.home_address || "",
         transportations: data?.transportations || {},
@@ -179,9 +177,6 @@ export const updateLifestyle = async (
       combinedPreferences[preference] = true;
     });
 
-    console.log("Combined Preferences:", combinedPreferences);
-    console.log("Lifestyle Paragraph:", lifestyleData.lifestyleParagraph);
-
     // Create a reference to the user's document in Firestore
     const userDocRef = doc(firestore, "users", userId);
 
@@ -197,7 +192,7 @@ export const updateLifestyle = async (
   }
 };
 
-export const updateCategories = async (
+export const updatePredictedCategories = async (
   userId: string,
   categories: Category[]
 ) => {
@@ -206,11 +201,13 @@ export const updateCategories = async (
     throw Error("No categories provided for user.");
   }
 
-  console.log("Starting updateCategories function for user:", userId);
+  console.log("__________________________________________________________");
+  console.log("Starting updatePredictedCategories function for user:", userId);
   console.log("Full categories object:", categories);
   console.log(Array.isArray(categories));
   console.log("Categories to update:", categories[0]);
   console.log(Array.isArray(categories[0]));
+  console.log("__________________________________________________________");
 
   const categoriesRef = collection(firestore, `users/${userId}/categories`);
 
@@ -218,18 +215,9 @@ export const updateCategories = async (
     const batch = writeBatch(firestore);
 
     // Step 1: Check if the categories subcollection exists by querying documents in it
-    console.log(
-      "Checking if categories subcollection exists for user:",
-      userId
-    );
     const querySnapshot = await getDocs(categoriesRef);
 
     if (!querySnapshot.empty) {
-      console.log(
-        "Categories subcollection exists. Deleting existing documents for user:",
-        userId
-      );
-
       // Clear it by deleting all existing documents using a for loop
       for (const doc of querySnapshot.docs) {
         batch.delete(doc.ref);
@@ -242,9 +230,6 @@ export const updateCategories = async (
         userId
       );
     }
-
-    // Step 2: Add new categories
-    console.log("Adding new categories for user:", userId);
 
     for (const category of categories) {
       const newCategoryRef = doc(categoriesRef); // Automatically generates unique ID for each category
@@ -261,13 +246,8 @@ export const updateCategories = async (
       batch.set(newCategoryRef, categoryData);
     }
 
-    console.log("New categories added for user:", userId);
-
     // Step 3: Commit the batch operations (deletes + sets)
-    console.log("Committing batch operations for user:", userId);
     await batch.commit();
-    console.log("Batch operations committed successfully for user:", userId);
-
     console.log("Categories successfully replaced for user:", userId);
   } catch (error) {
     console.error("Error updating categories for user:", userId, error);

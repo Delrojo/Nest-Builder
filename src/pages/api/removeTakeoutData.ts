@@ -6,22 +6,20 @@ if (!API_KEY) {
   throw new Error("API key is missing.");
 }
 
-const deleteFileFromGemini = async (fileUri: string): Promise<void> => {
+const deleteFileFromGemini = async (fileName: string): Promise<void> => {
   if (API_KEY.length === 0) {
     console.error("API Key is missing.");
     throw new Error("API key is missing.");
   }
 
-  console.log("In the deleteFileFromGemini function");
   const fileManager = new GoogleAIFileManager(API_KEY);
 
-  console.log(`Deleting file with URI: ${fileUri} from Gemini...`);
+  console.log(`Deleting file with URI: ${fileName} from Gemini...`);
   try {
-    await fileManager.deleteFile(fileUri);
+    await fileManager.deleteFile(fileName);
     console.log(`File deleted successfully from Gemini.`);
   } catch (error: Error | any) {
     if (error.response && error.response.status === 404) {
-      console.error("File not found:", error);
       throw new Error("File not found");
     } else {
       console.error("Error deleting file:", error);

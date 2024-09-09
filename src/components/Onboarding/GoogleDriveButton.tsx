@@ -20,7 +20,7 @@ type Activity = {
 };
 
 interface GoogleDriveButtonProps {
-  handleUpload: (fileUri: string) => void;
+  handleUpload: (fileUri: string, fileName: string) => void;
 }
 
 const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
@@ -42,8 +42,6 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
       const clientId = process.env.NEXT_PUBLIC_GOOGLE_DRIVE_CLIENT_ID ?? "";
       const developerKey = process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY ?? "";
 
-      console.log("Opening Google Drive Picker with token:", token);
-
       openPicker({
         clientId: token.length === 0 ? clientId : "",
         developerKey: token.length === 0 ? developerKey : "",
@@ -55,12 +53,10 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
         multiselect: false,
         callbackFunction: (data) => {
           if (data.action === "cancel") {
-            console.log("User clicked cancel/close button");
             return;
           }
 
           if (data.action === "picked") {
-            console.log("Fetching Google Drive file with ID:", data.docs[0].id);
             fetchGoogleDriveFile(data.docs[0].id, token);
             return;
           }
@@ -108,7 +104,6 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
    * @param accessToken - The access token for Google Drive API
    */
   async function fetchGoogleDriveFile(fileId: string, accessToken: string) {
-    console.log("Fetching Google Drive file with ID:", fileId);
     setIsLoading(true);
     try {
       // Fetch the file as a blob (since it's a ZIP file)
@@ -122,14 +117,12 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
         }
       );
 
-      console.log("Got a response in google drive file fetch", response);
       validateResponse(response)
         .then((jsonFileContent: string | undefined) => {
           if (jsonFileContent === undefined) {
             throw new Error("JSON content is null");
           }
           const jsonData = JSON.parse(jsonFileContent);
-          console.log("Cleaning and uploading the data...");
           handleCleanDataAndUploadResults(jsonData);
         })
         .catch((error: any) => {
@@ -180,7 +173,6 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
 
     for (const fileName in unzippedContent.files) {
       if (fileName.includes(`MyActivity.json`)) {
-        console.log(`Found target JSON file: ${fileName}`);
         return unzippedContent.files[fileName].async("string");
       }
     }
@@ -195,14 +187,14 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
     try {
       const dataWithinLimit = cleanAndLimitData(jsonData);
       const file = createFileFromJson(dataWithinLimit);
-      const fileUri = await uploadFileToGemini(file);
+      const result = await uploadFileToGemini(file);
 
-      if (!fileUri) {
-        console.error("File URI is undefined after upload");
-        throw new Error("File URI is undefined after upload");
+      if (result) {
+        const { fileUri, fileName } = result;
+        handleUpload(fileUri, fileName);
+      } else {
+        console.error("Failed to upload file to Gemini.");
       }
-
-      handleUpload(fileUri);
     } catch (error) {
       console.error("Error in handleCleanDataAndUploadResults:", error);
     }
@@ -300,7 +292,13 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
    */
   const uploadFileToGemini = async (
     file: File
-  ): Promise<string | undefined> => {
+  ): Promise<
+    | {
+        fileUri: string;
+        fileName: string;
+      }
+    | undefined
+  > => {
     const formData = new FormData();
     formData.append("file", file); // Append the selected file
 
@@ -312,7 +310,10 @@ const GoogleDriveButton = ({ handleUpload }: GoogleDriveButtonProps) => {
 
       if (response.ok) {
         const data = await response.json();
-        return data.fileUri;
+        return {
+          fileUri: data.fileUri,
+          fileName: data.fileName,
+        };
       } else {
         console.error("Failed to upload file. Status:", response.status);
       }

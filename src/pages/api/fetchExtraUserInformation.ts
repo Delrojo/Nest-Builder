@@ -18,8 +18,6 @@ const fetchPeopleInfo = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     });
 
-    console.log("Response from people info API", response.status);
-
     if (response.status === 200) {
       const data = await response.json();
       return res.status(200).json(data);

@@ -39,17 +39,19 @@ const withAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
           (user.user?.status !== "whitelist" && user.user?.status !== "admin")
         ) {
           if (user) {
+            // User is authenticated but does not have the right status, redirecting to home page
             router.push("/");
             return;
           }
+          // User is not authenticated, opening login modal
           setAuthModalState({ isOpen: true, mode: "login" });
           console.log("User is not authenticated, showing login modal...");
         } else if (user.user?.googleAuthToken) {
-          // Validate the token if the user has it
-          console.log("Validating token...");
-          const refreshed = validateAndRefreshToken().then((res) => res);
-          console.log("Token refreshed:", refreshed);
+          // User has a Google auth token, validating the token
+          console.log("User has a Google auth token, validating token...");
+          const refreshed = await validateAndRefreshToken();
           if (!refreshed) {
+            // Token is invalid, forcing re-authentication
             setUser({ user: null });
             setAuthModalState({ isOpen: true, mode: "login" });
             console.log("Invalid token, forcing re-authentication...");

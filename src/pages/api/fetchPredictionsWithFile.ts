@@ -18,25 +18,22 @@ if (!API_KEY) {
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 function extractJsonFromOutput(output: string): any {
-  console.log("In extractJsonFromOutput function");
   const replacedOutput = output.replace("```json", "").replace("```", "");
   return JSON.parse(replacedOutput);
 }
 
-// Helper function for retry logic
 async function retryGenerateContent(
   model: any,
   systemInstruction: string,
   uploadedFileUri: string,
-  maxRetries: number = 2
+  maxRetries: number = 2,
+  baseDelay: number = 1000
 ) {
-  console.log("In retryGenerateContent function");
-  let response = null;
-
+  console.log("Generating content with retry logic...");
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    console.log(`Attempt ${attempt + 1}/${maxRetries + 1}`);
     try {
-      response = await model.generateContent([
+      console.log(`Attempt ${attempt + 1}/${maxRetries + 1}`);
+      const response = await model.generateContent([
         systemInstruction,
         {
           fileData: {
@@ -45,41 +42,28 @@ async function retryGenerateContent(
           },
         },
       ]);
-
       console.log("Original Response", response.response.text());
       const newText = extractJsonFromOutput(response.response.text());
       console.log("Extracted JSON", newText);
       return newText;
-    } catch (error: Error | EvalError | any) {
-      if (error.name === "DeadlineExceeded") {
-        console.error("Deadline exceeded. Retrying in 1 second...");
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second
-      } else if (error.name === "JSONDecodeError") {
-        console.error("JSON decode error. Retrying in 1 second...");
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second
-      } else if (error.name === "ResourceExhausted") {
-        console.error("Resource exhausted. Retrying in 10 seconds...");
+    } catch (error: any) {
+      if (attempt === maxRetries) {
+        console.error("Max retries reached. Failing.");
+        return null;
+      }
+      // Special handling for specific errors
+      if (error.name === "ResourceExhausted") {
+        console.error("Resource exhausted. Waiting longer to retry.");
         await new Promise((resolve) => setTimeout(resolve, 10000)); // Wait 10 seconds
-      } else if (error instanceof EvalError) {
-        console.error("A value error occurred. Retrying in 1 second...");
-        if (response !== null) {
-          console.error(response.prompt_feedback);
-          console.error(response.candidates[0].finish_reason);
-          console.error(response.candidates[0].safety_ratings);
-        }
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second
       } else {
-        console.log("Error name:", error.name);
-        console.error("Unexpected error occurred:", error);
-        break;
+        const delay = baseDelay * Math.pow(2, attempt); // Exponential backoff
+        console.error(`Error encountered: ${error}. Retrying in ${delay}ms...`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
   }
-
-  console.error(
-    "Failed to generate content after maximum retries. And returning null"
-  );
-  return null; // Return null if all retries fail
+  console.log("Failed to generate content after retries.");
+  return null;
 }
 
 // Main handler function
@@ -87,8 +71,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log("Trying to fetch predictions...");
-
   if (req.method !== "POST") {
     console.error("Invalid request method:", req.method);
     return res.status(405).json({ error: "Method not allowed" });
@@ -97,9 +79,6 @@ export default async function handler(
   try {
     const { fileUri: uploadedFileUri, instructions: additionalInstructions } =
       req.body;
-
-    console.log("Uploaded file URI:", uploadedFileUri);
-    console.log("Additional instructions:", additionalInstructions);
 
     // Set generation config
     const generationConfig = {
@@ -130,11 +109,6 @@ export default async function handler(
       uploadedFileUri
     );
 
-    console.log(
-      "Response from Gemini model in fetchPredictionsWithFile:",
-      result
-    );
-
     if (result === null) {
       console.error("Failed to generate content after retries.");
       return res
@@ -142,8 +116,6 @@ export default async function handler(
         .json({ error: "Failed to generate content after 3 retries" });
     }
 
-    // Send the result back to the client
-    console.log("Successful from Gemini model:", result);
     res.status(200).json({ result });
   } catch (error) {
     console.error("Error fetching transportation predictions:", error);
