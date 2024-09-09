@@ -79,6 +79,7 @@ const Transportation: React.FC = () => {
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const method = event.target.name as keyof Transportation;
+    console.log("Before update:", transportation);
     const updatedTransportation = {
       ...transportation,
       [method]: {
@@ -86,14 +87,17 @@ const Transportation: React.FC = () => {
         selected: event.target.checked,
       },
     };
+    console.log("Updated transportation:", updatedTransportation);
     setTransportation(updatedTransportation);
     setOnboardingProfile((prevProfile) => ({
       ...prevProfile,
       transportation: updatedTransportation,
     }));
+    console.log("Profile after update:", onboardingProfile);
   };
 
   const handleSliderChange = (method: keyof Transportation, value: number) => {
+    console.log("Before update:", transportation);
     const updatedTransportation = {
       ...transportation,
       [method]: {
@@ -101,13 +105,14 @@ const Transportation: React.FC = () => {
         radius: value,
       },
     };
+    console.log("Updated transportation:", updatedTransportation);
     setTransportation(updatedTransportation);
     setOnboardingProfile((prevProfile) => ({
       ...prevProfile,
       transportation: updatedTransportation,
     }));
+    console.log("Profile after update:", onboardingProfile);
   };
-
   useEffect(() => {
     if (mapRef.current) {
       const mapOptions: google.maps.MapOptions = {
@@ -149,7 +154,7 @@ const Transportation: React.FC = () => {
         }
       });
     }
-  }, [autoComplete, mapInstance]);
+  }, [autoComplete, mapInstance, setOnboardingProfile]);
 
   useEffect(() => {
     createCircles(

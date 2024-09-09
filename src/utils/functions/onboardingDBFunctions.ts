@@ -296,10 +296,6 @@ export const updateLifestyle = async (
   }
 };
 
-interface CategoryGroup {
-  categories: Category[];
-}
-
 /**
  * Updates the predicted categories for a user in Firestore
  * by replacing the existing categories with the new data
@@ -308,7 +304,7 @@ interface CategoryGroup {
  */
 export const updatePredictedCategories = async (
   userId: string,
-  categories: CategoryGroup[]
+  categories: Category[]
 ) => {
   if (!categories || categories.length === 0) {
     console.error("No categories provided for user:", userId);
@@ -319,8 +315,6 @@ export const updatePredictedCategories = async (
   console.log("Starting updatePredictedCategories function for user:", userId);
   console.log("Full categories object:", categories);
   console.log(Array.isArray(categories));
-  console.log("Categories to update:", categories[0]);
-  console.log(Array.isArray(categories[0].categories));
   console.log("__________________________________________________________");
 
   const categoriesRef = collection(firestore, `users/${userId}/categories`);
@@ -345,7 +339,7 @@ export const updatePredictedCategories = async (
       );
     }
 
-    for (const category of categories[0].categories) {
+    for (const category of categories) {
       const newCategoryRef = doc(categoriesRef); // Automatically generates unique ID for each category
       const categoryData = {
         title: category.title || "",

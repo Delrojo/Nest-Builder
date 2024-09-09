@@ -211,6 +211,85 @@ const IntroPage = () => {
         }
 
         const data = await response.json();
+        console.log("This is the response data", data);
+
+        //TODO: Remove this debugging step
+        //if in category section, we need to make sure that the data is cleaned because the AI might return the wrong json format
+        if (section === "categories") {
+          console.log("Received response:", data);
+
+          if (!data || !Array.isArray(data.categories)) {
+            console.error(
+              "The 'categories' field is missing or is not an array."
+            );
+          } else {
+            data.categories.forEach((category: any, index: number) => {
+              if (typeof category.title !== "string") {
+                console.error(
+                  `Category at index ${index} has an invalid 'title'. Expected string, got ${typeof category.title}.`
+                );
+              }
+              if (typeof category.preference !== "string") {
+                console.error(
+                  `Category at index ${index} has an invalid 'preference'. Expected string, got ${typeof category.preference}.`
+                );
+              }
+              if (
+                !Array.isArray(category.vibes) ||
+                !category.vibes.every((vibe: any) => typeof vibe === "string")
+              ) {
+                console.error(
+                  `Category at index ${index} has an invalid 'vibes' array. Expected array of strings, got ${JSON.stringify(
+                    category.vibes
+                  )}.`
+                );
+              }
+              if (
+                !Array.isArray(category.subcategories) ||
+                !category.subcategories.every(
+                  (subcategory: any) => typeof subcategory === "string"
+                )
+              ) {
+                console.error(
+                  `Category at index ${index} has an invalid 'subcategories' array. Expected array of strings, got ${JSON.stringify(
+                    category.subcategories
+                  )}.`
+                );
+              }
+              if (
+                typeof category.cost !== "string" ||
+                !["$", "$$", "$$$", "$$$$"].includes(category.cost)
+              ) {
+                console.error(
+                  `Category at index ${index} has an invalid 'cost'. Expected one of '$', '$$', '$$$', '$$$$', got ${category.cost}.`
+                );
+              }
+            });
+
+            // Optionally check if all categories passed validation
+            const isValid = data.categories.every(
+              (category: any) =>
+                typeof category.title === "string" &&
+                typeof category.preference === "string" &&
+                Array.isArray(category.vibes) &&
+                category.vibes.every((vibe: any) => typeof vibe === "string") &&
+                Array.isArray(category.subcategories) &&
+                category.subcategories.every(
+                  (subcategory: any) => typeof subcategory === "string"
+                ) &&
+                typeof category.cost === "string" &&
+                ["$", "$$", "$$$", "$$$$"].includes(category.cost)
+            );
+
+            if (isValid) {
+              console.log("The categories structure is correct.");
+            } else {
+              console.error(
+                "The categories structure is incorrect. See above for details."
+              );
+            }
+          }
+        }
 
         if (data.result) {
           dbFunction(userState.user?.uid || "", data.result);

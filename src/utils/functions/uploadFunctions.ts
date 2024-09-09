@@ -26,16 +26,22 @@ export function createTransportationInstruction() {
 
 export function createCategoriesInstruction() {
   return `
-    "categories": [
-      {
-        "title": "string", // The category name, such as 'restaurant', 'entertainment', 'grocery', 'shopping', 'fitness', 'personal care', 'outdoors', 'religion', 'workspaces', 'nightlife', 'education', etc.
-        "preference": "string", // A first-person narrative describing the user's preferences in this category (e.g., favorite brands, visit frequency, spending habits, and favored times).
-        "vibes": ["string"], // A list of up to 6 adjectives in Title Case that describe the user's preferred environment for this category.
-        "subcategories": ["string"], // Related subcategories within the main category, such as cuisines for 'restaurant' or types of activities for 'entertainment'.
-        "cost": "string", // The user's preferred cost range (choose from: '$', '$$', '$$$', or '$$$$').
-      }
-      // Plus Additional categories can follow this structure.
-    ]
+    Please return a JSON object with the following exact structure:
+
+    {
+      "categories": [
+        {
+          "title": "string", // The category name, such as 'restaurant', 'entertainment', 'grocery', 'shopping', 'fitness', 'personal care', 'outdoors', 'religion', 'workspaces', 'nightlife', 'education', etc.
+          "preference": "string", // A first-person narrative describing the user's preferences in this category (e.g., favorite brands, visit frequency, spending habits, and favored times).
+          "vibes": ["string"], // A list of up to 6 adjectives in Title Case that describe the user's preferred environment for this category.
+          "subcategories": ["string"], // Related subcategories within the main category, such as cuisines for 'restaurant' or types of activities for 'entertainment'.
+          "cost": "string", // The user's preferred cost range (choose from: '$', '$$', '$$$', or '$$$$').
+        }
+        // Additional categories may follow this structure.
+      ]
+    }
+
+    It is important to always return this as an array of objects within the "categories" field. Do not return single objects or other variations. The response should strictly follow this JSON structure.
   `;
 }
 
